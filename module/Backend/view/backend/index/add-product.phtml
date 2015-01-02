@@ -1,0 +1,93 @@
+<?php
+
+    $messages = NULL;
+    $rawValues = [];
+    if(isset($inputFilter))
+    {
+        $messages = $inputFilter->getMessages();
+        $rawValues = $inputFilter->getRawValues();
+    }
+
+
+    function displayErrorIfAny(& $messages, $formName)
+    {
+        $string = '';
+        if(!empty($messages[$formName])) 
+        {
+            $string = '</br>';
+
+            foreach($messages[$formName] as $message)
+            {
+                $string .= '<i class="fa fa-times-circle-o"></i> '; 
+                $string .= '<span class="form-error-message" style="font-weight:400">' . $message . "</span></br>";
+            }
+
+  
+        }
+        return $string;
+    }
+
+    function hasError(& $messages, $formName)
+    {
+        if(!empty($messages[$formName])){
+            return "has-error";
+        }
+    }
+
+?>
+
+<div class="row">
+    <div class="col-md-12">
+            <?php if(isset($success) && $success == TRUE) { ?>
+                <div class="alert alert-success alert-dismissable">
+                    <i class="fa fa-check"></i>
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <b><?php echo $productName?> </b> Added! You can add another product or you can manage your stock level.
+                </div>
+            <?php }?>
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">Add New Product</h3>
+            </div><!-- /.box-header -->
+            <!-- form start -->
+
+            <form role="form" method="POST" action="?">
+                <div class="box-body">
+                    <div class="form-group <?php echo hasError($messages, 'sku');?>">                 
+                        <label for="sku">SKU: <?php echo displayErrorIfAny($messages, 'sku');?></label>
+                        
+                        <input type="text" class="form-control" id="sku" name="sku" placeholder="SKU"
+                               value="<?php if(!empty($rawValues['sku'])){ echo htmlspecialchars($rawValues['sku']); }?>">
+                    </div>
+                    <div class="form-group <?php echo hasError($messages, 'itemname');?>">
+                        <label for="itemname">Item Name: <?php echo displayErrorIfAny($messages, 'itemname');?></label>
+                        
+                        <input type="text" class="form-control" id="itemname" name="itemname" placeholder="Item Name"
+                               value="<?php if(!empty($rawValues['itemname'])){ echo htmlspecialchars($rawValues['itemname']); }?>">
+                    </div>
+                    <div class="form-group <?php echo hasError($messages, 'coreprice');?>">
+                        <label for="coreprice">Capital Price: <?php echo displayErrorIfAny($messages, 'coreprice');?></label>
+                        
+                        <input type="text" class="form-control" id="coreprice" name="coreprice" placeholder="Capital Price"
+                               value="<?php if(!empty($rawValues['coreprice'])){ echo htmlspecialchars($rawValues['coreprice']); }?>">
+                    </div>
+                    <div class="form-group <?php echo hasError($messages, 'price');?>">
+                        <label for="price">Price (SRP): <?php echo displayErrorIfAny($messages, 'price');?></label>
+                        
+                        <input type="text" class="form-control" id="price" name="price" placeholder="SRP"
+                               value="<?php if(!empty($rawValues['price'])){ echo htmlspecialchars($rawValues['price']); }?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">Initial Stock Number</label>
+                        <input type="text" class="form-control" id="stock" name="stock" placeholder="stock level"
+                               value="<?php if(!empty($rawValues['stock'])){ echo htmlspecialchars($rawValues['stock']); }?>">
+                    </div>
+                </div><!-- /.box-body -->
+
+                <div class="box-footer">
+                    <button type="submit" class="btn btn-primary">Add Product</button>
+                </div>
+            </form>
+        </div>
+    </div><!-- /.col (left) -->
+</div>

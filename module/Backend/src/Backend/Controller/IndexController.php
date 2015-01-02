@@ -9,8 +9,10 @@
 
 namespace Backend\Controller;
 
+use Zend\Http\Request;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
+use Backend\Model;
 
 class IndexController extends AbstractActionController
 {
@@ -19,6 +21,41 @@ class IndexController extends AbstractActionController
 
         $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
 
-        return new ViewModel();
     }
+
+    public function testAction(){
+        echo "Asdfa";exit;
+    }
+
+
+    public function addProductAction(){
+        
+        $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
+
+        $request = $this->getRequest();
+   
+  
+        if ($request->isPost()) {
+            $posts = $request->getPost();
+            $data  = $posts->toArray();
+            $productModel = new Model\Products();
+            $productModel->setDbAdapter($mongoDb);
+            $result = $productModel->addProduct($data);
+
+            if($result === TRUE){
+
+                return new ViewModel(['success'     => TRUE, 
+                                      'productName' => $data['itemname']]
+                                    );
+            }
+            return new ViewModel(['inputFilter' => $result]);
+        }
+
+
+
+        return new ViewModel();
+
+    }
+
+
 }

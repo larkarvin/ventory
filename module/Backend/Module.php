@@ -37,8 +37,9 @@ class Module
                     $mongoClass  = class_exists('\MongoClient') ? '\MongoClient' : '\Mongo';
                     $connection  = new $mongoClass($mongoConfig['connectionString'],
                                                   $mongoConfig['connectOptions']);
-                    $connection->connect();
+
                     $MongoDb = $connection->selectDb($mongoConfig['connectOptions']['db']);
+
                     return $MongoDb;
                 }),
         );

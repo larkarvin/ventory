@@ -16,7 +16,7 @@ return array(
                     'route'    => '/',
                     'defaults' => array(
                         'controller' => 'Backend\Controller\Index',
-                        'action'     => 'index',
+                        'action'     => 'addProduct',
                     ),
                 ),
             ),
@@ -24,14 +24,14 @@ return array(
             // new controllers and actions without needing to create a new
             // module. Simply drop new controllers in, and you can access them
             // using the path /backend/:controller/:action
-            'backend' => array(
+            'Product' => array(
                 'type'    => 'Literal',
                 'options' => array(
-                    'route'    => '/backend',
+                    'route'    => '/product',
                     'defaults' => array(
                         '__NAMESPACE__' => 'Backend\Controller',
                         'controller'    => 'Index',
-                        'action'        => 'index',
+                        'action'        => 'addProduct',
                     ),
                 ),
                 'may_terminate' => true,
