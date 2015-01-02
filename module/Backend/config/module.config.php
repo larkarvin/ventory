@@ -15,7 +15,7 @@ return array(
                 'options' => array(
                     'route'    => '/',
                     'defaults' => array(
-                        'controller' => 'Backend\Controller\Index',
+                        'controller' => 'Backend\Controller\Product',
                         'action'     => 'addProduct',
                     ),
                 ),
@@ -30,7 +30,7 @@ return array(
                     'route'    => '/product',
                     'defaults' => array(
                         '__NAMESPACE__' => 'Backend\Controller',
-                        'controller'    => 'Index',
+                        'controller'    => 'Product',
                         'action'        => 'addProduct',
                     ),
                 ),
@@ -73,7 +73,7 @@ return array(
     ),
     'controllers' => array(
         'invokables' => array(
-            'Backend\Controller\Index' => 'Backend\Controller\IndexController'
+            'Backend\Controller\Product' => 'Backend\Controller\ProductController'
         ),
     ),
     'view_manager' => array(

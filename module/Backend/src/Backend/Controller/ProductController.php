@@ -14,7 +14,7 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Backend\Model;
 
-class IndexController extends AbstractActionController
+class ProductController extends AbstractActionController
 {
     public function indexAction()
     {
