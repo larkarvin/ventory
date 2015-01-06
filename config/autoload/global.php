@@ -13,7 +13,7 @@
 
 return array(
     'Mongo' => array(
-        'connectionString' => 'mongodb://localhost:27017',
+        'connectionString' => 'mongodb://127.0.0.1:27017',
         'connectOptions'   => array(
                                   "connect" => FALSE,
                                   "connectTimeoutMS" => 60000,
