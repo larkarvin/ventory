@@ -23,13 +23,18 @@ class Products
             return $validationResult;
         }
 
-        $insertData = ['sku'       => $product['sku'],
-                       'itemname'  => $product['itemname'],
-                       'coreprice' => (float) $product['coreprice'],
-                       'price'     => (float) $product['price'],
-                       'stock'     => (int) $product['stock'],
-
+        $insertData = ['sku'         => $product['sku'],
+                       'itemname'    => $product['itemname'],
+                       'coreprice'   => (float) $product['coreprice'],
+                       'price'       => (float) $product['price'],
+                       'stock'       => (int) $product['stock'],
+                       'created'     => new \MongoDate(),
+                       'update_time' => new \MongoDate(),
         ];
+
+        if(isset($product['_id'])){
+            $insertData['_id'] = new \MongoId($product['_id']);
+        }
 
         $criteria = ['sku' => $product['sku']];
 
@@ -40,6 +45,19 @@ class Products
         }
     }
 
+    public function deleteProduct($productId)
+    {
+        $criteria = ['_id' => new \MongoId($productId)];
+
+        $result = $this->_collection->remove($criteria, ['justOne' => TRUE]);
+
+        if(empty($result['err'])){
+            return TRUE;
+        }
+
+        return FALSE;
+    }
+
 
     public function updateProduct(Array $product)
     {
@@ -48,12 +66,12 @@ class Products
             return $validationResult;
         }
 
-        $updateData = ['sku'       => $product['sku'],
-                       'itemname'  => $product['itemname'],
-                       'coreprice' => (float) $product['coreprice'],
-                       'price'     => (float) $product['price'],
-                       'stock'     => (int) $product['stock'],
-
+        $updateData = ['sku'        => $product['sku'],
+                       'itemname'   => $product['itemname'],
+                       'coreprice'  => (float) $product['coreprice'],
+                       'price'      => (float) $product['price'],
+                       'stock'      => (int) $product['stock'],
+                       'update_time' => new \MongoDate(),
         ];
 
         $criteria = ['_id' => new \MongoId($product['_id'])];
@@ -117,7 +135,7 @@ class Products
 
     }
 
-    public function fetchAll(Array $criteria = NULL, $options = [],  $limit = 10)
+    public function fetchAll(Array $criteria = NULL, $options = [],  $limit = 20, $sort = ['update_time' => 1])
     {
 
         if(empty($criteria)){
@@ -126,14 +144,15 @@ class Products
             $cursor = $this->_collection->find($criteria, $options);
         }
 
-
         $cursor->limit($limit);
-        $data = NULL;
+        $cursor->sort($sort);
+        $data['products'] = [];
+        $data['count']    = $cursor->count();
 
-        foreach($cursor as $row)
-        {
-
-        $data[] = $row;
+        if($data['count'] > 0) {
+            foreach($cursor as $row) {
+                $data['products'][] = $row;
+            }
         }
 
         return $data;

@@ -32,16 +32,53 @@ class ProductController extends AbstractActionController
         $productModel = new Model\Products();
         $productModel->setDbAdapter($mongoDb);
 
-        $data = $productModel->fetchAll();
+        $request = $this->getRequest();
 
-        return new ViewModel(['data' => $data]);
+        $getData = $request->getQuery()->toArray();
+        $criteria = [];
+        if(!empty($getData['q'])){
+            $criteria = [ '$text' => [ '$search' => $getData['q'] ]];
+        }
+
+        $sort = [];
+
+        $orderby = -1;
+        if(!empty($getData['order']) && $getData['order'] == 'ASC')
+            $orderby = 1;
+        
+        if(!empty($getData['sort'])){
+            $keyName = $getData['sort'];
+            $sort = [ $keyName => $orderby];
+        }
+
+        $data = $productModel->fetchAll($criteria, [], 20, $sort);
+
+
+        return new ViewModel(['data' => $data, 'searchParams' => $getData]);
+    }
+
+
+    public function deleteAction(){
+        $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
+        $request = $this->getRequest();
+        $productModel =  new Model\Products();
+        $productModel->setDbAdapter($mongoDb);
+
+        $getData   = $request->getQuery()->toArray();
+        $productId = $getData['product_id'];
+
+        $criteria    = ['_id' => new \MongoId($productId)];
+        $productData = $productModel->fetchOne($criteria);
+
+        $result = $productModel->deleteProduct($productId);
+
+        return new ViewModel(['product' => $productData]);
     }
 
     public function updateAction()
     {
         $request = $this->getRequest();
         $getData = $request->getQuery()->toArray();
-
         $productId = $getData['product_id'];
 
         if(empty($productId)){

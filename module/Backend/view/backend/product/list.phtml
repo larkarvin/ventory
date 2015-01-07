@@ -1,42 +1,100 @@
+<?php
+function determineSortByLink($searchParams, $sortName){
+
+    if(isset($searchParams['sort']) && $searchParams['sort'] == $sortName){
+        if(isset($searchParams['order']) && $searchParams['order'] == 'DESC'){
+            $searchParams['order'] = 'ASC';
+        }else{
+            $searchParams['order'] = 'DESC';
+        }
+    }else{
+        $searchParams['sort'] = $sortName;
+    }
+
+    return http_build_query($searchParams);
+}
+    
+?>
+
 <div class="box">
     <div class="box-header">
-        <h3 class="box-title">Products</h3>
+
+        <!-- <h3 class="box-title">Products</h3> -->
         <div class="box-tools">
+        <form action="<?php echo $this->basePath();?>/product/list" method="GET">
             <div class="input-group">
-                <input type="text" name="table_search" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Search">
+                <input type="text" name="q" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Search"
+                  value="<?php if(isset($searchParams['q'])) echo htmlspecialchars($searchParams['q']);?>">
                 <div class="input-group-btn">
-                    <button class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
+                    <button type="submit" class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
                 </div>
             </div>
+            </form>
         </div>
     </div><!-- /.box-header -->
     <div class="box-body table-responsive no-padding">
         <table class="table table-hover table-bordered">
             <tbody><tr>
-                <th>Sku</th>
-                <th>Item Name</th>
-                <th>Capital Price</th>
-                <th>Price</th>
-                <th>Stock Count</th>
+                <th>
+                    <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'sku');?>">
+                    Sku </a>
+                </th>
+                <th>
+                    <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'itemname');?>">
+                    Item Name </a>
+                </th>
+                <th>
+                    <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'coreprice');?>">
+                    Capital Price </a>
+                </th>
+                <th>
+                    <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'price');?>">
+                    Price </a>
+                </th>
+                <th>
+                    <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'stock');?>">
+                    Stock Count </a>
+                </th>
                 <th>Actions </th>
             </tr>
-            <?php foreach($data as $product){ ?>
+            <?php 
+            if($data['count'] > 0 )
+            {
+                foreach($data['products'] as $product){ ?>
             <tr>
                 <td><?php echo $product['sku'];?></td>
                 <td><?php echo $product['itemname'];?></td>
                 <td style="text-align:right"><?php echo number_format($product['coreprice'],2);?></td>
                 <td style="text-align:right"><?php echo number_format($product['price'], 2);?></td>
                 <td><?php echo $product['stock'];?></td>
-                <td>
+                <td id="accordion-option-<?php echo $product['_id']?>">
                     <a href="<?php echo $this->basePath();?>/product/update?product_id=<?php echo $product['_id']?>">
-                    <button class="btn btn-primary btn-sm">
-                         Edit 
-                    </button>
+                        <button class="btn btn-primary btn-xs">
+                             Edit Product
+                        </button>
                     </a>
-                    <a href="#" style="padding-left:20px"> Delete </a>
+                    <a style="padding-left:2em" data-toggle="collapse" data-parent="#accordion-option-<?php echo $product['_id']?>"
+                    href="#accordion-<?php echo $product['_id']?>">
+                        <button class="btn btn-danger btn-xs">
+                        Delete
+                        </button>
+                    </a>
+                    <div id="accordion-<?php echo $product['_id']?>" class="collapse" style="height:0px">
+                        <div class="box-body">
+                        <a href="<?php echo $this->basePath();?>/product/delete?product_id=<?php echo $product['_id']?>">
+                            <button class="btn btn-danger btn-xs">
+                            Confirm Delete
+                            </button>
+                        </a>
+                        <a data-toggle="collapse" data-parent="#accordion-option-<?php echo $product['_id']?>"
+                           href="#accordion-<?php echo $product['_id']?>">
+                            <button class="btn btn-xs">Cancel</button>
+                        </a>
+                        </div>
+                    </div>
                 </td>
             </tr>
-           <?php } ?>
+           <?php }}?>
         </tbody></table>
     </div><!-- /.box-body -->
 </div>
