@@ -44,7 +44,7 @@ function determineSortByLink($searchParams, $sortName){
                     Item Name </a>
                 </th>
                 <th>
-                    <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'coreprice');?>">
+                    <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'costprice');?>">
                     Capital Price </a>
                 </th>
                 <th>
@@ -64,7 +64,7 @@ function determineSortByLink($searchParams, $sortName){
             <tr>
                 <td><?php echo $product['sku'];?></td>
                 <td><?php echo $product['itemname'];?></td>
-                <td style="text-align:right"><?php echo number_format($product['coreprice'],2);?></td>
+                <td style="text-align:right"><?php echo number_format($product['costprice'],2);?></td>
                 <td style="text-align:right"><?php echo number_format($product['price'], 2);?></td>
                 <td><?php echo $product['stock'];?></td>
                 <td id="accordion-option-<?php echo $product['_id']?>">

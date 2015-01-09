@@ -10,13 +10,14 @@ class Products
 
     private $_collectionName = 'products';
     private $_collection = NULL;
+    private $_variantModel = NULL;
 
     public function setDbAdapter($dbAdapter)
     {
         $this->_collection = $dbAdapter->selectCollection($this->_collectionName);
     }
 
-    public function addProduct(Array $product)
+    public function addProductssssss(Array $product)
     {
         $validationResult = $this->_validateProduct($product);
         if($validationResult !== TRUE){
@@ -25,7 +26,7 @@ class Products
 
         $insertData = ['sku'         => $product['sku'],
                        'itemname'    => $product['itemname'],
-                       'coreprice'   => (float) $product['coreprice'],
+                       'cost'        => (float) $product['cost'],
                        'price'       => (float) $product['price'],
                        'stock'       => (int) $product['stock'],
                        'created'     => new \MongoDate(),
@@ -68,7 +69,7 @@ class Products
 
         $updateData = ['sku'        => $product['sku'],
                        'itemname'   => $product['itemname'],
-                       'coreprice'  => (float) $product['coreprice'],
+                       'cost'  => (float) $product['cost'],
                        'price'      => (float) $product['price'],
                        'stock'      => (int) $product['stock'],
                        'update_time' => new \MongoDate(),
@@ -82,28 +83,109 @@ class Products
         }
     }
 
+    public function setVariantModel($variantModel){
+        $this->_variantModel = $variantModel;
+    }
 
-
-    private function _validateProduct(Array $product)
+    public function addProduct(Array $product)
     {
-        $sku = new Input('sku');
+        $errorMessages = [];
+        $validProductVariants = [];
+        $allValid = TRUE;
+
+        $productValid = $this->_validateProduct($product);        
+        if($productValid !== TRUE){
+            $errorMessages['main'] = $productValid;
+            $allValid = FALSE;
+        }
+
+        $variantCounter = 1;
+
+ 
+        foreach($product['variants'] as $variant){
+            $result = $this->_validateProductVariant($variant);
+            
+            if($result !== TRUE){
+                $errorMessages['variants'][$variantCounter] = $result;
+                $allValid = FALSE;
+            }
+
+            $variantCounter++;
+        }
+
+        if($allValid){
+            $this->_insertProduct($product);
+        }
+
+    }    
+
+    private function _insertProduct($product)
+    {
+
+        $insertData =  [
+                     'itemname'    => $product['itemname'],
+                     'created'     => new \MongoDate(),
+                     'update_time' => new \MongoDate(),
+                     ];
+
+        $productVariants = $product['variants'];
+        unset($product['variants']);
+
+        $result['product'] = $this->_collection->insert($insertData);
+        $productId = $insertData['_id'];
+
+        $result['variants'] = $this->_variantModel->insertVariants($productId, $productVariants);
+
+        if(empty($result['product']['err']) && empty($result['variants']['err'])){
+            return TRUE;
+        }
+    }
+ 
+
+
+    private function _validateProduct(Array & $product)
+    {
 
         $stringLengthValidator = new Validator\StringLength();
         $stringLengthValidator->setMin(5);
-
-        $sku->getValidatorChain()
-        ->attach($stringLengthValidator);
-
         $itemname = new Input('itemname');
         $itemname->getValidatorChain()
-                 ->attach($stringLengthValidator)
-                 ->attach(new Validator\NotEmpty());
+                 ->attach($stringLengthValidator);
 
-        $coreprice = new Input('coreprice');
-        $coreprice->getValidatorChain()
-                  ->attach(new \Zend\I18n\Validator\Float())
-                  ->attach(new Validator\NotEmpty())
-                  ->attach(new Validator\GreaterThan(['min' => 0, 'inclusive' => true]));
+        $inputFilter = new InputFilter();
+        $inputFilter->add($itemname)->setData($product);
+
+        if ($inputFilter->isValid()) {
+            return TRUE;
+        }
+
+        return $inputFilter;
+    }
+
+    private function _validateProductVariant(Array & $product)
+    {
+
+        $stringLengthValidator = new Validator\StringLength();
+        $stringLengthValidator->setMin(3);
+
+
+        $variantName = new Input('variant');
+        $variantName->getValidatorChain()
+                    ->attach($stringLengthValidator)
+                    ->attach(new Validator\NotEmpty());
+  
+
+
+        $sku = new Input('sku');
+        $sku->getValidatorChain()
+            ->attach($stringLengthValidator);
+
+
+        $cost = new Input('cost');
+        $cost->getValidatorChain()
+             ->attach(new \Zend\I18n\Validator\Float())
+             ->attach(new Validator\NotEmpty())
+             ->attach(new Validator\GreaterThan(['min' => 0, 'inclusive' => true]));
 
         $price = new Input('price');
         $price->getValidatorChain()
@@ -118,12 +200,11 @@ class Products
                ->attach(new Validator\NotEmpty())
                ->attach(new Validator\Digits())
                ->attach(new Validator\GreaterThan(['min' => 0, 'inclusive' => true]));
-               // ->attach(new \Zend\I18n\Validator\Int());
 
         $inputFilter = new InputFilter();
         $inputFilter->add($sku)
-                    ->add($itemname)
-                    ->add($coreprice)
+                    ->add($variantName)
+                    ->add($cost)
                     ->add($price)
                     ->add($stock)
                     ->setData($product);

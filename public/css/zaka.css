@@ -1,0 +1,45 @@
+label {
+    display: inline-block;
+    margin-bottom: 5px;
+    font-weight: 700;
+    text-align: right;
+    width: 20%;
+    padding-right: 1em;
+}
+
+.form-control {
+    display: inline;
+    width: 75%;
+}
+
+.box .box-divider {
+    border-top: 1px solid #f4f4f4;
+    -webkit-border-top-left-radius: 0;
+    -webkit-border-top-right-radius: 0;
+    -webkit-border-bottom-right-radius: 3px;
+    -webkit-border-bottom-left-radius: 3px;
+    -moz-border-radius-topleft: 0;
+    -moz-border-radius-topright: 0;
+    -moz-border-radius-bottomright: 3px;
+    -moz-border-radius-bottomleft: 3px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    background-color: #ffffff;
+}
+
+.box .box-header > .fa, .box .box-header > .glyphicon, .box .box-header > .ion, .box .box-header .box-title{
+    display: inline-block;
+    padding: 10px 10px 10px 20px;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 400;
+    float: left;
+    cursor: default;
+}
+
+.variant-form{
+    height: 2em;
+    border: 1px solid #ddd
+}

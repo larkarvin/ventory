@@ -58,7 +58,8 @@ class ProductController extends AbstractActionController
     }
 
 
-    public function deleteAction(){
+    public function deleteAction()
+    {
         $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
         $request = $this->getRequest();
         $productModel =  new Model\Products();
@@ -113,7 +114,7 @@ class ProductController extends AbstractActionController
 
     }
 
-    public function addProductAction()
+    public function addTestProductAction()
     {
         
         $request = $this->getRequest();
@@ -133,6 +134,40 @@ class ProductController extends AbstractActionController
                 return new ViewModel(['success'     => TRUE, 
                                       'productName' => $data['itemname']]
                                     );
+
+            }
+            return new ViewModel(['inputFilter' => $result]);
+        }
+        return new ViewModel();
+
+    }
+
+    public function addProductAction()
+    {
+        
+        $request = $this->getRequest();
+
+        if ($request->isPost()) {
+            $posts = $request->getPost();
+            $data  = $posts->toArray();
+
+            $productModel        = new Model\Products();
+            $productVariantModel = new Model\ProductVariants();
+
+            $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
+            $productModel->setDbAdapter($mongoDb);
+
+            $productVariantModel->setDbAdapter($mongoDb);
+            $productModel->setVariantModel($productVariantModel);
+
+            $result = $productModel->addProduct($data);
+
+            if($result === TRUE){
+
+                return new ViewModel(['success'     => TRUE, 
+                                      'productName' => $data['itemname']]
+                                    );
+
             }
             return new ViewModel(['inputFilter' => $result]);
         }
