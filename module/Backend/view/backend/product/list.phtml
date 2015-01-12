@@ -44,16 +44,8 @@ function determineSortByLink($searchParams, $sortName){
                     Item Name </a>
                 </th>
                 <th>
-                    <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'costprice');?>">
-                    Capital Price </a>
-                </th>
-                <th>
-                    <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'price');?>">
-                    Price </a>
-                </th>
-                <th>
-                    <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'stock');?>">
-                    Stock Count </a>
+                    <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'active');?>">
+                    Active </a>
                 </th>
                 <th>Actions </th>
             </tr>
@@ -62,11 +54,16 @@ function determineSortByLink($searchParams, $sortName){
             {
                 foreach($data['products'] as $product){ ?>
             <tr>
-                <td><?php echo $product['sku'];?></td>
-                <td><?php echo $product['itemname'];?></td>
-                <td style="text-align:right"><?php echo number_format($product['costprice'],2);?></td>
-                <td style="text-align:right"><?php echo number_format($product['price'], 2);?></td>
-                <td><?php echo $product['stock'];?></td>
+                <td><?php if (isset($product['sku'])) { echo $product['sku']; }?></td>
+                <td><?php if (isset($product['itemname'])) { echo $product['itemname']; }?></td>
+                <td>
+                    <?php if (isset($product['active']) && $product === TRUE) 
+                    {
+                        echo '<small class="badge bg-green">active</small>';
+                    } else {
+                        echo '<small class="badge bg-yellow">inactive</small>';
+                    }?>
+                </td>
                 <td id="accordion-option-<?php echo $product['_id']?>">
                     <a href="<?php echo $this->basePath();?>/product/update?product_id=<?php echo $product['_id']?>">
                         <button class="btn btn-primary btn-xs">

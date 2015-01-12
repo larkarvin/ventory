@@ -1,37 +1,57 @@
 <?php
 
-    $messages = NULL;
-    $rawValues = [];
-    if(isset($inputFilter))
+    function repopulateTableVariants($inputfilters)
     {
-        $messages = $inputFilter->getMessages();
-        $rawValues = $inputFilter->getRawValues();
-    }
 
-
-    function displayErrorIfAny(& $messages, $formName)
-    {
         $string = '';
-        if(!empty($messages[$formName])) 
-        {
-            $string = '</br>';
+        foreach($inputfilters as $key => $inputfilter){
 
-            foreach($messages[$formName] as $message)
-            {
-                $string .= '<i class="fa fa-times-circle-o"></i> '; 
-                $string .= '<span class="form-error-message" style="font-weight400">' . $message . "</span></br>";
-            }
-
-  
+            $rawValues = $inputfilter->getRawValues();
+            $string .= createVariantError($inputfilter);
+            $string .= '<tr>';
+            $string .= '<td><input type="text" class="form-control variant-form" name="variants['.$key.'][variant]" value="'. htmlspecialchars( $rawValues['variant'] ) . '"></td>';
+            $string .= '<td><input type="text" class="form-control variant-form" name="variants['.$key.'][sku]"     value="'. htmlspecialchars( $rawValues['sku'] ) . '"></td>';
+            $string .= '<td><input type="text" class="form-control variant-form" name="variants['.$key.'][cost]"    value="'. htmlspecialchars( $rawValues['cost'] ) . '"></td>';
+            $string .= '<td><input type="text" class="form-control variant-form" name="variants['.$key.'][price]"   value="'. htmlspecialchars( $rawValues['price'] ) . '"></td>';
+            $string .= '<td><input type="text" class="form-control variant-form" name="variants['.$key.'][stock]"   value="'. htmlspecialchars( $rawValues['stock'] ) . '"></td>';
+            $string .= '<td><a href="#" onClick="removeTr(event, this)"> <i class="fa fa-times-circle"></i> </a></td>';
+            $string .= '</tr>'; 
         }
         return $string;
     }
 
-    function hasError(& $messages, $formName)
+    function createVariantError(& $inputfilter)
     {
-        if(!empty($messages[$formName])){
-            return "has-error";
-        }
+            if($inputfilter->isValid()) return '';
+            $messages = $inputfilter->getMessages();
+            $string = '<tr>';
+            $string .= '<td colspan="6">';
+            $string .= createInputFilterMessage($messages);
+            $string .= '</td>';
+            $string .= '</tr>';
+            return $string;
+    }
+
+    function createInputFilterMessage($messages)
+    {
+            $string = '<div class="alert alert-warning alert-dismissable">';
+            $string .= '    <i class="fa fa-warning"></i>';
+            $string .= '    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>';
+
+            foreach($messages as $key => $errorMessages){               
+                    foreach($errorMessages as $message)
+                    $string .= '       <p><i class="fa fa-warning"></i> '. $key.': '.  $message.'</p>';
+            }
+            $string .= '</div>';
+            return $string;
+    }
+
+    function displayMainProductError($inputfilter)
+    {
+        if($inputfilter->isValid())
+            return '';
+
+        return createInputFilterMessage($inputfilter->getMessages());
     }
 
 ?>
@@ -42,7 +62,7 @@
                     <div class="alert alert-success alert-dismissable">
                         <i class="fa fa-check"></i>
                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                        <b><?php echo $productName?> </b> Added! You can add another product or you can manage your stock level.
+                        <b><?php echo $productName; ?> </b> Added! You can add another product or you can manage your stock level.
                     </div>
                 <?php }?>
             <div class="box">
@@ -51,12 +71,16 @@
                 </div>
                 <!-- form start -->
                     <div class="box-body">
-
-                        <div class="form-group <?php echo hasError($messages, 'itemname');?>">
-                            <label for="itemname">Item Name <?php echo displayErrorIfAny($messages, 'itemname');?></label>
+                        <?php 
+                        if(isset($result['inputfilters']['main'])) {
+                            echo displayMainProductError($result['inputfilters']['main']);
+                        }
+                        ?>
+                        <div class="form-group">
+                            <label for="itemname">Item Name </label>
                             
                             <input type="text" class="form-control" id="itemname" name="itemname" placeholder="Item Name"
-                                   value="Tshirtko<?php if(isset($rawValues['itemname'])){ echo htmlspecialchars($rawValues['itemname']); }?>">
+                                   value="<?php if(isset($rawValues['itemname'])){ echo htmlspecialchars($rawValues['itemname']); }?>">
                         </div>
                     </div>
 
@@ -67,36 +91,36 @@
 
                     <div class="box-body">
 
-                        <div class="form-group <?php echo hasError($messages, 'itemname');?>">
-                            <label for="variantName">Variant Name <?php echo displayErrorIfAny($messages, 'variantName');?></label>
+                        <div class="form-group">
+                            <label for="variantName">Variant Name </label>
                             
                             <input type="text" class="form-control" id="variantName" name="variantName" placeholder="Variant Name"
                                    value="<?php if(isset($rawValues['variantName'])){ echo htmlspecialchars($rawValues['variantName']); }?>">
                         </div>
-                        <div class="form-group <?php echo hasError($messages, 'sku');?>">                 
-                            <label for="sku">SKU <?php echo displayErrorIfAny($messages, 'sku');?></label>
+                        <div class="form-group">                 
+                            <label for="sku">SKU </label>
                             
                             <input type="text" class="form-control" id="sku" name="sku" placeholder="SKU"
                                    value="<?php if(isset($rawValues['sku'])){ echo htmlspecialchars($rawValues['sku']); }?>">
                         </div>
 
-                        <div class="form-group <?php echo hasError($messages, 'cost');?>">
-                            <label for="cost">Buy Price <?php echo displayErrorIfAny($messages, 'cost');?></label>
+                        <div class="form-group">
+                            <label for="cost">Buy Price </label>
                             
                             <input type="text" class="form-control" id="cost" name="cost" placeholder="Buy Price"
                                    value="<?php if(isset($rawValues['cost'])){ echo htmlspecialchars($rawValues['cost']); }?>">
                         </div>
-                        <div class="form-group <?php echo hasError($messages, 'price');?>">
-                            <label for="price">Price (SRP) <?php echo displayErrorIfAny($messages, 'price');?></label>
+                        <div class="form-group">
+                            <label for="price">Price (SRP) </label>
                             <input type="text" class="form-control" id="price" name="price" placeholder="SRP"
                                    value="<?php if(isset($rawValues['price'])){ echo htmlspecialchars($rawValues['price']); }?>">
                         </div>
-                        <div class="form-group <?php echo hasError($messages, 'stock');?>">
-                            <label for="cost">Initial Stock <?php echo displayErrorIfAny($messages, 'stock');?></label>
+                        <div class="form-group">
+                            <label for="cost">Initial Stock </label>
                             <input type="text" class="form-control" id="stock" name="stock" placeholder="Initial Stock"
                                    value="<?php if(isset($rawValues['stock'])){ echo htmlspecialchars($rawValues['stock']); }?>">
                         </div>
-                        <div class="form-group <?php echo hasError($messages, 'stock');?>">
+                        <div class="form-group">
                             <button type="button" id="add-variant-btn" class="btn btn-info btn-flat">Add Variant</button>
                         </div>
                     </div><!-- /.box-body -->
@@ -106,6 +130,16 @@
                     </div>
 
 
+                <?php 
+
+               if(isset($result['zeroVariant']) && $result['zeroVariant'] === TRUE ){
+
+                    $string  = '<div class="callout callout-warning">';
+                    $string .= '       <p><i class="fa fa-warning"></i> No Variants, Please add at least one variant.</p>';
+                    $string .= '</div>';
+
+                    echo $string;
+                }?>
                         <div class="box-body">
                                     <table class="table table-bordered">
                                         <tbody  id="variant-list" >
@@ -117,9 +151,16 @@
                                             <th>Stock on Hand</th>
                                             <th>&nbsp;</th>
                                         </tr>
-                                        <tr>
+
+                                        <?php
+
+                                        if(isset($result['inputfilters']['variants']) && count($result['inputfilters']['variants']) > 0){
+                                            echo repopulateTableVariants($result['inputfilters']['variants']);
+                                        }
+                                        ?>
+<!--                                         <tr>
                                             <td><input type="text" class="form-control variant-form" name="variants[1][variant]" value="ABC/D"></td>
-                                            <td><input type="text" class="form-control variant-form" name="variants[1][sku]"  value="SKU1"></td>
+                                            <td><input type="text" class="form-control variant-form" name="variants[1][sku]"  value="SU1"></td>
                                             <td><input type="text" class="form-control variant-form" name="variants[1][cost]" value="10.4"></td>
                                             <td><input type="text" class="form-control variant-form" name="variants[1][price]" value="30.5"></td>
                                             <td><input type="text" class="form-control variant-form" name="variants[1][stock]" value="52"></td>
@@ -133,7 +174,7 @@
                                             <td><input type="text" class="form-control variant-form" name="variants[2][stock]" value="2252"></td>
                                             <td><a href="#" onClick="removeTr(event, this)"> <i class="fa fa-times-circle"></i> </a></td>
                                             
-                                        </tr>
+                                        </tr> -->
                                     </tbody></table>
                         </div>
 
@@ -148,7 +189,7 @@
 
 <script type="text/javascript">
 
-    var variantCounter = 2;
+    var variantCounter = 0;
     updateVariantCounter();
 
 

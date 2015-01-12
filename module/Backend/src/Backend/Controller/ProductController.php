@@ -21,11 +21,6 @@ class ProductController extends AbstractActionController
         $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
     }
 
-    public function testAction()
-    {
-        echo "Asdfa";exit;
-    }
-
     public function listAction()
     {
         $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
@@ -114,34 +109,6 @@ class ProductController extends AbstractActionController
 
     }
 
-    public function addTestProductAction()
-    {
-        
-        $request = $this->getRequest();
-
-        if ($request->isPost()) {
-            $posts = $request->getPost();
-            $data  = $posts->toArray();
-            $productModel = new Model\Products();
-
-            $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
-            $productModel->setDbAdapter($mongoDb);
-
-            $result = $productModel->addProduct($data);
-
-            if($result === TRUE){
-
-                return new ViewModel(['success'     => TRUE, 
-                                      'productName' => $data['itemname']]
-                                    );
-
-            }
-            return new ViewModel(['inputFilter' => $result]);
-        }
-        return new ViewModel();
-
-    }
-
     public function addProductAction()
     {
         
@@ -161,7 +128,6 @@ class ProductController extends AbstractActionController
             $productModel->setVariantModel($productVariantModel);
 
             $result = $productModel->addProduct($data);
-
             if($result === TRUE){
 
                 return new ViewModel(['success'     => TRUE, 
@@ -169,7 +135,7 @@ class ProductController extends AbstractActionController
                                     );
 
             }
-            return new ViewModel(['inputFilter' => $result]);
+            return new ViewModel(['result' => $result]);
         }
         return new ViewModel();
 

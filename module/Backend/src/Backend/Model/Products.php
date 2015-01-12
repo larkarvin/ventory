@@ -89,33 +89,48 @@ class Products
 
     public function addProduct(Array $product)
     {
-        $errorMessages = [];
+        $inputfilters = [];
+        $zeroVariant = TRUE;
         $validProductVariants = [];
         $allValid = TRUE;
 
-        $productValid = $this->_validateProduct($product);        
-        if($productValid !== TRUE){
-            $errorMessages['main'] = $productValid;
+        $inputfilters['main'] = $this->_validateProduct($product);   
+        // check main product if valid     
+        if($inputfilters['main']->isValid() !== TRUE){
             $allValid = FALSE;
         }
 
+
+        // determine if there is inputted variants if not send nodata error message
         $variantCounter = 1;
 
- 
-        foreach($product['variants'] as $variant){
-            $result = $this->_validateProductVariant($variant);
-            
-            if($result !== TRUE){
-                $errorMessages['variants'][$variantCounter] = $result;
-                $allValid = FALSE;
+        if(isset($product['variants']) && count($product['variants']) > 0){
+            $zeroVariant = FALSE;
+            // check all variants
+            // if all passed validation insert
+            foreach($product['variants'] as $variant){
+                $result = $this->_validateProductVariant($variant);
+                $inputfilters['variants'][$variantCounter] = $result;
+                if($result->isValid() !== TRUE){
+                    $allValid = FALSE;
+                }
+                
+                $variantCounter++;
             }
 
-            $variantCounter++;
+        }else{
+            $allValid = FALSE;
         }
 
-        if($allValid){
-            $this->_insertProduct($product);
+           
+        // if all are valid insert product and variants
+        $insertResult = FALSE;
+        if($allValid === TRUE){
+            return $this->_insertProduct($product);
         }
+
+        // return error message
+        return ['inputfilters' => $inputfilters, 'zeroVariant' => $zeroVariant];
 
     }    
 
@@ -124,6 +139,7 @@ class Products
 
         $insertData =  [
                      'itemname'    => $product['itemname'],
+                     'active'      => true,
                      'created'     => new \MongoDate(),
                      'update_time' => new \MongoDate(),
                      ];
@@ -154,10 +170,6 @@ class Products
 
         $inputFilter = new InputFilter();
         $inputFilter->add($itemname)->setData($product);
-
-        if ($inputFilter->isValid()) {
-            return TRUE;
-        }
 
         return $inputFilter;
     }
@@ -209,9 +221,6 @@ class Products
                     ->add($stock)
                     ->setData($product);
 
-        if ($inputFilter->isValid()) {
-            return TRUE;
-        }
         return $inputFilter;
 
     }
