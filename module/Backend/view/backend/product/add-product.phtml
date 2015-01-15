@@ -55,7 +55,7 @@
     }
 
 ?>
-<form role="form" method="POST" action="?">
+<form role="form" method="POST" action="<?php echo $this->basePath();?>/product/add-product">
     <div class="row">
         <div class="col-md-12">
                 <?php if(isset($success) && $success == TRUE) { ?>
@@ -65,9 +65,9 @@
                         <b><?php echo $productName; ?> </b> Added! You can add another product or you can manage your stock level.
                     </div>
                 <?php }?>
-            <div class="box">
+
                 <div class="box-header">
-                    <h3 class="box-title">Product Detail</h3>
+                    <h4 class="box-title">Product Detail</h4>
                 </div>
                 <!-- form start -->
                     <div class="box-body">
@@ -85,7 +85,7 @@
                     </div>
 
                     <div class="box-header box-divider">
-                        <h3 class="box-title">Product Variant</h3>
+                        <h4 class="box-title">Product Variant</h4>
                     </div>
 
 
@@ -110,6 +110,8 @@
                             <input type="text" class="form-control" id="cost" name="cost" placeholder="Buy Price"
                                    value="<?php if(isset($rawValues['cost'])){ echo htmlspecialchars($rawValues['cost']); }?>">
                         </div>
+
+
                         <div class="form-group">
                             <label for="price">Price (SRP) </label>
                             <input type="text" class="form-control" id="price" name="price" placeholder="SRP"
@@ -121,12 +123,12 @@
                                    value="<?php if(isset($rawValues['stock'])){ echo htmlspecialchars($rawValues['stock']); }?>">
                         </div>
                         <div class="form-group">
-                            <button type="button" id="add-variant-btn" class="btn btn-info btn-flat">Add Variant</button>
+                            <button type="button" id="add-variant-btn" class="btn btn-info btn-sm">Add Variant</button>
                         </div>
                     </div><!-- /.box-body -->
 
                     <div class="box-header box-divider">
-                        <h3 class="box-title">Variant Details <span id="variant-counter">(0 variants)</span></h3> 
+                        <h4 class="box-title">Variant Details <span id="variant-counter">(0 variants)</span></h4> 
                     </div>
 
 
@@ -182,7 +184,7 @@
                     <div class="box-footer">
                         <button type="submit" class="btn btn-primary">Add Product</button>
                     </div>
-            </div>
+
         </div><!-- /.col (left) -->
     </div>
 </form>

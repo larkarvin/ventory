@@ -17,34 +17,6 @@ class Products
         $this->_collection = $dbAdapter->selectCollection($this->_collectionName);
     }
 
-    public function addProductssssss(Array $product)
-    {
-        $validationResult = $this->_validateProduct($product);
-        if($validationResult !== TRUE){
-            return $validationResult;
-        }
-
-        $insertData = ['sku'         => $product['sku'],
-                       'itemname'    => $product['itemname'],
-                       'cost'        => (float) $product['cost'],
-                       'price'       => (float) $product['price'],
-                       'stock'       => (int) $product['stock'],
-                       'created'     => new \MongoDate(),
-                       'update_time' => new \MongoDate(),
-        ];
-
-        if(isset($product['_id'])){
-            $insertData['_id'] = new \MongoId($product['_id']);
-        }
-
-        $criteria = ['sku' => $product['sku']];
-
-        $result = $this->_collection->update($criteria, ['$set' => $insertData], ['upsert' => true]);
-
-        if(empty($result['err'])){
-            return TRUE;
-        }
-    }
 
     public function deleteProduct($productId)
     {
@@ -109,7 +81,7 @@ class Products
             // check all variants
             // if all passed validation insert
             foreach($product['variants'] as $variant){
-                $result = $this->_validateProductVariant($variant);
+                $result = $this->_variantModel->validateProductVariant($variant);
                 $inputfilters['variants'][$variantCounter] = $result;
                 if($result->isValid() !== TRUE){
                     $allValid = FALSE;
@@ -174,56 +146,6 @@ class Products
         return $inputFilter;
     }
 
-    private function _validateProductVariant(Array & $product)
-    {
-
-        $stringLengthValidator = new Validator\StringLength();
-        $stringLengthValidator->setMin(3);
-
-
-        $variantName = new Input('variant');
-        $variantName->getValidatorChain()
-                    ->attach($stringLengthValidator)
-                    ->attach(new Validator\NotEmpty());
-  
-
-
-        $sku = new Input('sku');
-        $sku->getValidatorChain()
-            ->attach($stringLengthValidator);
-
-
-        $cost = new Input('cost');
-        $cost->getValidatorChain()
-             ->attach(new \Zend\I18n\Validator\Float())
-             ->attach(new Validator\NotEmpty())
-             ->attach(new Validator\GreaterThan(['min' => 0, 'inclusive' => true]));
-
-        $price = new Input('price');
-        $price->getValidatorChain()
-              ->attach(new \Zend\I18n\Validator\Float())
-              ->attach(new Validator\NotEmpty())
-              ->attach(new Validator\GreaterThan(['min' => 0, 'inclusive' => true]));
-
-
-
-        $stock = new Input('stock');
-        $stock->getValidatorChain()
-               ->attach(new Validator\NotEmpty())
-               ->attach(new Validator\Digits())
-               ->attach(new Validator\GreaterThan(['min' => 0, 'inclusive' => true]));
-
-        $inputFilter = new InputFilter();
-        $inputFilter->add($sku)
-                    ->add($variantName)
-                    ->add($cost)
-                    ->add($price)
-                    ->add($stock)
-                    ->setData($product);
-
-        return $inputFilter;
-
-    }
 
     public function fetchAll(Array $criteria = NULL, $options = [],  $limit = 20, $sort = ['update_time' => 1])
     {
@@ -236,12 +158,11 @@ class Products
 
         $cursor->limit($limit);
         $cursor->sort($sort);
-        $data['products'] = [];
-        $data['count']    = $cursor->count();
 
-        if($data['count'] > 0) {
+        $data = [];
+        if($cursor->count() > 0) {
             foreach($cursor as $row) {
-                $data['products'][] = $row;
+                $data[] = $row;
             }
         }
 
@@ -250,7 +171,7 @@ class Products
 
     }
 
-    public function fetchOne(Array $criteria, $options = [],  $limit = 10)
+    public function fetchOne(Array $criteria, $options = [])
     {
 
         $cursor = $this->_collection->findOne($criteria, $options);

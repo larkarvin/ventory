@@ -21,6 +21,49 @@ class ProductController extends AbstractActionController
         $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
     }
 
+
+    public function variantAction()
+    {
+
+        $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
+
+        $viewModelData = [];
+        $request = $this->getRequest();
+
+        $variantModel = new Model\ProductVariants();
+        $variantModel->setDbAdapter($mongoDb);
+
+        $getData   = $request->getQuery()->toArray();
+        $variantId = $getData['variant_id'];
+
+        if ($request->isPost()) {
+            $posts = $request->getPost();
+            $data  = $posts->toArray();
+
+            $variantId = $data['variant_id'];
+            unset($data['variant_id']);
+
+            $validationResult = $variantModel->validateProductVariant($data);
+
+            if($validationResult->isValid()){
+                $result = $variantModel->updateVariant($variantId, $data);
+                if($result === TRUE){
+                    $resultData = ['success' => TRUE];
+                    $viewModelData = array_merge($viewModelData, $resultData);
+                }
+            }else{
+                $viewModelData = array_merge($viewModelData, ['inputFilter' => $validationResult ]);
+            }
+        }
+
+        $criteria = ['_id' => new \MongoId($variantId)];
+        $variantData = $variantModel->fetchOne($criteria);
+
+        $viewModelData = array_merge($viewModelData, ['variantData' => $variantData]);
+        return new ViewModel($viewModelData);
+
+    }
+
     public function listAction()
     {
         $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
@@ -28,14 +71,12 @@ class ProductController extends AbstractActionController
         $productModel->setDbAdapter($mongoDb);
 
         $request = $this->getRequest();
-
         $getData = $request->getQuery()->toArray();
         $criteria = [];
         if(!empty($getData['q'])){
             $criteria = [ '$text' => [ '$search' => $getData['q'] ]];
         }
-
-        $sort = [];
+        $sort = ['created' => -1];
 
         $orderby = -1;
         if(!empty($getData['order']) && $getData['order'] == 'ASC')
@@ -139,6 +180,63 @@ class ProductController extends AbstractActionController
         }
         return new ViewModel();
 
+    }
+
+
+    public function detailsAction()
+    {
+        $request = $this->getRequest();
+        $getData = $request->getQuery()->toArray();
+        $productId = $getData['product_id'];
+
+       if(empty($productId)){
+            return new ViewModel();
+        }
+
+        $viewModelData = [];
+        $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
+        $productModel = new Model\Products();
+        $productModel->setDbAdapter($mongoDb);
+
+        $variantModel = new Model\ProductVariants();
+        $variantModel->setDbAdapter($mongoDb);
+
+        // post means they are adding a variant
+        if ($request->isPost()) {
+            $posts = $request->getPost();
+            $data  = $posts->toArray();
+
+            $productId = new \MongoId($data['product_id']);
+            unset($data['product_id']);
+            $result = $variantModel->validateProductVariant($data);
+
+            if($result->isValid()){
+                // multi insert thats why you need to create an array with a single value
+                $insertData[0] = $data;
+                $insertResult = $variantModel->insertVariants($productId, $insertData);
+
+                $viewModelData = array_merge($viewModelData, ['success' => $insertResult]);
+                
+            }else{
+                $viewModelData = array_merge($viewModelData, ['inputFilter' => $result]);
+            }
+        }
+
+        // fetch product data
+        $criteria = ['_id' => new \MongoId($productId)];
+        $productData = $productModel->fetchOne($criteria);
+
+        // fetch all variants data
+        $criteria = ['product_id' => new \MongoId($productId)];
+        $sort = ['variant' => 1];
+        $variantData = $variantModel->fetchAll($criteria,[], NULL, $sort);
+
+
+        $viewModelData['productData'] = $productData;
+        $viewModelData['variantData'] = $variantData;
+
+
+        return new ViewModel($viewModelData);
     }
 
 

@@ -1,0 +1,160 @@
+
+<section class="content">
+                <?php if(isset($success) && $success == TRUE) { ?>
+                    <div class="alert alert-success alert-dismissable">
+                        <i class="fa fa-check"></i>
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        A variant has been Added!   
+                    </div>
+                <?php }?>
+
+                    <!-- info row -->
+                    <div class="row ">
+                        <div class="col-sm-4">
+                                <strong>Product</strong><br>
+                                <?php echo $productData['itemname'];?>
+                        </div><!-- /.col -->
+                        <div class="col-sm-4">
+                            <strong> Last update:</strong><br> 
+                            <?php echo date('Y-m-d H:m:s', $productData['update_time']->sec);?>
+                        </div>
+                        <div class="col-sm-4"> 
+                            <strong> Created:</strong><br> <?php echo date('Y-m-d H:m:s', $productData['created']->sec);?>
+                        </div>
+                        &nbsp;
+                    </div><!-- /.row -->
+
+                    <!-- Table row -->
+                    <div class="row">
+                        <div class="col-sm-12 table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Available</th>
+                                        <th>SKU</th>
+                                        <th>Name</th>
+                                        <th style="text-align:right">Buy Price</th>
+                                        <th style="text-align:right">Selling Price</th>
+                                        <th>&nbsp;</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php 
+
+                                foreach($variantData as $variant){
+
+
+                                    ?>
+                                    <tr>
+                                        <td>
+                                            <strong>
+                                            <?php echo htmlspecialchars($variant['stock']);?>
+                                            </strong>
+                                        </td>
+                                        <td><?php echo htmlspecialchars($variant['sku']);?></td>
+                                        <td><?php echo htmlspecialchars($variant['variant']);?></td>
+                                        <td style="text-align:right"><?php echo number_format(htmlspecialchars($variant['cost']),2);?></td>
+                                        <td style="text-align:right"><?php echo number_format(htmlspecialchars($variant['price']),2);?></td>
+                                        <td>
+                                            <a href="<?php echo $this->basePath();?>/product/variant?variant_id=<?php echo $variant['_id']?>">
+                                                <button class="btn btn-primary btn-xs">
+                                                    Update
+                                                </button>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                                </tbody>
+                            </table>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+
+                    <div class="row">
+                        <!-- accepted payments column -->
+                        <div class="form-group">
+                            <button type="button" id="add-variant-btn" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".add-variant-modal">Add Variant</button>
+                        </div>
+                        
+
+
+                    </div><!-- /.row -->
+
+</section>
+
+
+<div class="modal fade add-variant-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close btn-sm" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Add Variant</h4>
+      </div>
+
+<form role="form" method="POST" action="?product_id=<?php echo htmlspecialchars($productData['_id']);?>">
+        <div class="modal-body">
+
+<?php
+
+
+/// display input Filter
+$tmp = '';
+$rawValues = [];
+if(isset($inputFilter)){
+
+    $messages  = $inputFilter->getMessages();
+    $rawValues = $inputFilter->getRawValues();
+
+    $string = '<div class="alert alert-warning alert-dismissable">';
+    $string .= '    <i class="fa fa-warning"></i>';
+    $string .= '    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>';
+
+    foreach($messages as $key => $errorMessages){               
+            foreach($errorMessages as $message)
+            $string .= '       <p><i class="fa fa-warning"></i> <strong>'. $key.': </strong> '.  $message.'</p>';
+    }
+    $string .= '</div>';
+    echo $string;
+    echo "<script type='text/javascript'> $('.add-variant-modal').modal('show');</script>";
+}
+
+?>
+            
+                    <div class="form-group">                 
+                        <label for="sku">SKU: </label>
+                        <input type="text" class="form-control" id="sku" name="sku" placeholder="SKU"
+                        value="<?php if(isset($rawValues['sku'])){ echo htmlspecialchars($rawValues['sku']); }?>">
+                        <input type="hidden" name="product_id" value="<?php echo htmlspecialchars($productData['_id'])?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="variant">Variant Name: </label>
+                        <input type="text" class="form-control" id="variant" name="variant" placeholder="Item Name"
+                        value="<?php if(isset($rawValues['variant'])){ echo htmlspecialchars($rawValues['variant']); }?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="cost">Capital Price: </label>
+                        <input type="text" class="form-control" id="cost" name="cost" placeholder="Cost Price"
+                        value="<?php if(isset($rawValues['cost'])){ echo htmlspecialchars($rawValues['cost']); }?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Price (SRP): </label>
+                        <input type="text" class="form-control" id="price" name="price" placeholder="SRP"
+                        value="<?php if(isset($rawValues['price'])){ echo htmlspecialchars($rawValues['price']); }?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">Initial Stock</label>
+                        <input type="text" class="form-control" id="stock" name="stock" placeholder="stock level"
+                        value="<?php if(isset($rawValues['stock'])){ echo htmlspecialchars($rawValues['stock']); }?>">
+                    </div>
+
+
+        </div><!-- /.box-body -->
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button  type="submit" class="btn btn-primary"> Add Variant</button>
+          </div>
+        </form>
+    </div>
+  </div>
+</div>

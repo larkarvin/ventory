@@ -15,14 +15,18 @@ function determineSortByLink($searchParams, $sortName){
 }
     
 ?>
+<section class="product-list">
 
-<div class="box">
-    <div class="box-header">
+    <div class="row">
 
         <!-- <h3 class="box-title">Products</h3> -->
-        <div class="box-tools">
+        <div class="col-sm-6">
+            <a class="pull-left" href="<?php echo $this->basePath();?>/product/add-product"> <button type="button" id="add-variant-btn" class="btn btn-primary btn-sm">Add Product</button> </a>
+        </div>
+        <div class="col-sm-6">
         <form action="<?php echo $this->basePath();?>/product/list" method="GET">
             <div class="input-group">
+
                 <input type="text" name="q" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Search"
                   value="<?php if(isset($searchParams['q'])) echo htmlspecialchars($searchParams['q']);?>">
                 <div class="input-group-btn">
@@ -32,13 +36,11 @@ function determineSortByLink($searchParams, $sortName){
             </form>
         </div>
     </div><!-- /.box-header -->
-    <div class="box-body table-responsive no-padding">
+    <div> &nbsp</div>
+    <div class="row">
+    <div class="box-body table-responsive col-sm-12">
         <table class="table table-hover table-bordered">
             <tbody><tr>
-                <th>
-                    <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'sku');?>">
-                    Sku </a>
-                </th>
                 <th>
                     <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'itemname');?>">
                     Item Name </a>
@@ -47,29 +49,32 @@ function determineSortByLink($searchParams, $sortName){
                     <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'active');?>">
                     Active </a>
                 </th>
-                <th>Actions </th>
+                <th>&nbsp;</th>
             </tr>
             <?php 
-            if($data['count'] > 0 )
+            if(count($data) > 0 )
             {
-                foreach($data['products'] as $product){ ?>
+                foreach($data as $product){ ?>
             <tr>
-                <td><?php if (isset($product['sku'])) { echo $product['sku']; }?></td>
-                <td><?php if (isset($product['itemname'])) { echo $product['itemname']; }?></td>
                 <td>
-                    <?php if (isset($product['active']) && $product === TRUE) 
+                    <a href="<?php echo $this->basePath();?>/product/details?product_id=<?php echo $product['_id']?>">
+                            <?php if (isset($product['itemname'])) { echo $product['itemname']; }?>
+                    </a>
+                </td>
+                <td>
+                    <?php if (isset($product['active']) && $product == TRUE) 
                     {
-                        echo '<small class="badge bg-green">active</small>';
+                        echo '<small class="badge bg-green">Active</small>';
                     } else {
-                        echo '<small class="badge bg-yellow">inactive</small>';
+                        echo '<small class="badge bg-gray">Disabled</small>';
                     }?>
                 </td>
                 <td id="accordion-option-<?php echo $product['_id']?>">
-                    <a href="<?php echo $this->basePath();?>/product/update?product_id=<?php echo $product['_id']?>">
+                    <a href="<?php echo $this->basePath();?>/product/details?product_id=<?php echo $product['_id']?>">
                         <button class="btn btn-primary btn-xs">
-                             Edit Product
+                            Details
                         </button>
-                    </a>
+                    </a><!-- 
                     <a style="padding-left:2em" data-toggle="collapse" data-parent="#accordion-option-<?php echo $product['_id']?>"
                     href="#accordion-<?php echo $product['_id']?>">
                         <button class="btn btn-danger btn-xs">
@@ -88,10 +93,14 @@ function determineSortByLink($searchParams, $sortName){
                             <button class="btn btn-xs">Cancel</button>
                         </a>
                         </div>
-                    </div>
+                    </div> -->
                 </td>
             </tr>
            <?php }}?>
         </tbody></table>
     </div><!-- /.box-body -->
-</div>
+    </div>
+
+
+
+</section>
