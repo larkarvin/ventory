@@ -26,6 +26,25 @@ class ProductVariants
 
     }
 
+    public function decrementVariantStock($id, $qty)
+    {
+
+        $criteria = ['_id' => new \MongoId($id)];
+        $updateData = ['$inc' => ['stock' => -$qty]];
+        $this->_collection->update($criteria, $updateData);         
+
+
+    }
+    public function incrementVariantStock($id, $qty)
+    {
+
+        $criteria = ['_id' => new \MongoId($id)];
+        $updateData = ['$inc' => ['stock' => $qty]];
+        $this->_collection->update($criteria, $updateData);         
+
+
+    }
+
     public function updateVariant($variantId, $variant){
 
 

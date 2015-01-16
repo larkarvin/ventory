@@ -1,0 +1,349 @@
+
+<style>
+    .sales-order-form{
+ /*       height: 100%;*/
+        width: 100%;
+    }
+    .no-border{
+        border: 0px;
+    }
+
+.order-detail-title{
+    width: 200px;
+    min-width: 50px;
+}
+.order-detail-value{
+
+}
+
+.tt-query, /* UPDATE: newer versions use tt-input instead of tt-query */
+.tt-hint {
+    width: 396px;
+    height: 30px;
+    padding: 8px 12px;
+    font-size: 24px;
+    line-height: 30px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+}
+
+.tt-query { /* UPDATE: newer versions use tt-input instead of tt-query */
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.tt-hint {
+    color: #999
+}
+
+.tt-dropdown-menu {
+    width: 422px;
+    margin-top: 12px;
+    padding: 8px 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+.tt-suggestion {
+    padding: 3px 20px;
+    font-size: 18px;
+    line-height: 24px;
+}
+
+.tt-suggestion.tt-is-under-cursor { /* UPDATE: newer versions use .tt-suggestion.tt-cursor */
+    color: #fff;
+    background-color: #0097cf;
+
+}
+</style>
+<h4>Sales Order</h4>
+<form method="POST" action="<?php echo $this->basePath();?>/order/sales">
+<section class="content">    
+        <div class="row">
+            
+            <div class="col-sm-6">
+                <div class="input-group">
+                            <input style="width:250px" id="typeaheadsearch" type="text" name="q" class="form-control" placeholder="Search Products">
+                </div>
+            </div>
+            <div class="col-xs-6">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tbody><tr>
+                                        <th style="width:50%">Total Units:</th>
+                                        <td><span id="total-units">0</span></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Total:</th>
+                                        <td>&#8369; <span id="total-price">0.00</span></td>
+                                    </tr>
+                                </tbody></table>
+                            </div>
+                        </div>
+        </div>
+        <div>&nbsp;</div>
+
+        <!-- Table row -->
+        <div class="row">
+            <div class="col-12 table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th width="50%">SKU</th>
+                            <th width="10%">Qty</th>
+                            <th width="10%">Stock</th>
+                            <th width="10%">Price</th>
+                            <th width="10%">Discount</th>
+                            <th width="10%">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="order_tbody">
+                        <!-- <tr>
+                            <td>
+
+
+                            </td>
+                            <td>
+                                <input type="text" class="form-control sales-order-form" value="1">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control sales-order-form" value="1">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control sales-order-form" placeholder="price">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control sales-order-form" placeholder="discount">
+                                
+                            </td>
+                            <td>
+                                <input type="text" class="form-control sales-order-form" placeholder="subtotal">
+                            </td>
+                        </tr> -->
+
+
+                    </tbody>
+                </table>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+        <div class="row">
+            <!-- accepted payments column -->
+            <div class="form-group">
+                <button type="submit" id="add-variant-btn" class="btn btn-primary">Place Order</button>
+            </div>
+            
+        </div>
+</section>
+
+
+<script type="text/javascript" src="<?php echo $this->basePath();?>/js/plugins/typeahead.js" /></script>
+
+<script type="text/javascript">
+
+function computeSubtotal(itemCounter)
+{
+
+    priceId = "item-"+ itemCounter +"-price";
+    discountId = "item-"+ itemCounter +"-discount";
+    subtotalId = "item-"+ itemCounter +"-subtotal";
+    qtyId = "item-"+ itemCounter +"-qty";
+
+    priceElement = document.getElementById(priceId);
+    discountElement = document.getElementById(discountId);
+    subtotalElement = document.getElementById(subtotalId);
+    qtyElement = document.getElementById(qtyId);
+
+    priceElement.value = priceElement.value.replace(/[^\d.-]/g, '')
+    qtyElement.value = qtyElement.value.replace(/[^\d-]/g, '')
+    discountElement.value = discountElement.value.replace(/[^\d.-]/g, '')
+
+
+    if((priceElement.value == "." )|| (priceElement.value == "0..")){
+        priceElement.value = "0."
+    }
+
+    if((discountElement.value == "." )|| (discountElement.value == "0..")){
+        discountElement.value = "0."
+    }
+
+
+    var price = priceElement.value;
+    var qty = qtyElement.value;
+    var discount = discountElement.value;
+    subtotal = qty * price;
+
+    discount = subtotal * (discount * 0.01);
+    subtotalElement.value = (subtotal - discount);
+
+    updateTotalandTotalUnits();
+}
+
+
+function updateTotalandTotalUnits(){
+
+    qtyelements = document.getElementsByClassName('qty-element');
+    var x;
+    var count = 0;
+    for(x = 0; x < qtyelements.length; x++){
+        console.log(qtyelements[x].value);
+        count = count + parseInt(qtyelements[x].value);
+    }
+
+
+    document.getElementById('total-units').innerHTML = count;
+
+    subtotalelements = document.querySelectorAll('.subtotal-element');
+
+    var total = 0;
+    for(x = 0; x < subtotalelements.length; x++){
+        total = total + parseFloat(subtotalelements[x].value);
+    }
+
+
+    total = total.toFixed(2).replace(/./g, function(c, i, a) {
+        return i && c !== "." && ((a.length - i) % 3 === 0) ? ',' + c : c;
+    });
+    document.getElementById('total-price').innerHTML = total;
+
+
+}
+
+var itemCounter = 0;
+
+var skus = new Bloodhound({
+    datumTokenizer: function (datum) {
+        return Bloodhound.tokenizers.whitespace(datum.value);
+    },
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    remote: {
+        url: '<?php echo $this->basePath();?>/order/typeahead?q=%QUERY',
+        filter: function (data) {
+            // Map the remote source JSON array to a JavaScript object array
+            return $.map(data, function (variant) {
+
+                return { "value": variant.variant,
+                         "sku"  : variant.sku,
+                         "variant_id"  : variant._id.$id,
+                         "stock"  : variant.stock,
+                         "price"  : variant.price,
+
+                };
+            });
+        }
+    }
+});
+
+function createEntry(datum)
+{
+
+    input_variantName = document.createElement("input");
+    input_variantName.setAttribute("type", "text");
+    input_variantName.setAttribute("class", "form-control sales-order-form");
+    input_variantName.setAttribute("name", "items["+ itemCounter +"][sku]");
+    input_variantName.setAttribute("value", datum.value);
+    input_variantName.setAttribute("id", "item-"+ itemCounter +"-sku");
+
+    input_sku = document.createElement("input");
+    input_sku.setAttribute("type", "hidden");
+    input_sku.setAttribute("name", "items["+ itemCounter +"][id]");
+    input_sku.setAttribute("class", "form-control sales-order-form");
+    input_sku.setAttribute("value", datum.variant_id);
+    input_sku.setAttribute("id", "item-"+ itemCounter +"-id");
+    salesorder_td_1 = document.createElement("td");
+    salesorder_td_1.appendChild(input_variantName);
+    salesorder_td_1.appendChild(input_sku);
+    
+    input_qty = document.createElement("input");
+    input_qty.setAttribute("type", "text");
+    input_qty.setAttribute("name", "items["+ itemCounter +"][qty]");
+    input_qty.setAttribute("value", 1);
+    input_qty.setAttribute("class", "form-control sales-order-form qty-element");
+    input_qty.setAttribute("id", "item-"+ itemCounter +"-qty");
+    input_qty.setAttribute("onkeyup", "computeSubtotal("+ itemCounter +")");
+    salesorder_td_2 = document.createElement("td");
+    salesorder_td_2.appendChild(input_qty);
+
+
+    input_available = document.createElement("input");
+    input_available.setAttribute("type", "text");
+    input_available.setAttribute("disabled", "disabled");
+    input_available.setAttribute("class", "form-control sales-order-form");
+    input_available.setAttribute("value", datum.stock);
+    input_available.setAttribute("id", "item-"+ itemCounter +"-available");
+    salesorder_td_3 = document.createElement("td");
+    salesorder_td_3.appendChild(input_available);
+
+
+    input_price = document.createElement("input");
+    input_price.setAttribute("type", "text");
+    input_price.setAttribute("name", "items["+ itemCounter +"][price]");
+    input_price.setAttribute("class", "form-control sales-order-form");
+    input_price.setAttribute("value", datum.price);
+    input_price.setAttribute("id", "item-"+ itemCounter +"-price");
+    input_price.setAttribute("onkeyup", "computeSubtotal("+ itemCounter +")");
+    salesorder_td_4 = document.createElement("td");
+    salesorder_td_4.appendChild(input_price);
+
+
+    input_discount = document.createElement("input");
+    input_discount.setAttribute("type", "text");
+    input_discount.setAttribute("value", "0");
+    input_discount.setAttribute("name", "items["+ itemCounter +"][discount]");
+    input_discount.setAttribute("onkeyup", "computeSubtotal("+ itemCounter +")");    
+    input_discount.setAttribute("id", "item-"+ itemCounter +"-discount");
+    input_discount.setAttribute("class", "form-control sales-order-form");
+    salesorder_td_5 = document.createElement("td");
+    salesorder_td_5.appendChild(input_discount);
+
+    subtotal = datum.price;
+    input_subtotal = document.createElement("input");
+    input_subtotal.setAttribute("type", "text");
+    input_subtotal.setAttribute("name", "items["+ itemCounter +"][subtotal]");
+    input_subtotal.setAttribute("value", subtotal);
+    input_subtotal.setAttribute("id", "item-"+ itemCounter +"-subtotal");
+    input_subtotal.setAttribute("class", "form-control sales-order-form subtotal-element");
+    input_subtotal.setAttribute("readOnly", true);
+    salesorder_td_6 = document.createElement("td");
+    salesorder_td_6.appendChild(input_subtotal);
+
+
+    table_tbody = document.getElementById("order_tbody");
+    salesorder_tr = document.createElement("tr");
+    salesorder_tr.setAttribute("id", "tr-item-"+ itemCounter +"-price")
+
+    salesorder_tr.appendChild(salesorder_td_1);
+    salesorder_tr.appendChild(salesorder_td_2);
+    salesorder_tr.appendChild(salesorder_td_3);
+    salesorder_tr.appendChild(salesorder_td_4);
+    salesorder_tr.appendChild(salesorder_td_5);
+    salesorder_tr.appendChild(salesorder_td_6);
+
+    table_tbody.appendChild(salesorder_tr);
+
+    typeahead = document.getElementById("typeaheadsearch");
+    typeahead.value = '';
+
+    itemCounter = itemCounter + 1;
+    updateTotalandTotalUnits();
+
+}
+
+$(document).ready(function() {
+
+    skus.initialize();
+     
+    $('#typeaheadsearch').typeahead(null, {
+      name: 'skusearch',
+      displayKey: 'value',
+      source: skus.ttAdapter()
+    }).bind("typeahead:selected", function(obj, datum, name) {
+        console.log(obj, datum, name);
+        createEntry(datum);
+    });
+
+
+});
+</script>

@@ -50,6 +50,32 @@ return array(
                     ),  
                 ),
             ),
+            'Order' => array(
+                'type'    => 'Literal',
+                'options' => array(
+                    'route'    => '/order',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Backend\Controller',
+                        'controller'    => 'Order',
+                        'action'        => 'index',
+                    ),
+                ),
+                'may_terminate' => true,
+                'child_routes' => array(
+                    'default' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '[/:action]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                                'action' => 'index'
+                            ),
+                        ),
+                    ),  
+                ),
+            ),
         ),
     ),
     'service_manager' => array(
@@ -73,7 +99,8 @@ return array(
     ),
     'controllers' => array(
         'invokables' => array(
-            'Backend\Controller\Product' => 'Backend\Controller\ProductController'
+            'Backend\Controller\Product' => 'Backend\Controller\ProductController',
+            'Backend\Controller\Order'   => 'Backend\Controller\OrderController',
         ),
     ),
     'view_manager' => array(
