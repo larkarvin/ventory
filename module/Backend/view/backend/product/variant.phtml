@@ -98,8 +98,8 @@ if(isset($inputFilter))
 
             <div id="delete-accordion" class="collapse" style="height:0px">
                 <div class="box-body">
-                    <a href="#<?php echo $this->basePath();?>/product/delete?product_id=delete">
-                        <button class="btn btn-danger btn-xs">
+                    <a href="<?php echo $this->basePath();?>/product/remove-variant?product_id=<?php echo $variantData['product_id'];?>&variant_id=<?php echo $variantData['_id'];?>">
+                        <button type="button" class="btn btn-danger btn-xs">
                         Confirm Delete
                         </button>
                     </a>

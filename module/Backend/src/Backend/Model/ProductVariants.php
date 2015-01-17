@@ -26,6 +26,11 @@ class ProductVariants
 
     }
 
+    public function remove($criteria)
+    {
+        $this->_collection->remove($criteria);
+    }
+
     public function decrementVariantStock($id, $qty)
     {
 

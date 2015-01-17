@@ -1,0 +1,89 @@
+<?php
+function determineSortByLink($searchParams, $sortName){
+
+    if(isset($searchParams['sort']) && $searchParams['sort'] == $sortName){
+        if(isset($searchParams['order']) && $searchParams['order'] == 'ASC'){
+            $searchParams['order'] = 'DESC';
+        }else{
+            $searchParams['order'] = 'ASC';
+        }
+    }else{
+        $searchParams['sort'] = $sortName;
+    }
+
+    return http_build_query($searchParams);
+}
+    
+?>
+<section class="product-list">
+
+    <div class="row">
+
+        <!-- <h3 class="box-title">Products</h3> -->
+        <div class="col-sm-6">
+            <h4> Low Stock SKUs</h4>
+            <!-- <a class="pull-left" href="<?php echo $this->basePath();?>/product/add-product"> <button type="button" id="add-variant-btn" class="btn btn-primary btn-sm">Add Product</button> </a> -->
+        </div>
+        <div class="col-sm-6">
+        <form action="<?php echo $this->basePath();?>/product/lowstock" method="GET">
+            <div class="input-group">
+
+                <input type="text" name="q" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Search"
+                  value="<?php if(isset($searchParams['q'])) echo htmlspecialchars($searchParams['q']);?>">
+                <div class="input-group-btn">
+                    <button type="submit" class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div><!-- /.box-header -->
+    <div> &nbsp</div>
+    <div class="row">
+    <div class="box-body table-responsive col-sm-12">
+        <table class="table table-hover table-bordered">
+            <tbody>
+            <tr>
+                <th>
+                    <a href="<?php echo $this->basePath();?>/product/lowstock?<?php echo determineSortByLink($searchParams, 'stock');?>">
+                    Stock </a>
+                </th>
+                <th>
+                    <a href="<?php echo $this->basePath();?>/product/lowstock?<?php echo determineSortByLink($searchParams, 'variant');?>">
+                    Variant </a>
+                </th>
+                <th>
+                    <a href="<?php echo $this->basePath();?>/product/lowstock?<?php echo determineSortByLink($searchParams, 'sku');?>">
+                    SKU </a>
+                </th>
+
+            </tr>
+            <?php 
+            if(count($data) > 0 )
+            {
+                foreach($data as $product){ ?>
+            <tr>
+              <td style="text-align:right">
+                    <?php
+                    echo number_format($product['stock']);
+                    ?>
+                </td>
+                <td>
+                    <a href="<?php echo $this->basePath();?>/product/details?product_id=<?php echo $product['product_id']?>">
+                            <?php if (isset($product['variant'])) { echo $product['variant']; }?>
+                    </a>
+                </td>
+                <td>
+                    <a href="<?php echo $this->basePath();?>/product/details?product_id=<?php echo $product['product_id']?>">
+                            <?php if (isset($product['sku'])) { echo $product['sku']; }?>
+                    </a>
+                </td>
+  
+            </tr>
+           <?php }}?>
+        </tbody></table>
+    </div><!-- /.box-body -->
+    </div>
+
+
+
+</section>

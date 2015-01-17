@@ -93,6 +93,36 @@ class ProductController extends AbstractActionController
         return new ViewModel(['data' => $data, 'searchParams' => $getData]);
     }
 
+    public function lowStockAction()
+    {
+
+        $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
+        $productVariantModel = new Model\ProductVariants();
+        $productVariantModel->setDbAdapter($mongoDb);
+
+        $request = $this->getRequest();
+        $getData = $request->getQuery()->toArray();
+        $criteria = [];
+        if(!empty($getData['q'])){
+            $criteria = [ '$text' => [ '$search' => $getData['q'] ]];
+        }
+        $sort = ['stock' => 1];
+
+        $orderby = -1;
+        if(!empty($getData['order']) && $getData['order'] == 'ASC')
+            $orderby = 1;
+        
+        if(!empty($getData['sort'])){
+            $keyName = $getData['sort'];
+            $sort = [ $keyName => $orderby];
+        }
+
+        $data = $productVariantModel->fetchAll($criteria, [], 50, $sort);
+
+
+        return new ViewModel(['data' => $data, 'searchParams' => $getData]);
+    }
+
 
     public function deleteAction()
     {
@@ -149,6 +179,26 @@ class ProductController extends AbstractActionController
         return new ViewModel($viewModelData);
 
     }
+
+    public function removeVariantAction()
+    {
+
+        $request = $this->getRequest();
+        $getData = $request->getQuery()->toArray();
+        $productVariantModel = new Model\ProductVariants();
+        $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
+        $productVariantModel->setDbAdapter($mongoDb);
+
+        $criteria['_id'] = new \MongoId($getData['variant_id']);
+        $productVariantModel->remove($criteria);
+
+
+        $newURL = 'http://backend.localhost/product/details?product_id=' . $getData['product_id'];
+        header('Location: '.$newURL);
+        exit;
+
+    }
+
 
     public function addProductAction()
     {
