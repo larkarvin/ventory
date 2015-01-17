@@ -35,7 +35,7 @@ class Orders
         unset($order['q']);
 
         $order['created'] = new \MongoDate();
-
+        $order['shipment_date'] = new \MongoDate(strtotime($order['shipment_date']));
         $total = 0;
         foreach($order['items'] as $key => $item){
             $order['items'][$key]['qty']      = (float) $item['qty'];
@@ -44,6 +44,24 @@ class Orders
             $order['items'][$key]['subtotal'] = (float) $item['subtotal'];
             $total += (float)$item['subtotal'];
             $this->_variantModel->decrementVariantStock($item['id'], (float) $item['qty']);
+        }
+        $order['total'] = $total;
+        $this->_collection->insert($order);
+    }
+
+    public function purchaseOrder($order){
+        unset($order['q']);
+
+        $order['created'] = new \MongoDate();
+        $order['stock_due'] = new \MongoDate(strtotime($order['stock_due']));
+        $total = 0;
+        foreach($order['items'] as $key => $item){
+            $order['items'][$key]['qty']      = (float) $item['qty'];
+            $order['items'][$key]['cost']    = (float) $item['cost'];
+            $order['items'][$key]['subtotal'] = (float) $item['subtotal'];
+            $total += (float)$item['subtotal'];
+            unset($order['items'][$key]['discount']);
+            $this->_variantModel->incrementVariantStock($item['id'], (float) $item['qty']);
         }
         $order['total'] = $total;
         $this->_collection->insert($order);

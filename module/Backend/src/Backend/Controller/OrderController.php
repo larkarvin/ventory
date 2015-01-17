@@ -47,6 +47,28 @@ class OrderController extends AbstractActionController
         return new ViewModel();
     }
 
+    public function purchaseAction()
+    {
+
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $posts = $request->getPost();
+            $data  = $posts->toArray();
+
+            $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
+            $orderModel = new Model\Orders();
+            $orderModel->setDbAdapter($mongoDb);
+
+            $productVariants = new Model\ProductVariants();
+            $productVariants->setDbAdapter($mongoDb);
+
+            $orderModel->setVariantModel($productVariants);
+            $orderModel->purchaseOrder($data);  
+        }
+
+        return new ViewModel();
+    }
+
     public function typeaheadAction()
     {
 
