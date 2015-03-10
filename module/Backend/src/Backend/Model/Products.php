@@ -156,7 +156,7 @@ class Products
             $cursor = $this->_collection->find($criteria, $options);
         }
 
-        $cursor->limit($limit);
+        // $cursor->limit($limit);
         $cursor->sort($sort);
 
         $data = [];

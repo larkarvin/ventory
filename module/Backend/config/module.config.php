@@ -49,6 +49,32 @@ return array(
                         ),
                     ),  
                 ),
+            ),          
+            'Login' => array(
+                'type'    => 'Literal',
+                'options' => array(
+                    'route'    => '/login',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Backend\Controller',
+                        'controller'    => 'User',
+                        'action'        => 'login',
+                    ),
+                ),
+                'may_terminate' => true,
+                'child_routes' => array(
+                    'default' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '[/:action]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                                'action' => 'index'
+                            ),
+                        ),
+                    ),  
+                ),
             ),
             'Order' => array(
                 'type'    => 'Literal',
@@ -101,6 +127,7 @@ return array(
         'invokables' => array(
             'Backend\Controller\Product' => 'Backend\Controller\ProductController',
             'Backend\Controller\Order'   => 'Backend\Controller\OrderController',
+            'Backend\Controller\User'   => 'Backend\Controller\UserController',
         ),
     ),
     'view_manager' => array(

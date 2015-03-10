@@ -11,19 +11,63 @@ namespace Backend;
 
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
+use Zend\Authentication\Storage;
+use Zend\Authentication\AuthenticationService;
+use Zend\Authentication\Adapter\DbTable as DbTableAuthAdapter;
+use Zend\Authentication\Storage\Session;
 
 class Module
 {
-    public function onBootstrap(MvcEvent $e)
-    {
-        $eventManager        = $e->getApplication()->getEventManager();
-        $moduleRouteListener = new ModuleRouteListener();
-        $moduleRouteListener->attach($eventManager);
-    }
+    // public function onBootstrap(MvcEvent $e)
+    // {
+    //     $eventManager        = $e->getApplication()->getEventManager();
+    //     $moduleRouteListener = new ModuleRouteListener();
+    //     $moduleRouteListener->attach($eventManager);
+    // }
 
     public function getConfig()
     {
         return include __DIR__ . '/config/module.config.php';
+    }
+
+    public function onBootstrap(MvcEvent $e)
+    {
+
+
+
+        $eventManager = $e->getApplication()->getEventManager();        
+        $checkACL = $eventManager->attach(MvcEvent::EVENT_DISPATCH, function($e) {
+            // only implement ACL on non CLI application
+
+            
+                $controller = $e->getTarget();
+                $auth = new AuthenticationService();
+                $isLogin = $auth->hasIdentity();
+                $params = $e->getApplication()->getMvcEvent()->getRouteMatch()->getParams();
+
+                // check if action being accessed is "login"
+                // there should only be one method called "login" across 
+                // any controller or else this won't work
+
+    
+                if($params['action'] == "login"){
+                    // on the login page but is already logged in redirect to "dashboard/home"
+                    if($isLogin){
+                        return $controller->redirect()->toRoute('Order');
+                    }
+                }else{
+                    // on other pages but does not have any login redirect to login page
+                    // else continue and check ACL
+                    if(!$isLogin){
+                        // return $controller->redirect()->toRoute('Product');   
+                    }
+                }
+
+        });
+
+
+        $moduleRouteListener = new ModuleRouteListener();
+        $moduleRouteListener->attach($eventManager);
     }
 
     public function getServiceConfig() {
@@ -41,7 +85,20 @@ class Module
                     $MongoDb = $connection->selectDb($mongoConfig['connectOptions']['db']);
 
                     return $MongoDb;
-                }),
+                },
+
+                'AuthService' => function($sm) {
+                
+                    $dbAdapter           = $sm->get('Zend\Db\Adapter\Adapter');
+                    $dbTableAuthAdapter  = new DbTableAuthAdapter($dbAdapter, 'users','username','password', 'MD5(?)');
+
+                    $authService = new AuthenticationService();
+                    $authService->setAdapter($dbTableAuthAdapter);
+                    $authService->setStorage(new Session());
+
+                    return $authService;
+                },
+                ),
         );
     }
 

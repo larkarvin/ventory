@@ -43,7 +43,7 @@ function determineSortByLink($searchParams, $sortName){
             <tbody><tr>
                 <th>
                     <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'itemname');?>">
-                    Item Name </a>
+                    Item Name (<?php echo count($data); ?> Items)</a>
                 </th>
                 <th>
                     <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'active');?>">

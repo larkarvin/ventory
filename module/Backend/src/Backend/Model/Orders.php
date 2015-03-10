@@ -52,6 +52,8 @@ class Orders
     public function purchaseOrder($order){
         unset($order['q']);
 
+        $this->_collection = $dbAdapter->selectCollection('purchase_orders');
+
         $order['created'] = new \MongoDate();
         $order['stock_due'] = new \MongoDate(strtotime($order['stock_due']));
         $total = 0;
