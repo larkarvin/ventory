@@ -15,8 +15,8 @@ return array(
                 'options' => array(
                     'route'    => '/',
                     'defaults' => array(
-                        'controller' => 'Backend\Controller\Product',
-                        'action'     => 'addProduct',
+                        'controller' => 'Backend\Controller\Order',
+                        'action'     => 'sales',
                     ),
                 ),
             ),
@@ -70,7 +70,7 @@ return array(
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                             ),
                             'defaults' => array(
-                                'action' => 'index'
+                                'action' => 'login'
                             ),
                         ),
                     ),  
@@ -136,6 +136,7 @@ return array(
         'doctype'                  => 'HTML5',
         'not_found_template'       => 'error/404',
         'exception_template'       => 'error/index',
+        'base_path'                => '/',
         'template_map' => array(
             'layout/layout'           => __DIR__ . '/../view/layout/layout.phtml',
             'backend/index/index' => __DIR__ . '/../view/backend/index/index.phtml',

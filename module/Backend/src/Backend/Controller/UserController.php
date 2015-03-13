@@ -22,9 +22,9 @@ class UserController extends AbstractActionController
         return new ViewModel();
     }
 
-    public function loginAction(){
+    public function loginAction()
+    {
 
-        echo "Asdfasd";
-        exit;
+        $this->layout('layout/login');
     }
 }

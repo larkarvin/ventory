@@ -59,11 +59,13 @@ class Module
                     // on other pages but does not have any login redirect to login page
                     // else continue and check ACL
                     if(!$isLogin){
-                        // return $controller->redirect()->toRoute('Product');   
+                        // return $controller->redirect()->toRoute('Login');   
                     }
                 }
 
         });
+
+
 
 
         $moduleRouteListener = new ModuleRouteListener();
@@ -111,6 +113,7 @@ class Module
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
                 ),
             ),
+            
         );
     }
 }

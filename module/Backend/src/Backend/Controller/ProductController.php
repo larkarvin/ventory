@@ -25,6 +25,9 @@ class ProductController extends AbstractActionController
     public function variantAction()
     {
 
+        $this->layout()->pageTitle = 'Update Variant';
+        $this->layout()->pageDesc = 'Change the variant information here';
+
         $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
 
         $viewModelData = [];
@@ -66,6 +69,11 @@ class ProductController extends AbstractActionController
 
     public function listAction()
     {
+
+
+        $this->layout()->pageTitle = 'Product List';
+        $this->layout()->pageDesc = 'Search and find your products.';
+
         $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
         $productModel = new Model\Products();
         $productModel->setDbAdapter($mongoDb);
@@ -95,6 +103,11 @@ class ProductController extends AbstractActionController
 
     public function lowStockAction()
     {
+
+
+        $this->layout()->pageTitle = 'Low Stock Items';
+        $this->layout()->pageDesc = 'Products with low stock variants';
+
 
         $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
         $productVariantModel = new Model\ProductVariants();
@@ -126,6 +139,12 @@ class ProductController extends AbstractActionController
 
     public function deleteAction()
     {
+
+
+
+        $this->layout()->pageTitle = 'Delete Variant';
+        // $this->layout()->pageDesc = 'Change the variant information here';
+
         $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
         $request = $this->getRequest();
         $productModel =  new Model\Products();
@@ -144,6 +163,11 @@ class ProductController extends AbstractActionController
 
     public function updateAction()
     {
+
+
+        $this->layout()->pageTitle = 'Update Product';
+        $this->layout()->pageDesc = 'Change Product information here';
+
         $request = $this->getRequest();
         $getData = $request->getQuery()->toArray();
         $productId = $getData['product_id'];
@@ -183,6 +207,11 @@ class ProductController extends AbstractActionController
     public function removeVariantAction()
     {
 
+
+        $this->layout()->pageTitle = 'Remove Variant';
+        // $this->layout()->pageDesc = 'Change the variant information here';
+
+
         $request = $this->getRequest();
         $getData = $request->getQuery()->toArray();
         $productVariantModel = new Model\ProductVariants();
@@ -202,6 +231,11 @@ class ProductController extends AbstractActionController
 
     public function addProductAction()
     {
+
+
+        $this->layout()->pageTitle = 'Add Product';
+        $this->layout()->pageDesc = 'Add Product and variants to your inventory.';
+
         
         $request = $this->getRequest();
 
@@ -235,6 +269,11 @@ class ProductController extends AbstractActionController
 
     public function detailsAction()
     {
+
+
+        $this->layout()->pageTitle = 'Product Detail';
+        $this->layout()->pageDesc = 'Show product and variant information.';
+
         $request = $this->getRequest();
         $getData = $request->getQuery()->toArray();
         $productId = $getData['product_id'];

@@ -27,6 +27,9 @@ class OrderController extends AbstractActionController
     public function salesAction()
     {
 
+        $this->layout()->pageTitle = 'Sale Order';
+        $this->layout()->pageDesc = 'Things you buy with the supplier';
+
 
         $request = $this->getRequest();
         if ($request->isPost()) {
@@ -49,6 +52,11 @@ class OrderController extends AbstractActionController
 
     public function purchaseAction()
     {
+
+
+        $this->layout()->pageTitle = 'Purchase Order';
+        $this->layout()->pageDesc = '';
+
 
         $request = $this->getRequest();
         if ($request->isPost()) {

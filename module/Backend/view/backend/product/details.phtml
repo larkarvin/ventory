@@ -1,5 +1,5 @@
 
-<section class="content">
+
                 <?php if(isset($success) && $success == TRUE) { ?>
                     <div class="alert alert-success alert-dismissable">
                         <i class="fa fa-check"></i>
@@ -7,6 +7,10 @@
                         A variant has been Added!   
                     </div>
                 <?php }?>
+<div class="box box-default">
+
+<div class="box-body">
+
 
                     <!-- info row -->
                     <div class="row ">
@@ -67,19 +71,26 @@
                                 </tbody>
                             </table>
                         </div><!-- /.col -->
+
+
+                        
                     </div><!-- /.row -->
 
                     <div class="row">
-                        <!-- accepted payments column -->
-                        <div class="form-group">
-                            <button type="button" id="add-variant-btn" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".add-variant-modal">Add Variant</button>
-                        </div>
-                        
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <button type="button" id="add-variant-btn" class="btn btn-primary" data-toggle="modal" data-target=".add-variant-modal">Add Variant</button>
+                                </div>
+                            </div>
 
 
                     </div><!-- /.row -->
 
-</section>
+
+</div><!-- /.box-body -->
+</div>
+
 
 
 <div class="modal fade add-variant-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
