@@ -15,8 +15,8 @@ return array(
                 'options' => array(
                     'route'    => '/',
                     'defaults' => array(
-                        'controller' => 'Backend\Controller\Order',
-                        'action'     => 'sales',
+                        'controller' => 'Backend\Controller\User',
+                        'action'     => 'profile',
                     ),
                 ),
             ),
@@ -49,15 +49,15 @@ return array(
                         ),
                     ),  
                 ),
-            ),          
-            'Login' => array(
+            ),      
+            'User' => array(
                 'type'    => 'Literal',
                 'options' => array(
-                    'route'    => '/login',
+                    'route'    => '/user',
                     'defaults' => array(
                         '__NAMESPACE__' => 'Backend\Controller',
                         'controller'    => 'User',
-                        'action'        => 'login',
+                        'action'        => 'profile',
                     ),
                 ),
                 'may_terminate' => true,
@@ -70,11 +70,35 @@ return array(
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                             ),
                             'defaults' => array(
-                                'action' => 'login'
+                                'action' => 'profile'
                             ),
                         ),
                     ),  
                 ),
+            ),          
+            'Login' => array(
+                'type'    => 'Literal',
+                'options' => array(
+                    'route'    => '/login',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Backend\Controller',
+                        'controller'    => 'User',
+                        'action'        => 'login',
+                    ),
+                ),
+                'may_terminate' => true,
+            ),          
+            'Dashboard' => array(
+                'type'    => 'Literal',
+                'options' => array(
+                    'route'    => '/dashboard',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Backend\Controller',
+                        'controller' => 'Order',
+                        'action'     => 'sales',
+                    ),
+                ),
+                'may_terminate' => true,
             ),
             'Order' => array(
                 'type'    => 'Literal',
@@ -112,7 +136,11 @@ return array(
         'aliases' => array(
             'translator' => 'MvcTranslator',
         ),
+        'factories' => array(
+            'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory',
+        ),
     ),
+
     'translator' => array(
         'locale' => 'en_US',
         'translation_file_patterns' => array(

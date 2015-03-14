@@ -45,23 +45,23 @@ class Module
                 $isLogin = $auth->hasIdentity();
                 $params = $e->getApplication()->getMvcEvent()->getRouteMatch()->getParams();
 
+                // var_dump($params['action'] !== "login");
+                // var_dump($isLogin);
+                // exit;
+
+                if($isLogin  && $params['action'] == "login"){
+                    return $controller->redirect()->toRoute('Dashboard');
+                }
+
+                if($isLogin == FALSE && $params['action'] !== "login"){
+                    return $controller->redirect()->toRoute('Login');  
+                }
+
                 // check if action being accessed is "login"
                 // there should only be one method called "login" across 
                 // any controller or else this won't work
-
-    
-                if($params['action'] == "login"){
-                    // on the login page but is already logged in redirect to "dashboard/home"
-                    if($isLogin){
-                        return $controller->redirect()->toRoute('Order');
-                    }
-                }else{
-                    // on other pages but does not have any login redirect to login page
-                    // else continue and check ACL
-                    if(!$isLogin){
-                        // return $controller->redirect()->toRoute('Login');   
-                    }
-                }
+                  
+                
 
         });
 
