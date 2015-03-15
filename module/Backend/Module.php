@@ -37,7 +37,6 @@ class Module
 
         $eventManager = $e->getApplication()->getEventManager();        
         $checkACL = $eventManager->attach(MvcEvent::EVENT_DISPATCH, function($e) {
-            // only implement ACL on non CLI application
 
             
                 $controller = $e->getTarget();
@@ -45,23 +44,17 @@ class Module
                 $isLogin = $auth->hasIdentity();
                 $params = $e->getApplication()->getMvcEvent()->getRouteMatch()->getParams();
 
-                // var_dump($params['action'] !== "login");
-                // var_dump($isLogin);
-                // exit;
 
+                // check if action being accessed is "login"
+                // there should only be one method called "login" across 
+                // any controller or else this won't work
                 if($isLogin  && $params['action'] == "login"){
-                    return $controller->redirect()->toRoute('Dashboard');
+                    return $controller->redirect()->toRoute('dashboard');
                 }
 
                 if($isLogin == FALSE && $params['action'] !== "login"){
                     return $controller->redirect()->toRoute('Login');  
                 }
-
-                // check if action being accessed is "login"
-                // there should only be one method called "login" across 
-                // any controller or else this won't work
-                  
-                
 
         });
 

@@ -35,34 +35,42 @@ class UserController extends AbstractActionController
         }
         $request = $this->getRequest();
 
+        if ($request->isPost()) {
+            
+            $posts = $request->getPost();
+            $data  = $posts->toArray();
+            // default value to NULL
+            $username = $password = $rememberme = NULL;
 
-        $username = $request->getPost('username');
-        $password = $request->getPost('password');
-        $rememberme = $request->getPost('rememberme');
+            if(isset($data['username']))  { $username = $data['username']; }
+            if(isset($data['password']))  { $password = $data['password']; }
+            if(isset($data['rememberme'])){ $rememberme = $data['rememberme']; }
+            
 
-        if(isset($username) && isset($password)){
+            if(isset($username) && isset($password)){
 
-            $dbAdapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-            $staticSalt = "l4r!<@rB3n";
-            $authAdapter = new AuthAdapter($dbAdapter,
-                            'users', //method setTableName  for dbAdapter
-                            'username', // a method for setIdentityColumn
-                            'password', //  a method for setCredentialColumn
-                            "MD5(CONCAT('$staticSalt', ?))" // setCredentialTreatment(parametrized string) 'MD5(?)'
-            );
+                $dbAdapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+                $staticSalt = "l4r!<@rB3n";
+                $authAdapter = new AuthAdapter($dbAdapter,
+                                'users', //method setTableName  for dbAdapter
+                                'username', // a method for setIdentityColumn
+                                'password', //  a method for setCredentialColumn
+                                "MD5(CONCAT('$staticSalt', ?))" // setCredentialTreatment(parametrized string) 'MD5(?)'
+                );
 
-            $authAdapter
-                    ->setIdentity($username)
-                    ->setCredential($password);
+                $authAdapter
+                        ->setIdentity($username)
+                        ->setCredential($password);
 
-            $result = $auth->authenticate($authAdapter);
+                $result = $auth->authenticate($authAdapter);
 
-            if ($rememberme) {
-                $sessionManager = new \Zend\Session\SessionManager();
-                $time = 1209600; // 14 days 1209600/3600 = 336 hours => 336/24 = 14 days
-                $sessionManager->rememberMe($time);
+                if ($rememberme) {
+                    $sessionManager = new \Zend\Session\SessionManager();
+                    $time = 1209600; // 14 days 1209600/3600 = 336 hours => 336/24 = 14 days
+                    $sessionManager->rememberMe($time);
+                }
+                return $this->redirect()->toRoute('Dashboard');
             }
-            return $this->redirect()->toRoute('dashboard');
         }
         $this->layout('layout/login');
     }

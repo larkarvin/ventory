@@ -46,7 +46,11 @@ class Orders
             $this->_variantModel->decrementVariantStock($item['id'], (float) $item['qty']);
         }
         $order['total'] = $total;
-        $this->_collection->insert($order);
+        $result = $this->_collection->insert($order);
+        if(!empty($result['err'])){
+            throw new \Exception($result['err']);
+        }
+        return $order['_id'];
     }
 
     public function purchaseOrder($order){

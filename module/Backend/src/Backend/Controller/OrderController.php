@@ -44,11 +44,53 @@ class OrderController extends AbstractActionController
             $productVariants->setDbAdapter($mongoDb);
 
             $orderModel->setVariantModel($productVariants);
-            $orderModel->salesOrder($data);  
+            try{
+                $orderId = $orderModel->salesOrder($data);  
+                return $this->redirect()->toRoute('Salesorder', array(
+                    'controller' => 'Order',
+                    'action'     => 'salesorder',
+                    'orderid'    => $orderId,
+                ));
+            }catch(\Exception $ex){
+                $result['error'] = $ex->getMessage();
+            }
         }
 
-        return new ViewModel();
+        return new ViewModel(); 
     }
+
+    public function salesorderAction(){
+        $orderid = $this->getEvent()->getRouteMatch()->getParam('orderid');
+        if(empty($orderid)){
+            echo "error";
+        }
+        $request = $this->getRequest();
+        $getData   = $request->getQuery()->toArray();
+
+        if(isset($getData['print'])){
+             $this->layout('layout/print');
+        }
+
+
+        $this->layout()->pageTitle = 'Invoice';
+        $this->layout()->pageDesc = '';
+
+
+        $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
+        $orderModel = new Model\Orders();
+        $orderModel->setDbAdapter($mongoDb);
+
+        $criteria = ['_id' => new \MongoId($orderid)];
+        $data['salesorderData'] = $orderModel->fetchOne($criteria);
+
+        return new ViewModel($data);
+    }
+
+
+    public function invoicesAction(){
+
+    }
+
 
     public function purchaseAction()
     {

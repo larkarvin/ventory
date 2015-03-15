@@ -100,6 +100,17 @@ return array(
                 ),
                 'may_terminate' => true,
             ),
+            'Salesorder' => array(
+                'type' => 'Segment',
+                'options' => array(
+                'route'    => '/salesorder/[:orderid]',
+                'defaults' => array(
+                        '__NAMESPACE__' => 'Backend\Controller',
+                        'controller' => 'Order',
+                        'action'     => 'salesorder',
+                    ),
+                ),
+            ),
             'Order' => array(
                 'type'    => 'Literal',
                 'options' => array(
