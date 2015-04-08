@@ -50,6 +50,44 @@ return array(
                     ),  
                 ),
             ),      
+            'Salesorder' => array(
+                'type'    => 'Literal',
+                'options' => array(
+                    'route'    => '/salesorder',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Backend\Controller',
+                        'controller'    => 'SalesOrder',
+                        'action'        => 'new',
+                    ),
+                ),
+                'may_terminate' => true,
+                'child_routes' => array(
+                    'default' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '[/:action]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                                'action' => 'new'
+                            ),
+                        ),
+                    ),  
+                    'details' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '/details[/:orderid]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                                'action' => 'details'
+                            ),
+                        ),
+                    ),  
+                ),
+            ),      
             'User' => array(
                 'type'    => 'Literal',
                 'options' => array(
@@ -99,17 +137,6 @@ return array(
                     ),
                 ),
                 'may_terminate' => true,
-            ),
-            'Salesorder' => array(
-                'type' => 'Segment',
-                'options' => array(
-                'route'    => '/salesorder/[:orderid]',
-                'defaults' => array(
-                        '__NAMESPACE__' => 'Backend\Controller',
-                        'controller' => 'Order',
-                        'action'     => 'salesorder',
-                    ),
-                ),
             ),
             'Order' => array(
                 'type'    => 'Literal',
@@ -166,6 +193,7 @@ return array(
         'invokables' => array(
             'Backend\Controller\Product' => 'Backend\Controller\ProductController',
             'Backend\Controller\Order'   => 'Backend\Controller\OrderController',
+            'Backend\Controller\SalesOrder'   => 'Backend\Controller\SalesOrderController',
             'Backend\Controller\User'   => 'Backend\Controller\UserController',
         ),
     ),

@@ -147,7 +147,7 @@ class Products
     }
 
 
-    public function fetchAll(Array $criteria = NULL, $options = [],  $limit = 20, $sort = ['update_time' => 1])
+    public function fetchAll(Array $criteria = NULL, $options = [], $sort = ['update_time' => 1], $limit = ['limit' => 30, 'skip' => 0])
     {
 
         if(empty($criteria)){
@@ -156,13 +156,15 @@ class Products
             $cursor = $this->_collection->find($criteria, $options);
         }
 
-        // $cursor->limit($limit);
+        $cursor->limit($limit['limit'])->skip($limit['skip']);
         $cursor->sort($sort);
 
-        $data = [];
+
+        $data['data'] = [];
         if($cursor->count() > 0) {
+            $data['count'] = $cursor->count();
             foreach($cursor as $row) {
-                $data[] = $row;
+                $data['data'][] = $row;
             }
         }
 

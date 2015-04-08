@@ -1,0 +1,97 @@
+<?php
+function determineSortByLink($searchParams, $sortName){
+
+    if(isset($searchParams['sort']) && $searchParams['sort'] == $sortName){
+        if(isset($searchParams['order']) && $searchParams['order'] == 'DESC'){
+            $searchParams['order'] = 'ASC';
+        }else{
+            $searchParams['order'] = 'DESC';
+        }
+    }else{
+        $searchParams['sort'] = $sortName;
+    }
+
+    return http_build_query($searchParams);
+}
+    
+?>
+<div class="box box-default">
+
+<div class="box-body">
+
+
+
+    <div class="row">
+
+
+
+        <div class="col-sm-6">
+            <a class="pull-left" href="<?php echo $this->basePath();?>/salesorder/new"> <button type="button" id="add-variant-btn" class="btn btn-primary btn-sm">New Invoice</button> </a>
+        </div>
+        <div class="col-sm-6">
+        <form action="<?php echo $this->basePath();?>/product/list" method="GET">
+            <div class="input-group">
+
+                <input type="text" name="q" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Search"
+                  value="<?php if(isset($searchParams['q'])) echo htmlspecialchars($searchParams['q']);?>">
+                <div class="input-group-btn">
+                    <button type="submit" class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <div class="row">
+
+
+            <div class="box-body table-responsive col-sm-12">
+                <table class="table table-hover table-striped table-bordered">
+                    <tbody><tr>
+                        <th>
+                            <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'itemname');?>">
+                            Invoice ID (<?php echo count($data); echo (count($data) == 1)? " item": " items" ?>)</a>
+                        </th>
+                        <th>
+                            <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'active');?>">
+                            Customer Name </a>
+                        </th>
+                        <th>Total</th>
+                        <th>Created</th>
+                    </tr>
+                    <?php 
+                    if(count($data) > 0 )
+                    {
+                        foreach($data as $invoice){ 
+
+
+                            ?>
+                    <tr>
+                        <td>
+                            <a href="<?php echo $this->basePath();?>/salesorder/details/<?php echo $invoice['_id']?>">
+                                    <?php if (isset($invoice['_id'])) { echo $invoice['_id']; }?>
+                            </a>
+                        </td>
+                        <td>
+                            <?php echo $invoice['customer'];?>
+                        </td>
+                        <td>
+                            <?php echo number_format($invoice['total'],2);?>
+                        </td>
+                        <td>
+                           <?php echo Date("M d, Y", $invoice['created']->sec);?>
+                        </td>
+                    </tr>
+                   <?php }}?>
+                </tbody></table>
+            </div>
+
+
+        </div>
+
+
+
+</div><!-- /.box-body -->
+</div>

@@ -70,7 +70,7 @@ class ProductController extends AbstractActionController
     public function listAction()
     {
 
-
+        //$this->determinePaginationPage();exit;
         $this->layout()->pageTitle = 'Product List';
         $this->layout()->pageDesc = 'Search and find your products.';
 
@@ -95,10 +95,36 @@ class ProductController extends AbstractActionController
             $sort = [ $keyName => $orderby];
         }
 
-        $data = $productModel->fetchAll($criteria, [], 20, $sort);
+        $data = $productModel->fetchAll($criteria, [], $sort, ['limit'=>25, 'skip'=>0]);
+
+        $pagination['count'] = $data['count'];
+        $pagination['limitPerLink'] = 25;
+        $pagination['currentPage'] = 0;
+
+        return new ViewModel(['data' => $data['data'], 'searchParams' => $getData], $pagination);
+    }
+
+    private function determinePaginationPage()
+    {
+        $count = 128;
+        $perPage = 30;
+        $skip = 30;
+
+        $pageCount = ceil($count/$perPage);
+ //       var_dump($pageCount);
+
+        //determine first page
+        $pagination['firstPage'] = $perPage;
+//        $pagination['currentPage'] = 
+
+    }
+
+    public function stockAdjustmentAction()
+    {
+        $this->layout()->pageTitle = 'Stock Adjustments';
+        $this->layout()->pageDesc = 'Adjust your stocks, list returns or defective items';
 
 
-        return new ViewModel(['data' => $data, 'searchParams' => $getData]);
     }
 
     public function lowStockAction()
@@ -224,7 +250,6 @@ class ProductController extends AbstractActionController
 
         $newURL = 'http://backend.localhost/product/details?product_id=' . $getData['product_id'];
         header('Location: '.$newURL);
-        exit;
 
     }
 
