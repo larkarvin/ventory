@@ -11,6 +11,7 @@ class Orders
     private $_collectionName = 'sales_orders';
     private $_collection = NULL;
     private $_variantModel = NULL;
+    private $_dbAdapter = NULL;
 
     public function setVariantModel($variantModel)
     {
@@ -19,7 +20,8 @@ class Orders
 
     public function setDbAdapter($dbAdapter)
     {
-        $this->_collection = $dbAdapter->selectCollection($this->_collectionName);
+        $this->_dbAdapter = $dbAdapter;
+        $this->_collection = $this->_dbAdapter->selectCollection($this->_collectionName);
     }
 
     public function fetchOne(Array $criteria, $options = [])
@@ -56,14 +58,14 @@ class Orders
     public function purchaseOrder($order){
         unset($order['q']);
 
-        $this->_collection = $dbAdapter->selectCollection('purchase_orders');
+        $this->_collection = $this->_dbAdapter->selectCollection('purchase_orders');
 
         $order['created'] = new \MongoDate();
         $order['stock_due'] = new \MongoDate(strtotime($order['stock_due']));
         $total = 0;
         foreach($order['items'] as $key => $item){
             $order['items'][$key]['qty']      = (float) $item['qty'];
-            $order['items'][$key]['cost']    = (float) $item['cost'];
+            $order['items'][$key]['cost']    = (float) $item['price'];
             $order['items'][$key]['subtotal'] = (float) $item['subtotal'];
             $total += (float)$item['subtotal'];
             unset($order['items'][$key]['discount']);
@@ -83,7 +85,7 @@ class Orders
             $cursor = $this->_collection->find($criteria, $options);
         }
 
-        $cursor->limit($limit);
+        // $cursor->limit($limit);
         $cursor->sort($sort);
 
         $data = [];

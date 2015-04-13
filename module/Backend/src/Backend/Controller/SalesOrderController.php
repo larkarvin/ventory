@@ -56,7 +56,11 @@ class SalesOrderController extends AbstractActionController
 
         $this->layout()->pageTitle = 'Sale Invoice';
         $this->layout()->pageDesc = 'New Sales Order';
+        $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
 
+        $sequenceModel = new Model\Sequence();
+        $sequenceModel->setDbAdapter($mongoDb);
+        $invoiceNumber = $sequenceModel->calculateNext('salesorder');
 
 
         $request = $this->getRequest();
@@ -64,18 +68,14 @@ class SalesOrderController extends AbstractActionController
             $posts = $request->getPost();
             $data  = $posts->toArray();
 
-            $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
-            $orderModel = new Model\SalesOrders();
-            $orderModel->setDbAdapter($mongoDb);
+            $salesOrderModel = new Model\SalesOrders();
+            $salesOrderModel->setDbAdapter($mongoDb);
+        
 
-            $productVariants = new Model\ProductVariants();
-            $productVariants->setDbAdapter($mongoDb);
+            $salesOrderModel->setSequenceModel($sequenceModel);
 
-            $orderModel->setVariantModel($productVariants);
             try{
-                $orderid = $orderModel->salesOrder($data);  
-
-                // var_dump($orderid);exit;
+                $orderid = $salesOrderModel->salesOrder($data);  
                 return $this->redirect()->toRoute('Salesorder/details', array(
                     'controller' => 'SalesOrder',
                     'action'     => 'details',
@@ -86,7 +86,7 @@ class SalesOrderController extends AbstractActionController
             }
         }
 
-        return new ViewModel(); 
+        return new ViewModel(['invoiceNumber' => $invoiceNumber]); 
     }
 
     public function detailsAction()
@@ -109,16 +109,62 @@ class SalesOrderController extends AbstractActionController
         $this->layout()->pageTitle = 'Invoice';
         $this->layout()->pageDesc = '';
 
-
         $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
-        $orderModel = new Model\Orders();
+        $orderModel = new Model\SalesOrders();
         $orderModel->setDbAdapter($mongoDb);
 
-        $criteria = ['_id' => new \MongoId($orderid)];
+        $criteria = ['_id' => (int)$orderid];
         $data['salesorderData'] = $orderModel->fetchOne($criteria);
 
         return new ViewModel($data);
     }
 
+
+    public function markaspaidAction()
+    {
+        // $orderid = $this->getEvent()->getRouteMatch()->getParam('orderid');
+        $orderid = $this->getEvent()->getRouteMatch()->getParam('orderid');
+        if(empty($orderid)){
+            echo "error";
+        }
+
+        $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
+        $salesOrderModel = new Model\SalesOrders();
+        $salesOrderModel->setDbAdapter($mongoDb);
+        $salesOrderModel->markAsPaid($orderid);
+                return $this->redirect()->toRoute('Salesorder/details', array(
+                    'controller' => 'SalesOrder',
+                    'action'     => 'details',
+                    'orderid'    => $orderid,
+                ));
+
+    }
+
+    public function markasdeliveredAction()
+    {
+        // $orderid = $this->getEvent()->getRouteMatch()->getParam('orderid');
+        $orderid = $this->getEvent()->getRouteMatch()->getParam('orderid');
+        if(empty($orderid)){
+            echo "error";
+        }
+
+        $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
+        $salesOrderModel = new Model\SalesOrders();
+        $salesOrderModel->setDbAdapter($mongoDb);
+
+        $productVariants = new Model\ProductVariants();
+        $productVariants->setDbAdapter($mongoDb);
+
+        $salesOrderModel->setVariantModel($productVariants);
+
+        $salesOrderModel->markAsDelivered($orderid);
+        // exit;
+                return $this->redirect()->toRoute('Salesorder/details', array(
+                    'controller' => 'SalesOrder',
+                    'action'     => 'details',
+                    'orderid'    => $orderid,
+                ));
+
+    }
 
 }

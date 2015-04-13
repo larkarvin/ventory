@@ -75,7 +75,7 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                         <div class="input-group-addon">
                             <i class="fa fa-user"></i>
                         </div>
-                        <input id="datemask" name="customer" type="text" class="form-control input-sm" placeholder="Customer Name">
+                        <input id="customer" name="customer" type="text" class="form-control input-sm" placeholder="Customer Name">
                     </div><!-- /.input group -->
                 </div>
                 <div class="form-group">
@@ -83,7 +83,7 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                         <div class="input-group-addon">
                             <i class="fa fa-truck"></i>
                         </div>
-                        <input name="customer" type="text" class="form-control input-sm" placeholder="Delivery Address">
+                        <input id="deliveryAddr" name="deliveryAddr" type="text" class="form-control input-sm" placeholder="Delivery Address">
                     </div><!-- /.input group -->
                 </div>
                 <div class="form-group">
@@ -91,7 +91,7 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input id="datemask" name="shipment_date" type="text" placeholder="Shipment Date" class="form-control input-sm" data-inputmask="'alias': 'mm/dd/yyyy'" data-mask="">
+                        <input id="shipmentDate" name="shipmentDate" type="text" placeholder="Shipment Date" class="form-control input-sm" data-inputmask="'alias': 'mm/dd/yyyy'" data-mask="">
                     </div><!-- /.input group -->
                 </div>
 
@@ -100,7 +100,7 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                         <div class="input-group-addon">
                             <i class="fa fa-clock-o"></i>
                         </div>
-                        <input type="text" class="form-control input-sm timepicker" name="deliverytime" placeholder="Time">
+                        <input id="deliveryTime" name="deliveryTime" type="text" class="form-control input-sm timepicker"  placeholder="Time">
                     </div><!-- /.input group -->
                 </div>
                 <div class="form-group">
@@ -108,10 +108,9 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                         <div class="input-group-addon">
                             <i class="fa fa-phone"></i>
                         </div>
-                        <input type="text" class="form-control" data-inputmask="&quot;mask&quot;: &quot;(9999) 999-9999&quot;" data-mask="" placeholder="Contact Number">
+                        <input id="phone" name="phone" type="text" class="form-control" data-inputmask="&quot;mask&quot;: &quot;(9999) 999-9999&quot;" data-mask="" placeholder="Contact Number">
                     </div><!-- /.input group -->
                 </div>
-
             </div>
             
 
@@ -124,36 +123,36 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
 
             <div class="col-xs-6">
                     <div class="form-group">
-                      <select class="form-control input-sm" >
+                      <select id="seller" name="seller" class="form-control input-sm" >
                         <option disabled selected>Seller</option>
-                        <option>Christy</option>
-                        <option>Karen</option>
-                        <option>Rose</option>
+                        <option value="Christy">Christy</option>
+                        <option value="Karen">Karen</option>
+                        <option value="Rose">Rose</option>
                       </select>
                     </div>
                     <div class="form-group">
-                      <select class="form-control input-sm" >
+                      <select id="deliveryType" name="deliveryType" class="form-control input-sm" >
                         <option disabled selected>Delivery Mode</option>
-                        <option>Delivery</option>
-                        <option>Meetup</option>
-                        <option>Shipping</option>
-                        <option>Pickup</option>
+                        <option value="Delivery">Delivery</option>
+                        <option value="Meetup">Meetup</option>
+                        <option value="Shipping">Shipping</option>
+                        <option value="Pickup">Pickup</option>
                       </select>
                     </div>
                     <div class="form-group">
-                      <select class="form-control input-sm" >
+                      <select id="paymentType" name="paymentType" class="form-control input-sm" >
                         <option disabled selected>Mode of Payment</option>
-                        <option>BDO</option>
-                        <option>BPI</option>
-                        <option>GCASH</option>
+                        <option value="BDO">BDO</option>
+                        <option value="BPI">BPI</option>
+                        <option value="GCASH">GCASH</option>
                       </select>
                     </div>
                     <div class="form-group">
-                      <select class="form-control input-sm" >
+                      <select id="rider" name="rider" class="form-control input-sm" >
                         <option disabled selected>Rider</option>
-                        <option>Macky</option>
-                        <option>Alex</option>
-                        <option>Nelson</option>
+                        <option value="Macky">Macky</option>
+                        <option value="Alex">Alex</option>
+                        <option value="Nelson">Nelson</option>
                       </select>
                     </div>
             </div>
@@ -185,28 +184,7 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                         </tr>
                     </thead>
                     <tbody id="order_tbody">
-                        <!-- <tr>
-                            <td>
 
-
-                            </td>
-                            <td>
-                                <input type="text" class="form-control sales-order-form" value="1">
-                            </td>
-                            <td>
-                                <input type="text" class="form-control sales-order-form" value="1">
-                            </td>
-                            <td>
-                                <input type="text" class="form-control sales-order-form" placeholder="price">
-                            </td>
-                            <td>
-                                <input type="text" class="form-control sales-order-form" placeholder="discount">
-                                
-                            </td>
-                            <td>
-                                <input type="text" class="form-control sales-order-form" placeholder="subtotal">
-                            </td>
-                        </tr> -->
 
 
                     </tbody>
@@ -226,7 +204,7 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                     <table class="table">
                         <tbody>
                         <tr>
-                            <td><strong> SR # 10010 </strong></td>
+                            <td><strong> SR # <?php echo $invoiceNumber + 1?> </strong></td>
                         </tr>
                         <tr>
                             <td><span id="total-units">0</span> Units</td>
@@ -252,6 +230,25 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
 </div>
 </div>
 
+
+<div class="modal modal-danger fade add-variant-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <button type="button" class="close btn-sm" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Invoice has missing fields</h4>
+        </div>
+        <div class="modal-body">
+            <ul id="modalul">
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+    </div>
+</div>
 
 <link href="<?php echo $homeUrl;?>js/plugins/timepicker/bootstrap-timepicker.min.css" rel="stylesheet"/>
 <script src="<?php echo $homeUrl;?>js/plugins/typeahead.js" type="text/javascript"/></script>
@@ -320,9 +317,109 @@ function computeSubtotal(itemCounter)
 
     updateTotalandTotalUnits();
 }
-
+var formIncorrect = 0;
+var formComplete = 0;
+submitButtonClicked = 0;
 function validate(form, event){
-    event.preventDefault();
+    submitButtonClicked = 1;
+    var modalul =  document.getElementById("modalul");
+    var textnode;
+    formIncorrect = 0;
+    while (modalul.firstChild) {
+        modalul.removeChild(modalul.firstChild);
+    }
+    
+    if( $('#customer').val() == "")
+    {
+        formIncorrect = 1;
+        customerLi = document.createElement("li");
+        textnode = document.createTextNode("Must have a Customer");
+        customerLi.appendChild(textnode);
+        modalul.appendChild(customerLi);
+    }
+    
+    if( $('#deliveryAddr').val() == "")
+    {
+        formIncorrect = 1;
+        deliveryAddrLi = document.createElement("li");
+        textnode = document.createTextNode("Must have an Address");
+        deliveryAddrLi.appendChild(textnode);
+        modalul.appendChild(deliveryAddrLi);
+    }
+    
+    if( $('#shipmentDate').val() == "")
+    {
+        formIncorrect = 1;
+        shipmentDateLi = document.createElement("li");
+        textnode = document.createTextNode("Must have a Shipment date");
+        shipmentDateLi.appendChild(textnode);
+        modalul.appendChild(shipmentDateLi);
+    }
+    
+    if( $('#deliveryTime').val() == "")
+    {
+        formIncorrect = 1;
+        deliveryTimeLi = document.createElement("li");
+        textnode = document.createTextNode("Must have Shipment time");
+        deliveryTimeLi.appendChild(textnode);
+        modalul.appendChild(deliveryTimeLi);
+
+    }
+    
+    if( $('#phone').val() == "")
+    {
+        formIncorrect = 1;
+        phoneLi = document.createElement("li");
+        textnode = document.createTextNode("Must have a phone number");
+        phoneLi.appendChild(textnode);
+        modalul.appendChild(phoneLi);
+    }
+    
+    if( $('#seller').val() == "")
+    {
+        formIncorrect = 1;
+        sellerLi = document.createElement("li");
+        textnode = document.createTextNode("Must have a Seller");
+        sellerLi.appendChild(textnode);
+        modalul.appendChild(sellerLi);
+    }
+    
+    if( $('#deliveryType').val() == "")
+    {
+        formIncorrect = 1;
+        deliveryTypeLi = document.createElement("li");
+        textnode = document.createTextNode("Must have a Delivery Type");
+        deliveryTypeLi.appendChild(textnode);
+        modalul.appendChild(deliveryTypeLi);
+    }
+    
+    if( $('#paymentType').val() == "")
+    {
+        formIncorrect = 1;
+        paymentTypeLi = document.createElement("li");
+        textnode = document.createTextNode("Must have a Payment Type");
+        paymentTypeLi.appendChild(textnode);
+        modalul.appendChild(paymentTypeLi);
+    }
+
+    if( $('.variant-item').length == 0){
+        formIncorrect = 1;
+        noitems = document.createElement("li");
+        textnode = document.createTextNode("No Items in the Cart");
+        noitems.appendChild(textnode);
+        modalul.appendChild(noitems);
+    }
+
+
+    // alert(formIncorrect);
+    // exit;
+    if(formIncorrect == 1){
+        
+        $('.modal').modal('show');
+        event.preventDefault();    
+    }
+    
+    
 
 }
 
@@ -426,7 +523,7 @@ function createEntry(datum)
 
     input_variantName = document.createElement("input");
     input_variantName.setAttribute("type", "text");
-    input_variantName.setAttribute("class", "form-control sales-order-form");
+    input_variantName.setAttribute("class", "variant-item form-control sales-order-form");
     input_variantName.setAttribute("name", "items["+ itemCounter +"][sku]");
     input_variantName.setAttribute("value", datum.value);
     input_variantName.setAttribute("id", "item-"+ itemCounter +"-sku");
@@ -526,11 +623,22 @@ function createEntry(datum)
     clearTypeAhead();
 
 }
-
+var formmodified = 0
 $(document).ready(function() {
 
     skus.initialize();
-     
+
+    $("form").change(function() {
+        formmodified = 1;
+    });
+
+    window.onbeforeunload = confirmExit;
+    function confirmExit() {
+        if (formmodified == 1 && submitButtonClicked == 1) {
+            return "Do you wish to leave the page?";
+        }
+    }
+
     // $("#datemask").inputmask("dd/mm/yyyy", {"placeholder": "dd/mm/yyyy"});
     $("[data-mask]").inputmask();
     $('#typeaheadsearch').typeahead(null, {

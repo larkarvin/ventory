@@ -86,6 +86,30 @@ return array(
                             ),
                         ),
                     ),  
+                    'markaspaid' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '/markaspaid[/:orderid]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                                'action' => 'markaspaid'
+                            ),
+                        ),
+                    ),
+                    'markasdelivered' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '/markasdelivered[/:orderid]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                                'action' => 'markasdelivered'
+                            ),
+                        ),
+                    ),  
                 ),
             ),      
             'User' => array(

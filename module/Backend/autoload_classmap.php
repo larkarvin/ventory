@@ -8,6 +8,7 @@ return array(
   'Backend\Controller\UserController'    => __DIR__ . '/src/Backend/Controller/UserController.php',
   'Backend\Model\Orders'                 => __DIR__ . '/src/Backend/Model/Orders.php',
   'Backend\Model\SalesOrders'                 => __DIR__ . '/src/Backend/Model/SalesOrders.php',
+  'Backend\Model\Sequence'                 => __DIR__ . '/src/Backend/Model/Sequence.php',
   // 'Backend\Model\Users  '                 => __DIR__ . '/src/Backend/Model/UserController.php',
   'Backend\Model\ProductVariants'        => __DIR__ . '/src/Backend/Model/ProductVariants.php',
   'Backend\Model\Products'               => __DIR__ . '/src/Backend/Model/Products.php',

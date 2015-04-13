@@ -29,7 +29,7 @@ function determineSortByLink($searchParams, $sortName){
             <a class="pull-left" href="<?php echo $this->basePath();?>/salesorder/new"> <button type="button" id="add-variant-btn" class="btn btn-primary btn-sm">New Invoice</button> </a>
         </div>
         <div class="col-sm-6">
-        <form action="<?php echo $this->basePath();?>/product/list" method="GET">
+        <form action="<?php echo $this->basePath();?>/salesorder/list" method="GET">
             <div class="input-group">
 
                 <input type="text" name="q" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Search"
@@ -51,15 +51,29 @@ function determineSortByLink($searchParams, $sortName){
                 <table class="table table-hover table-striped table-bordered">
                     <tbody><tr>
                         <th>
-                            <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'itemname');?>">
-                            Invoice ID (<?php echo count($data); echo (count($data) == 1)? " item": " items" ?>)</a>
+                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($searchParams, '_id');?>">
+                            Sales Order ID (<?php echo count($data); echo (count($data) == 1)? " item": " items" ?>)</a>
                         </th>
                         <th>
-                            <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'active');?>">
+                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($searchParams, 'customer');?>">
                             Customer Name </a>
                         </th>
-                        <th>Total</th>
-                        <th>Created</th>
+                        <th>
+                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($searchParams, 'total');?>">
+                            Total
+                        </th>
+                        <th>
+                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($searchParams, 'paid');?>">
+                            Paid
+                        </th>
+                        <th>
+                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($searchParams, 'delivered');?>">
+                            Delivered
+                        </th>
+                        <th>
+                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($searchParams, 'created');?>">
+                            Created
+                            </th>
                     </tr>
                     <?php 
                     if(count($data) > 0 )
@@ -71,14 +85,40 @@ function determineSortByLink($searchParams, $sortName){
                     <tr>
                         <td>
                             <a href="<?php echo $this->basePath();?>/salesorder/details/<?php echo $invoice['_id']?>">
-                                    <?php if (isset($invoice['_id'])) { echo $invoice['_id']; }?>
+                                   #<?php if (isset($invoice['_id'])) { echo $invoice['_id']; }?>
                             </a>
                         </td>
                         <td>
                             <?php echo $invoice['customer'];?>
                         </td>
                         <td>
-                            <?php echo number_format($invoice['total'],2);?>
+                            <span class="pull-right"><?php echo number_format($invoice['total'],2);?>
+                            </span> 
+                        </td>
+
+                        <td>
+
+                            <?php if( $invoice['paid']) {?>
+                                <span class="label bg-green">
+                                <i class="fa fa-check-circle"></i>  
+                                <?php echo Date('M d Y',$invoice['paid_date']->sec);?>
+                                </span>
+                                &nbsp;
+                            <?php }else {?>
+                                Unpaid
+                            <?php }?>
+                        </td>
+
+                        <td>
+                            <?php if( $invoice['shipped']) {?>
+                                <span class="label bg-blue">
+                                <i class="fa  fa-truck"></i>  
+                                <?php echo Date('M d Y',$invoice['shipped_date']->sec);?>
+                                </span>
+                                &nbsp;
+                            <?php }else {?>
+                                For Delivery
+                            <?php }?>
                         </td>
                         <td>
                            <?php echo Date("M d, Y", $invoice['created']->sec);?>
