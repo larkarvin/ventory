@@ -128,35 +128,34 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
               <?php } ?>
 
 
-              <?php if ($salesorderData['paid'] !== TRUE) {?>
-              <a href="<?php echo $homeUrl;?>salesorder/markaspaid/<?php echo $salesorderData['_id']?>">
+              <?php if ($salesorderData['paid'] == FALSE) {?>
+              <a href="#paymentmodal" data-toggle="modal">
+              <!-- <a href="<?php echo $homeUrl;?>salesorder/markaspaid/<?php echo $salesorderData['_id']?>"> -->
                  <button class="btn btn-success pull-right" style="margin-left: 5px;">
                  <i class="fa fa-credit-card"></i>
-                  Mark as Paid</button>
+                  Create Payment</button>
               </a>
               <?php }?>
 
             </div>
 
-            <div class="markaspaidmodal modal-success fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-                <div class="modal-dialog ">
+            <div class="modal fade" id="paymentmodal">
+              <div class="modal-dialog">
                 <div class="modal-content">
-
-                    <div class="modal-header">
-
-                        <button type="button" class="close btn-sm" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Mark as Paid</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div id="datepicker" data-date="<?php echo Date('Y-m-d')?>"></div>
-                        <input type="hidden" id="markaspaid" />
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-                </div>
-            </div>
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Create Payment</h4>
+                  </div>
+                  <div class="modal-body">
+                    <p>One fine body…</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                  </div>
+                </div><!-- /.modal-content -->
+              </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
 
           </div>
         </section>
@@ -164,13 +163,6 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
 
         <script type="text/javascript">
 
-        $(document).ready(function() {
-            $('#datepicker').datepicker();
-            $("#datepicker").on("changeDate", function(event) {
-                $("#my_hidden_input").val(
-                    $("#datepicker").datepicker('getFormattedDate')
-                 )
-            });
-        });
+   
 
         </script>
