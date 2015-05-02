@@ -16,6 +16,8 @@ use Backend\Model;
 
 class ProductController extends AbstractActionController
 {
+
+     use PaginatorTrait;
     public function indexAction()
     {
         $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
@@ -94,29 +96,23 @@ class ProductController extends AbstractActionController
             $keyName = $getData['sort'];
             $sort = [ $keyName => $orderby];
         }
+        $currentPage = 1;
+        if(!empty($getData['page']) && $getData['page'] > 1){
+            $currentPage = $getData['page'];
+        }
 
-        $data = $productModel->fetchAll($criteria, [], $sort, ['limit'=>25, 'skip'=>0]);
+        $perPage = 10;
+        $skip = ($currentPage-1) * $perPage;
 
-        $pagination['count'] = $data['count'];
-        $pagination['limitPerLink'] = 25;
-        $pagination['currentPage'] = 0;
+        $data = $productModel->fetchAll($criteria, [],  $perPage, $skip);
+        $totalNumberRecords = $data->count();
 
-        return new ViewModel(['data' => $data['data'], 'searchParams' => $getData], $pagination);
-    }
+        $pagination = $this->_determinePagination($totalNumberRecords, $perPage, $currentPage, 6);
 
-    private function determinePaginationPage()
-    {
-        $count = 128;
-        $perPage = 30;
-        $skip = 30;
-
-        $pageCount = ceil($count/$perPage);
- //       var_dump($pageCount);
-
-        //determine first page
-        $pagination['firstPage'] = $perPage;
-//        $pagination['currentPage'] = 
-
+        return new ViewModel(['data' => $data,
+                              'getParam' => $getData,
+                              'pagination' => $pagination,
+                             ]);
     }
 
     public function stockAdjustmentAction()
@@ -124,16 +120,13 @@ class ProductController extends AbstractActionController
         $this->layout()->pageTitle = 'Stock Adjustments';
         $this->layout()->pageDesc = 'Adjust your stocks, list returns or defective items';
 
-
     }
 
     public function lowStockAction()
     {
 
-
         $this->layout()->pageTitle = 'Low Stock Items';
         $this->layout()->pageDesc = 'Products with low stock variants';
-
 
         $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
         $productVariantModel = new Model\ProductVariants();
@@ -148,9 +141,9 @@ class ProductController extends AbstractActionController
         $sort = ['stock' => 1];
 
         $orderby = -1;
-        if(!empty($getData['order']) && $getData['order'] == 'ASC')
+        if(!empty($getData['order']) && $getData['order'] == 'ASC'){
             $orderby = 1;
-        
+        }
         if(!empty($getData['sort'])){
             $keyName = $getData['sort'];
             $sort = [ $keyName => $orderby];
@@ -158,8 +151,9 @@ class ProductController extends AbstractActionController
 
         $data = $productVariantModel->fetchAll($criteria, [], 50, $sort);
 
-
-        return new ViewModel(['data' => $data, 'searchParams' => $getData]);
+        return new ViewModel(['data' => $data,
+                              'searchParams' => $getData,
+                              'pagination' => $pagination ]);
     }
 
 
@@ -290,6 +284,7 @@ class ProductController extends AbstractActionController
         return new ViewModel();
 
     }
+
 
 
     public function detailsAction()

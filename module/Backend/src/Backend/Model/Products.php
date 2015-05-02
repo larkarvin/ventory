@@ -8,6 +8,8 @@ use Zend\InputFilter\Input;
 class Products
 {
 
+    use FetchTrait;
+
     private $_collectionName = 'products';
     private $_collection = NULL;
     private $_variantModel = NULL;
@@ -94,7 +96,6 @@ class Products
             $allValid = FALSE;
         }
 
-           
         // if all are valid insert product and variants
         $insertResult = FALSE;
         if($allValid === TRUE){
@@ -147,40 +148,6 @@ class Products
     }
 
 
-    public function fetchAll(Array $criteria = NULL, $options = [], $sort = ['update_time' => 1], $limit = ['limit' => 30, 'skip' => 0])
-    {
-
-        if(empty($criteria)){
-            $cursor = $this->_collection->find(); //$criteria, $options);
-        }else{
-            $cursor = $this->_collection->find($criteria, $options);
-        }
-
-        // $cursor->limit($limit['limit'])->skip($limit['skip']);
-        $cursor->sort($sort);
-
-
-        $data['data'] = [];
-        if($cursor->count() > 0) {
-            $data['count'] = $cursor->count();
-            foreach($cursor as $row) {
-                $data['data'][] = $row;
-            }
-        }
-
-        return $data;
-
-
-    }
-
-    public function fetchOne(Array $criteria, $options = [])
-    {
-
-        $cursor = $this->_collection->findOne($criteria, $options);
-
-        return $cursor;
-
-    }
 
 
 

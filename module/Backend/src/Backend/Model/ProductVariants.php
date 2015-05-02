@@ -176,4 +176,17 @@ class ProductVariants
 
     }
 
+
+    public function getItemQuantities(&$items)
+    {
+
+        foreach($items as $key => $item){
+            $itemCriteria = ["_id" => new \MongoId($item['id'])];
+            $result = $this->fetchOne($itemCriteria);
+            $items[$key]['stock'] = $result['stock'];
+        }
+
+    }
+
+
 }

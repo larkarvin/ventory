@@ -8,6 +8,8 @@ use Zend\InputFilter\Input;
 class SalesOrders
 {
 
+    use FetchTrait;
+
     private $_collectionName = 'sales_orders';
     private $_collection = NULL;
     private $_variantModel = NULL;
@@ -28,23 +30,52 @@ class SalesOrders
         $this->_sequenceModel = $sequenceModel;
     }
 
-    public function fetchOne(Array $criteria, $options = [])
-    {
-
-        $cursor = $this->_collection->findOne($criteria, $options);
-
-        return $cursor;
-
-    }
-
+ 
     public function salesOrder($order){
         unset($order['q']);
 
         $salesOrder = ['created'       => new \MongoDate(),
                        '_id'           => $this->_sequenceModel->getNextSequence('salesorder'),
-                       'shipment_date' => new \MongoDate(strtotime($order['shipment_date'])),
                        'paid'          => FALSE,
                        'shipped'       => FALSE,
+                       'finalized'     => FALSE,
+                       'customer'      => $order['customer'],
+                       'deliveryAddr'  => $order['deliveryAddr'],
+                       'shipmentDate'  => $order['shipmentDate'],
+                       'deliveryTime'  => $order['deliveryTime'],
+                       'phone'         => $order['phone'],
+                       'seller'        => $order['seller'],
+                       'deliveryType'  => $order['deliveryType'],
+                       'paymentType'   => $order['paymentType'],
+                       'rider'         => isset($order['rider'])? $order['rider']: '',
+                       'note'          => isset($order['note'])? $order['note']: '',
+                       'payments'      => []
+        ];
+        $total = 0;
+        foreach($order['items'] as $key => $item){
+            $salesOrder['items'][$key]['qty']      = (float) $item['qty'];
+            $salesOrder['items'][$key]['price']    = (float) $item['price'];
+            $salesOrder['items'][$key]['discount'] = (float) $item['discount'];
+            $salesOrder['items'][$key]['subtotal'] = (float) $item['subtotal'];
+            $salesOrder['items'][$key]['sku']      = $item['sku'];
+            $salesOrder['items'][$key]['id']       = $item['id'];
+            $total += (float)$item['subtotal'];
+            // $this->_variantModel->decrementVariantStock($item['id'], (float) $item['qty']);
+        }
+        $salesOrder['total'] = $total;
+        $salesOrder['payment_left'] = $total;
+        $result = $this->_collection->insert($salesOrder);
+        if(!empty($result['err'])){
+            throw new \Exception($result['err']);
+        }
+        return $salesOrder['_id'];
+    }
+
+
+    public function updateSalesOrder($orderId, $order){
+        unset($order['q']);
+
+        $salesOrder = ['updated'       => new \MongoDate(),
                        'customer'      => $order['customer'],
                        'deliveryAddr'  => $order['deliveryAddr'],
                        'shipmentDate'  => $order['shipmentDate'],
@@ -65,14 +96,15 @@ class SalesOrders
             $salesOrder['items'][$key]['sku']      = $item['sku'];
             $salesOrder['items'][$key]['id']       = $item['id'];
             $total += (float)$item['subtotal'];
-            // $this->_variantModel->decrementVariantStock($item['id'], (float) $item['qty']);
         }
         $salesOrder['total'] = $total;
-        $result = $this->_collection->insert($salesOrder);
+
+        $criteria = ["_id" => (int) $orderId];
+        $result = $this->_collection->update($criteria, ['$set' => $salesOrder]);
         if(!empty($result['err'])){
             throw new \Exception($result['err']);
         }
-        return $salesOrder['_id'];
+        return TRUE;
     }
 
     public function markAsPaid($id)
@@ -80,6 +112,41 @@ class SalesOrders
         $criteria = ['_id' => (int) $id];
 
         $updateDate = ['$set' => ['paid' => TRUE, 'paid_date' => new \MongoDate()]];
+        return $this->_collection->update($criteria, $updateDate);
+    }
+
+    public function pay($id, $data)
+    {
+        $criteria = ['_id' => (int) $id];
+        $salesorder = $this->fetchOne($criteria);
+
+        // compute payment left
+        $payment = $data['paymenttobemade'];
+        $paymentLeft = (float)$salesorder['payment_left'] - (float)$payment;
+
+        // data to be updated
+        $updateData['payment_left'] = $paymentLeft;
+        $payment = ['payments' => ['amount' => $payment, 'paid' => new \Mongodate()]];
+
+        // mark paid date if payment_left is now <= zero
+        if($paymentLeft <= 0){
+            $updateData['payment_left'] = 0; // force to zero
+            $updateData['paid_date'] = new \MongoDate();
+            $updateData['paid'] = TRUE;
+        }
+
+        // update
+        return $this->_collection->update($criteria, ['$push' => $payment, '$set' => $updateData]);
+
+
+
+    }
+
+    public function finalize($id)
+    {
+        $criteria = ['_id' => (int) $id];
+
+        $updateDate = ['$set' => ['finalized' => TRUE, 'finalized_date' => new \MongoDate()]];
         return $this->_collection->update($criteria, $updateDate);
     }
 
@@ -123,28 +190,6 @@ class SalesOrders
     }
 
 
-    public function fetchAll(Array $criteria = NULL, $options = [],  $limit = 20, $sort = ['update_time' => 1])
-    {
 
-        if(empty($criteria)){
-            $cursor = $this->_collection->find(); //$criteria, $options);
-        }else{
-            $cursor = $this->_collection->find($criteria, $options);
-        }
-
-        $cursor->limit($limit);
-        $cursor->sort($sort);
-
-        $data = [];
-        if($cursor->count() > 0) {
-            foreach($cursor as $row) {
-                $data[] = $row;
-            }
-        }
-
-        return $data;
-
-
-    }
 
 }

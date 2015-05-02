@@ -78,12 +78,19 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                 <?php }?>
                 </tbody>
               </table>
+
             </div><!-- /.col -->
+            <div>
+
+            </div>
           </div><!-- /.row -->
 
           <div class="row">
             <!-- accepted payments column -->
             <div class="col-xs-6">
+              <div id="AccountsReceivable">
+ 
+              </div>
               Notes:
                 <pre class="text-muted well well-sm no-shadow" style="font-style:italic; font-size:.9em; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;" ><?php echo $salesorderData['note'];?></pre>  
             </div><!-- /.col -->
@@ -91,19 +98,53 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
               <!-- <p class="lead">Amount Due 2/22/2014</p> -->
               <div class="table-responsive">
                 <table class="table">
-                  <tbody><tr>
-                    <th style="width:50%">Subtotal:</th>
-                    <td><?php echo number_format($salesorderData['total'],2)?></td>
-                  </tr>
-<!--                   <tr>
-                    <th>Shipping:</th>
-                    <td>$5.80</td>
-                  </tr> -->
+                  <tbody>
                   <tr>
                     <th>Total:</th>
                     <td>&#8369; <?php echo number_format($salesorderData['total'],2)?></td>
                   </tr>
+                  <tr>
+                    <th>Paid Total:</th>
+                    <td>&#8369; <?php echo number_format($salesorderData['total'] - $salesorderData['payment_left'],2)?></td>
+                  </tr>
+                  <?php if($salesorderData['payment_left'] > 0 ):?>
+                  <tr>
+                    <th>Accounts Receivable:</th>
+                    <td>&#8369; <?php echo number_format($salesorderData['payment_left'],2)?> </strong></td>
+                  </tr>
+                  <?php endif;?>
                 </tbody></table>
+                
+                <!-- PAYMENTS -->
+                <div id="paymentsmade" class="table-responsive">
+                    Payment Breakdown:
+                  <?php if(count($salesorderData['payments'] > 0)):?>
+
+                    <table class="table table-condensed" >
+
+                        <tbody>
+                        <?php 
+                          foreach($salesorderData['payments'] as $payment):
+                          if($payment['amount'] > 0):
+                          ?>
+                          <tr> 
+                            <td style="text-align:left"> 
+                              <?php echo Date('M d, Y',$payment['paid']->sec);?>
+                            </td>
+                            <td>&#8369; <?php echo number_format($payment['amount'],2)?></td>
+
+                          </tr>
+
+                        <?php 
+                          endif;
+                          endforeach; 
+                        ?>
+                      </tbody>
+                    </table>
+                  <?php endif;?>
+
+                </div>
+                <!-- PAYMENTS -->
               </div>
             </div><!-- /.col -->
           </div><!-- /.row -->
@@ -117,9 +158,22 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
           <!-- this row will not appear when printing -->
           <div class="row no-print">
             <div class="col-xs-12">
+ 
               <a href="?print=true" target="_blank" class="btn btn-default"><i class="fa fa-print"></i> Print</a>
+           
+              <?php if(!$salesorderData['finalized']){ ?>
+                <a href="<?php echo $homeUrl;?>salesorder/edit/<?php echo $salesorderData['_id']?>" class="btn btn-primary"><i class="fa fa-pencil"></i> Edit</a>   
+              <?php }?>
               
-              <?php if ($salesorderData['shipped'] !== TRUE) {?>
+              <?php if(!$salesorderData['finalized']){ ?>
+                <a href="#finalizemodal" data-toggle="modal">
+                   <button class="btn btn-success pull-right" style="margin-left: 5px;">
+                   <i class="fa fa-thumbs-up"></i>
+                    Finalize Invoice</button>
+                </a>
+              <?php }?>
+              
+              <?php if ($salesorderData['finalized'] && !$salesorderData['shipped']) {?>
                 <a href="<?php echo $homeUrl;?>salesorder/markasdelivered/<?php echo $salesorderData['_id']?>">
                    <button class="btn btn-primary pull-right" style="margin-left: 5px;">
                    <i class="fa fa-truck"></i>
@@ -128,7 +182,8 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
               <?php } ?>
 
 
-              <?php if ($salesorderData['paid'] == FALSE) {?>
+
+              <?php if ($salesorderData['finalized'] && !$salesorderData['paid']) {?>
               <a href="#paymentmodal" data-toggle="modal">
               <!-- <a href="<?php echo $homeUrl;?>salesorder/markaspaid/<?php echo $salesorderData['_id']?>"> -->
                  <button class="btn btn-success pull-right" style="margin-left: 5px;">
@@ -139,19 +194,54 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
 
             </div>
 
-            <div class="modal fade" id="paymentmodal">
+            <div id="paymentmodal" class="modal fade">
               <div class="modal-dialog">
                 <div class="modal-content">
+                  <form method="POST" role="form" action="<?php echo $homeUrl;?>salesorder/payments/<?php echo $salesorderData['_id']?>" onSubmit="validate(this, event)">
+
                   <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
                     <h4 class="modal-title">Create Payment</h4>
                   </div>
                   <div class="modal-body">
-                    <p>One fine body…</p>
+  
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                    &#8369; 
+                                    </div>
+                                    <input onKeyUp="validatePayment()" id="payment" name="paymenttobemade" type="text" class="form-control" placeholder="payment" value="<?php echo number_format((float)$salesorderData['payment_left'],2,'.','')?>">
+                                </div><!-- /.input group -->
+                            </div>
+
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="submit" class="btn btn-success">Save Payment</button>
+                  </div>
+                  </form>
+                </div><!-- /.modal-content -->
+              </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+
+
+            <div id="finalizemodal" class="modal fade">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Finalize Invoice</h4>
+                  </div>
+                  <div class="modal-body">
+                    <p>You cannot edit once you finalize this invoice</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                    <a href="<?php echo $homeUrl;?>salesorder/finalize/<?php echo $salesorderData['_id']?>">
+                        <button type="button" class="btn btn-success">
+                            <i class="fa fa-thumbs-up"></i> Finalize Invoice
+                        </button>
+                    </a>
                   </div>
                 </div><!-- /.modal-content -->
               </div><!-- /.modal-dialog -->
@@ -163,6 +253,22 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
 
         <script type="text/javascript">
 
+
+            function validatePayment()
+            {
+
+                paymentElement = document.getElementById('payment');
+                paymentElement.value = paymentElement.value.replace(/[^\d.-]/g, '')
+                console.log(paymentElement.value);
+                if((paymentElement.value == "." )|| (paymentElement.value == "0..")){
+                    paymentElement.value = "0."
+                }
+
+
+                if(paymentElement.value >= <?php echo $salesorderData['payment_left']?>){
+                    paymentElement.value = <?php echo $salesorderData['payment_left'];?>
+                }
+            }
    
 
         </script>

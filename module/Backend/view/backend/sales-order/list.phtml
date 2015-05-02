@@ -1,18 +1,50 @@
 <?php
-function determineSortByLink($searchParams, $sortName){
 
-    if(isset($searchParams['sort']) && $searchParams['sort'] == $sortName){
-        if(isset($searchParams['order']) && $searchParams['order'] == 'DESC'){
-            $searchParams['order'] = 'ASC';
+$homeUrl = $this->url('home',array(),array('force_canonical' => true));
+function determineSortByLink($getParam, $sortName){
+
+    if(isset($getParam['sort']) && $getParam['sort'] == $sortName){
+        if(isset($getParam['order']) && $getParam['order'] == 'DESC'){
+            $getParam['order'] = 'ASC';
         }else{
-            $searchParams['order'] = 'DESC';
+            $getParam['order'] = 'DESC';
         }
     }else{
-        $searchParams['sort'] = $sortName;
+        $getParam['sort'] = $sortName;
     }
 
-    return http_build_query($searchParams);
+    return http_build_query($getParam);
 }
+
+
+function generatePagination($getParam, $pagination, $homeUrl)
+{
+   
+    $html = '<div class="row"><div class="col-sm-12">
+            <div class="btn-group pull-right"> Pages: ';
+    $homeUrl .= "salesorder/list";
+
+    $currentPage = 1;
+    if(isset($getParam['page']) && $getParam['page'] > 0){
+        $currentPage = $getParam['page'];
+    }
+    $maxCount = count($pagination);
+    $tmpGet = $getParam;
+    foreach ($pagination as $key => $page) {
+        if($page == 0 ) continue;
+        $getParam['page'] = $page;
+        $getQuery = http_build_query($getParam);
+
+        $class = "btn-default";
+        if($currentPage == $page)
+            $class = "btn-primary";
+        $html .= "<a style='padding-right:3px' href='{$homeUrl}?{$getQuery}'>";
+        $html .= "<button class='btn {$class} btn-sm'>{$page}</button></a>";
+    }
+    $html .= '</div><!-- /.btn-group --></div></div>';
+    return $html;
+}
+    
     
 ?>
 <div class="box box-default">
@@ -33,7 +65,7 @@ function determineSortByLink($searchParams, $sortName){
             <div class="input-group">
 
                 <input type="text" name="q" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Search"
-                  value="<?php if(isset($searchParams['q'])) echo htmlspecialchars($searchParams['q']);?>">
+                  value="<?php if(isset($getParam['q'])) echo htmlspecialchars($getParam['q']);?>">
                 <div class="input-group-btn">
                     <button type="submit" class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
                 </div>
@@ -51,27 +83,31 @@ function determineSortByLink($searchParams, $sortName){
                 <table class="table table-hover table-striped table-bordered">
                     <tbody><tr>
                         <th>
-                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($searchParams, '_id');?>">
-                            Sales Order ID (<?php echo count($data); echo (count($data) == 1)? " item": " items" ?>)</a>
+                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($getParam, '_id');?>">
+                            ID (<?php echo count($data); echo (count($data) == 1)? " item": " items" ?>)</a>
                         </th>
                         <th>
-                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($searchParams, 'customer');?>">
+                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($getParam, 'customer');?>">
                             Customer Name </a>
                         </th>
                         <th>
-                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($searchParams, 'total');?>">
+                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($getParam, 'total');?>">
                             Total
                         </th>
                         <th>
-                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($searchParams, 'paid');?>">
+                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($getParam, 'finalized');?>">
+                            Finalized
+                        </th>
+                        <th>
+                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($getParam, 'paid');?>">
                             Paid
                         </th>
                         <th>
-                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($searchParams, 'delivered');?>">
+                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($getParam, 'delivered');?>">
                             Delivered
                         </th>
                         <th>
-                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($searchParams, 'created');?>">
+                            <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($getParam, 'created');?>">
                             Created
                             </th>
                     </tr>
@@ -96,6 +132,18 @@ function determineSortByLink($searchParams, $sortName){
                             </span> 
                         </td>
 
+                        <td>
+
+                            <?php if( isset($invoice['finalized']) && $invoice['finalized']) {?>
+                                <span class="label bg-green">
+                                <i class="fa fa-thumbs-up"></i>  
+                                <?php echo Date('M d Y',$invoice['finalized_date']->sec);?>
+                                </span>
+                                &nbsp;
+                            <?php }else {?>
+                                No
+                            <?php }?>
+                        </td>
                         <td>
 
                             <?php if( $invoice['paid']) {?>
@@ -127,10 +175,11 @@ function determineSortByLink($searchParams, $sortName){
                    <?php }}?>
                 </tbody></table>
             </div>
-
+            
 
         </div>
 
+    <?php echo generatePagination($getParam, $pagination, $homeUrl);?>
 
 
 </div><!-- /.box-body -->

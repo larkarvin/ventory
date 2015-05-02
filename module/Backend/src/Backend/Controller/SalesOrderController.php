@@ -16,6 +16,7 @@ use Backend\Model;
 
 class SalesOrderController extends AbstractActionController
 {
+    use PaginatorTrait;
     public function listAction()
     {
 
@@ -29,9 +30,11 @@ class SalesOrderController extends AbstractActionController
         $request = $this->getRequest();
         $getData = $request->getQuery()->toArray();
         $criteria = [];
+        $page = 1;
         if(!empty($getData['q'])){
             $criteria = [ '$text' => [ '$search' => $getData['q'] ]];
-        }
+        } 
+
         $sort = ['created' => -1];
 
         $orderby = -1;
@@ -43,12 +46,24 @@ class SalesOrderController extends AbstractActionController
             $sort = [ $keyName => $orderby];
         }
 
-        $data = $salesOrderModel->fetchAll($criteria, [], 20, $sort);
+        $currentPage = 1;
+        if(!empty($getData['page']) && $getData['page'] > 1){
+            $currentPage = $getData['page'];
+        }
 
+        $perPage = 20;                                //how many items to show per page
+        $skip = ($currentPage -1) * $perPage;
 
-        return new ViewModel(['data' => $data, 'searchParams' => $getData]);
+        $data = $salesOrderModel->fetchAll($criteria, [], $perPage, $skip, $sort);
+
+        $totalNumberRecords = $data->count();
+
+        $pagination = $this->_determinePagination($totalNumberRecords, $perPage, $page, 6);
+
+        return new ViewModel(['data' => $data,
+                              'getParam' => $getData,
+                              'pagination' => $pagination]);
     }
-
 
 
     public function newAction()
@@ -104,8 +119,6 @@ class SalesOrderController extends AbstractActionController
              $this->layout('layout/print');
         }
 
-
-
         $this->layout()->pageTitle = 'Invoice';
         $this->layout()->pageDesc = '';
 
@@ -117,6 +130,50 @@ class SalesOrderController extends AbstractActionController
         $data['salesorderData'] = $orderModel->fetchOne($criteria);
 
         return new ViewModel($data);
+    }
+
+
+    public function editAction()
+    {
+
+        $orderid = $this->getEvent()->getRouteMatch()->getParam('orderid');
+        if(empty($orderid)){
+            echo "error";
+        }
+
+        $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
+        $salesOrderModel = new Model\SalesOrders();
+        $salesOrderModel->setDbAdapter($mongoDb);
+
+        $updated = FALSE;
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $posts = $request->getPost();
+            $data  = $posts->toArray();
+            $updated = $salesOrderModel->updateSalesOrder($orderid, $data);
+        }
+
+        // product variants model to determine current stock count
+        $productsVariantsModel = new Model\ProductVariants();
+        $productsVariantsModel->setDbAdapter($mongoDb);
+
+
+        $criteria = ['_id' => (int)$orderid];
+        $salesorder = $salesOrderModel->fetchOne($criteria);
+
+        // determine stock count for the items in the sales order
+        $productsVariantsModel->getItemQuantities($salesorder['items']);
+
+        $uri = $request->getUri();
+        $homeUrl = sprintf('%s://%s', $uri->getScheme(), $uri->getHost());
+
+        $this->layout()->pageTitle = 'Edit Invoice <a href="'.$homeUrl.'/salesorder/details/'.$orderid.'">#'. $orderid .'</a>';
+        $this->layout()->pageDesc = '';
+
+        return new ViewModel(['salesorder' => $salesorder, 'updated' => $updated]);
+
+
+
     }
 
 
@@ -132,17 +189,68 @@ class SalesOrderController extends AbstractActionController
         $salesOrderModel = new Model\SalesOrders();
         $salesOrderModel->setDbAdapter($mongoDb);
         $salesOrderModel->markAsPaid($orderid);
-                return $this->redirect()->toRoute('Salesorder/details', array(
-                    'controller' => 'SalesOrder',
-                    'action'     => 'details',
-                    'orderid'    => $orderid,
-                ));
+
+
+        return $this->redirect()->toRoute('Salesorder/details', array(
+            'controller' => 'SalesOrder',
+            'action'     => 'details',
+            'orderid'    => $orderid,
+        ));
+
+    }
+    public function finalizeAction()
+    {
+        // $orderid = $this->getEvent()->getRouteMatch()->getParam('orderid');
+        $orderid = $this->getEvent()->getRouteMatch()->getParam('orderid');
+        if(empty($orderid)){
+            echo "error";
+        }
+
+        $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
+        $salesOrderModel = new Model\SalesOrders();
+        $salesOrderModel->setDbAdapter($mongoDb);
+        $salesOrderModel->finalize($orderid);
+
+
+        return $this->redirect()->toRoute('Salesorder/details', array(
+            'controller' => 'SalesOrder',
+            'action'     => 'details',
+            'orderid'    => $orderid,
+        ));
+
+    }
+
+    public function paymentsAction()
+    {
+        // $orderid = $this->getEvent()->getRouteMatch()->getParam('orderid');
+        $orderid = $this->getEvent()->getRouteMatch()->getParam('orderid');
+        if(empty($orderid)){
+            echo "error";
+        }
+
+        $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
+        $salesOrderModel = new Model\SalesOrders();
+        $salesOrderModel->setDbAdapter($mongoDb);
+        $request = $this->getRequest();
+        
+        if ($request->isPost()) {
+            $posts = $request->getPost();
+            $payment  = $posts->toArray();
+
+            $salesOrderModel->pay($orderid, $payment);
+        }
+
+
+        return $this->redirect()->toRoute('Salesorder/details', array(
+            'controller' => 'SalesOrder',
+            'action'     => 'details',
+            'orderid'    => $orderid,
+        ));
 
     }
 
     public function markasdeliveredAction()
     {
-        // $orderid = $this->getEvent()->getRouteMatch()->getParam('orderid');
         $orderid = $this->getEvent()->getRouteMatch()->getParam('orderid');
         if(empty($orderid)){
             echo "error";
@@ -158,12 +266,12 @@ class SalesOrderController extends AbstractActionController
         $salesOrderModel->setVariantModel($productVariants);
 
         $salesOrderModel->markAsDelivered($orderid);
-        // exit;
-                return $this->redirect()->toRoute('Salesorder/details', array(
-                    'controller' => 'SalesOrder',
-                    'action'     => 'details',
-                    'orderid'    => $orderid,
-                ));
+
+        return $this->redirect()->toRoute('Salesorder/details', array(
+            'controller' => 'SalesOrder',
+            'action'     => 'details',
+            'orderid'    => $orderid,
+        ));
 
     }
 

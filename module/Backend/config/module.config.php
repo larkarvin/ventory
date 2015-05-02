@@ -98,6 +98,18 @@ return array(
                             ),
                         ),
                     ),
+                    'payments' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '/payments[/:orderid]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                                'action' => 'payments'
+                            ),
+                        ),
+                    ),
                     'markasdelivered' => array(
                         'type' => 'Segment',
                         'options' => array(
@@ -107,6 +119,30 @@ return array(
                             ),
                             'defaults' => array(
                                 'action' => 'markasdelivered'
+                            ),
+                        ),
+                    ),
+                    'finalize' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '/finalize[/:orderid]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                                'action' => 'finalize'
+                            ),
+                        ),
+                    ),
+                    'edit' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '/edit[/:orderid]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                                'action' => 'edit'
                             ),
                         ),
                     ),  

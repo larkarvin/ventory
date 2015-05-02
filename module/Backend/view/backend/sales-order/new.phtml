@@ -458,7 +458,7 @@ function computePercentile(itemCounter)
 
     saleDiscount = origSubtotal - subtotal;
     percentile = (saleDiscount / origSubtotal) * 100;
-
+    percentile = parseFloat(Math.round(percentile * 100) / 100).toFixed(2);
     discountElement.value = percentile;
 
 }

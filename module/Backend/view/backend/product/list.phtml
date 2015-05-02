@@ -1,17 +1,47 @@
 <?php
-function determineSortByLink($searchParams, $sortName){
 
-    if(isset($searchParams['sort']) && $searchParams['sort'] == $sortName){
-        if(isset($searchParams['order']) && $searchParams['order'] == 'DESC'){
-            $searchParams['order'] = 'ASC';
+$homeUrl = $this->url('home',array(),array('force_canonical' => true));
+function determineSortByLink($getParam, $sortName){
+
+    if(isset($getParam['sort']) && $getParam['sort'] == $sortName){
+        if(isset($getParam['order']) && $getParam['order'] == 'DESC'){
+            $getParam['order'] = 'ASC';
         }else{
-            $searchParams['order'] = 'DESC';
+            $getParam['order'] = 'DESC';
         }
     }else{
-        $searchParams['sort'] = $sortName;
+        $getParam['sort'] = $sortName;
     }
 
-    return http_build_query($searchParams);
+    return http_build_query($getParam);
+}
+
+function generatePagination($getParam, $pagination, $homeUrl)
+{
+   
+    $html = '<div class="row"><div class="col-sm-12">
+            <div class="btn-group pull-right"> Pages: ';
+    $homeUrl .= "product/list";
+
+    $currentPage = 1;
+    if(isset($getParam['page']) && $getParam['page'] > 0){
+        $currentPage = $getParam['page'];
+    }
+    $maxCount = count($pagination);
+    $tmpGet = $getParam;
+    foreach ($pagination as $key => $page) {
+        if($page == 0 ) continue;
+        $getParam['page'] = $page;
+        $getQuery = http_build_query($getParam);
+
+        $class = "btn-default";
+        if($currentPage == $page)
+            $class = "btn-primary";
+        $html .= "<a style='padding-right:3px' href='{$homeUrl}?{$getQuery}'>";
+        $html .= "<button class='btn {$class} btn-sm'>{$page}</button></a>";
+    }
+    $html .= '</div><!-- /.btn-group --></div></div>';
+    return $html;
 }
     
 ?>
@@ -33,7 +63,7 @@ function determineSortByLink($searchParams, $sortName){
             <div class="input-group">
 
                 <input type="text" name="q" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Search"
-                  value="<?php if(isset($searchParams['q'])) echo htmlspecialchars($searchParams['q']);?>">
+                  value="<?php if(isset($getParam['q'])) echo htmlspecialchars($getParam['q']);?>">
                 <div class="input-group-btn">
                     <button type="submit" class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
                 </div>
@@ -51,11 +81,14 @@ function determineSortByLink($searchParams, $sortName){
                 <table class="table table-hover table-striped table-bordered">
                     <tbody><tr>
                         <th>
-                            <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'itemname');?>">
-                            Item Name (<?php echo count($data); echo (count($data) == 1)? " item": " items" ?>)</a>
+                            <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($getParam, 'itemname');?>">
+                            Item Name (
+                            <?php
+                            $totalProducts = $data->count();
+                            echo $totalProducts; echo ($totalProducts == 1)? " item": " items" ?>)</a>
                         </th>
                         <th>
-                            <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($searchParams, 'active');?>">
+                            <a href="<?php echo $this->basePath();?>/product/list?<?php echo determineSortByLink($getParam, 'active');?>">
                             Active </a>
                         </th>
                         <th>&nbsp;</th>
@@ -109,10 +142,11 @@ function determineSortByLink($searchParams, $sortName){
                 </tbody></table>
             </div>
 
+           
 
         </div>
 
-
+ <?php echo generatePagination($getParam, $pagination, $homeUrl);?>
 
 </div><!-- /.box-body -->
 </div>
