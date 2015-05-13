@@ -1,0 +1,162 @@
+<?php
+
+$homeUrl = $this->url('home',array(),array('force_canonical' => true));
+function determineSortByLink($getParam, $sortName){
+
+    if(isset($getParam['sort']) && $getParam['sort'] == $sortName){
+        if(isset($getParam['order']) && $getParam['order'] == 'DESC'){
+            $getParam['order'] = 'ASC';
+        }else{
+            $getParam['order'] = 'DESC';
+        }
+    }else{
+        $getParam['sort'] = $sortName;
+    }
+
+    return http_build_query($getParam);
+}
+
+
+function generatePagination($getParam, $pagination, $homeUrl)
+{
+   
+    $html = '<div class="row"><div class="col-sm-12">
+            <div class="btn-group pull-right"> Pages: ';
+    $homeUrl .= "purchaseorder/list";
+
+    $currentPage = 1;
+    if(isset($getParam['page']) && $getParam['page'] > 0){
+        $currentPage = $getParam['page'];
+    }
+    $maxCount = count($pagination);
+    $tmpGet = $getParam;
+    foreach ($pagination as $key => $page) {
+        if($page == 0 ) continue;
+        $getParam['page'] = $page;
+        $getQuery = http_build_query($getParam);
+
+        $class = "btn-default";
+        if($currentPage == $page)
+            $class = "btn-primary";
+        $html .= "<a style='padding-right:3px' href='{$homeUrl}?{$getQuery}'>";
+        $html .= "<button class='btn {$class} btn-sm'>{$page}</button></a>";
+    }
+    $html .= '</div><!-- /.btn-group --></div></div>';
+    return $html;
+}
+    
+    
+?>
+<div class="box box-default">
+
+<div class="box-body">
+
+
+
+    <div class="row">
+
+
+
+        <div class="col-sm-6">
+            <a class="pull-left" href="<?php echo $this->basePath();?>/purchaseorder/new"> <button type="button" id="add-variant-btn" class="btn btn-primary btn-sm">New Purchase Order</button> </a>
+        </div>
+        <div class="col-sm-6">
+        <form action="<?php echo $this->basePath();?>/purchaseorder/list" method="GET">
+            <div class="input-group">
+
+                <input type="text" name="q" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Search"
+                  value="<?php if(isset($getParam['q'])) echo htmlspecialchars($getParam['q']);?>">
+                <div class="input-group-btn">
+                    <button type="submit" class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <div class="row">
+
+
+            <div class="box-body table-responsive col-sm-12">
+                <table class="table table-hover table-striped table-bordered">
+                    <tbody><tr>
+                        <th>
+                            <a href="<?php echo $this->basePath();?>/purchaseorder/list?<?php echo determineSortByLink($getParam, '_id');?>">
+                            ID (<?php echo count($data); echo (count($data) == 1)? " item": " items" ?>)</a>
+                        </th>   
+                        <th>
+                            <a href="<?php echo $this->basePath();?>/purchaseorder/list?<?php echo determineSortByLink($getParam, 'cost');?>">
+                            Cost
+                        </th>
+                        <th>
+                            <a href="<?php echo $this->basePath();?>/purchaseorder/list?<?php echo determineSortByLink($getParam, 'status');?>">
+                            Status
+                        </th>
+                        <th>
+                            <a href="<?php echo $this->basePath();?>/purchaseorder/list?<?php echo determineSortByLink($getParam, 'created');?>">
+                            Created
+                            </th>
+                    </tr>
+                    <?php 
+                    if(count($data) > 0 )
+                    {
+                        foreach($data as $purchaseOrders){ 
+
+
+                            ?>
+                    <tr>
+                      <td>
+                            <a href="<?php echo $this->basePath();?>/purchaseorder/details/<?php echo $purchaseOrders['_id']?>">
+                                   #<?php if (isset($purchaseOrders['_id'])) { echo $purchaseOrders['_id']; }?>
+                            </a>
+                        </td>
+                        
+
+                
+
+                        <td>
+                            &#8369; <?php echo number_format($purchaseOrders['total'],2);?>
+                        </td>
+
+                        <td>
+                            <?php 
+                            $label = 'warning';
+                            switch ($purchaseOrders['status']) {
+                                case 'new':
+                                    $label ='warning';
+                                    break;
+                                
+                                case 'cancelled':
+                                    $label ='danger';
+                                    break;
+
+                                case 'closed':
+                                    $label ='success';
+                                    break;
+                                
+                                default:
+                                    # code...
+                                    break;
+                            }?>
+                            <span class="label label-<?php echo $label?>">
+                                <?php echo ucfirst( $purchaseOrders['status']);?>
+                            </span>
+                        </td>
+                        <td>
+                           <?php echo Date("M d, Y", $purchaseOrders['created']->sec);?>
+                        </td>
+                    </tr>
+                   <?php }}?>
+                </tbody></table>
+            </div>
+            
+
+        </div>
+
+    <?php echo generatePagination($getParam, $pagination, $homeUrl);?>
+
+
+</div><!-- /.box-body -->
+</div>

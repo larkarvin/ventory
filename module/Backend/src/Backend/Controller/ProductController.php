@@ -23,6 +23,33 @@ class ProductController extends AbstractActionController
         $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
     }
 
+    public function typeaheadAction()
+    {
+
+        $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
+
+        $variantModel = new Model\ProductVariants();
+        $variantModel->setDbAdapter($mongoDb);
+
+        $request = $this->getRequest();
+        $q = '';
+        $getData = $request->getQuery()->toArray();
+        $q = $getData['q'];
+
+        $criteria = ['$text' => ['$search' => $q]];
+        $cursor = $variantModel->fetchAll($criteria);
+
+        $data = [];
+        if($cursor->count() > 0) {
+            foreach($cursor as $row) {
+                $data[] = $row;
+            }
+        }
+        header('Content-Type: application/json');
+        echo json_encode($data);
+        exit;
+    }
+
 
     public function variantAction()
     {
@@ -48,7 +75,7 @@ class ProductController extends AbstractActionController
             $variantId = $data['variant_id'];
             unset($data['variant_id']);
 
-            $validationResult = $variantModel->validateProductVariant($data);
+            $validationResult = $variantModel->validateProductVariant($data, TRUE);
 
             if($validationResult->isValid()){
                 $result = $variantModel->updateVariant($variantId, $data);
@@ -104,7 +131,7 @@ class ProductController extends AbstractActionController
         $perPage = 10;
         $skip = ($currentPage-1) * $perPage;
 
-        $data = $productModel->fetchAll($criteria, [],  $perPage, $skip);
+        $data = $productModel->fetchAll($criteria, [],  $perPage, $skip, $sort);
         $totalNumberRecords = $data->count();
 
         $pagination = $this->_determinePagination($totalNumberRecords, $perPage, $currentPage, 6);
@@ -120,9 +147,59 @@ class ProductController extends AbstractActionController
         $this->layout()->pageTitle = 'Stock Adjustments';
         $this->layout()->pageDesc = 'Adjust your stocks, list returns or defective items';
 
+        
+        
+
     }
 
     public function lowStockAction()
+    {
+
+        //$this->determinePaginationPage();exit;
+        $this->layout()->pageTitle = 'Product List';
+        $this->layout()->pageDesc = 'Search and find your products.';
+
+        $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
+        $productVariantModel = new Model\ProductVariants();
+        $productVariantModel->setDbAdapter($mongoDb);
+
+        $request = $this->getRequest();
+        $getData = $request->getQuery()->toArray();
+        $criteria = [];
+        if(!empty($getData['q'])){
+            $criteria = [ '$text' => [ '$search' => $getData['q'] ]];
+        }
+        $sort = ['stock' => 1];
+
+        $orderby = -1;
+        if(!empty($getData['order']) && $getData['order'] == 'ASC')
+            $orderby = 1;
+        
+        if(!empty($getData['sort'])){
+            $keyName = $getData['sort'];
+            $sort = [ $keyName => $orderby];
+        }
+        $currentPage = 1;
+        if(!empty($getData['page']) && $getData['page'] > 1){
+            $currentPage = $getData['page'];
+        }
+
+        $perPage = 10;
+        $skip = ($currentPage-1) * $perPage;
+
+        $data = $productVariantModel->fetchAll($criteria, [],  $perPage, $skip, $sort);
+        $totalNumberRecords = $data->count();
+
+        $pagination = $this->_determinePagination($totalNumberRecords, $perPage, $currentPage, 6);
+
+        return new ViewModel(['data' => $data,
+                              'getParam' => $getData,
+                              'pagination' => $pagination,
+                             ]);
+    }
+
+
+    public function aaalowStockAction()
     {
 
         $this->layout()->pageTitle = 'Low Stock Items';
@@ -149,7 +226,7 @@ class ProductController extends AbstractActionController
             $sort = [ $keyName => $orderby];
         }
 
-        $data = $productVariantModel->fetchAll($criteria, [], 50, $sort);
+        $data = $productVariantModel->fetchAll($criteria, []);
 
         return new ViewModel(['data' => $data,
                               'searchParams' => $getData,
@@ -339,7 +416,7 @@ class ProductController extends AbstractActionController
         // fetch all variants data
         $criteria = ['product_id' => new \MongoId($productId)];
         $sort = ['variant' => 1];
-        $variantData = $variantModel->fetchAll($criteria,[], NULL, $sort);
+        $variantData = $variantModel->fetchAll($criteria,[]);
 
 
         $viewModelData['productData'] = $productData;

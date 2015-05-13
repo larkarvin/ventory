@@ -34,14 +34,18 @@ class SalesOrders
     public function salesOrder($order){
         unset($order['q']);
 
+        $shipmentDate = strtotime($order['shipmentDate']);
+
         $salesOrder = ['created'       => new \MongoDate(),
                        '_id'           => $this->_sequenceModel->getNextSequence('salesorder'),
                        'paid'          => FALSE,
+                       'paid_date'     => NULL,
                        'shipped'       => FALSE,
+                       'shipped_date'  => NULL,
                        'finalized'     => FALSE,
                        'customer'      => $order['customer'],
                        'deliveryAddr'  => $order['deliveryAddr'],
-                       'shipmentDate'  => $order['shipmentDate'],
+                       'shipmentDate'  => new \MongoDate($shipmentDate),
                        'deliveryTime'  => $order['deliveryTime'],
                        'phone'         => $order['phone'],
                        'seller'        => $order['seller'],
@@ -75,10 +79,11 @@ class SalesOrders
     public function updateSalesOrder($orderId, $order){
         unset($order['q']);
 
+        $shipmentDate = strtotime($order['shipmentDate']);
         $salesOrder = ['updated'       => new \MongoDate(),
                        'customer'      => $order['customer'],
                        'deliveryAddr'  => $order['deliveryAddr'],
-                       'shipmentDate'  => $order['shipmentDate'],
+                       'shipmentDate'  => new \MongoDate($shipmentDate),
                        'deliveryTime'  => $order['deliveryTime'],
                        'phone'         => $order['phone'],
                        'seller'        => $order['seller'],

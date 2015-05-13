@@ -1,17 +1,47 @@
 <?php
-function determineSortByLink($searchParams, $sortName){
 
-    if(isset($searchParams['sort']) && $searchParams['sort'] == $sortName){
-        if(isset($searchParams['order']) && $searchParams['order'] == 'ASC'){
-            $searchParams['order'] = 'DESC';
+$homeUrl = $this->url('home',array(),array('force_canonical' => true));
+function determineSortByLink($getParam, $sortName){
+
+    if(isset($getParam['sort']) && $getParam['sort'] == $sortName){
+        if(isset($getParam['order']) && $getParam['order'] == 'DESC'){
+            $getParam['order'] = 'ASC';
         }else{
-            $searchParams['order'] = 'ASC';
+            $getParam['order'] = 'DESC';
         }
     }else{
-        $searchParams['sort'] = $sortName;
+        $getParam['sort'] = $sortName;
     }
 
-    return http_build_query($searchParams);
+    return http_build_query($getParam);
+}
+
+function generatePagination($getParam, $pagination, $homeUrl)
+{
+   
+    $html = '<div class="row"><div class="col-sm-12">
+            <div class="btn-group pull-right"> Pages: ';
+    $homeUrl .= "product/lowstock";
+
+    $currentPage = 1;
+    if(isset($getParam['page']) && $getParam['page'] > 0){
+        $currentPage = $getParam['page'];
+    }
+    $maxCount = count($pagination);
+    $tmpGet = $getParam;
+    foreach ($pagination as $key => $page) {
+        if($page == 0 ) continue;
+        $getParam['page'] = $page;
+        $getQuery = http_build_query($getParam);
+
+        $class = "btn-default";
+        if($currentPage == $page)
+            $class = "btn-primary";
+        $html .= "<a style='padding-right:3px' href='{$homeUrl}?{$getQuery}'>";
+        $html .= "<button class='btn {$class} btn-sm'>{$page}</button></a>";
+    }
+    $html .= '</div><!-- /.btn-group --></div></div>';
+    return $html;
 }
     
 ?>
@@ -88,6 +118,6 @@ function determineSortByLink($searchParams, $sortName){
     </div>
 
 
-
+ <?php echo generatePagination($getParam, $pagination, $homeUrl);?>
 
 </div>

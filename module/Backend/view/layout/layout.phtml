@@ -226,17 +226,23 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <!--             <li class="active"><a href="#"><span>Link</span></a><</li>
             <li><a href="#"><span>Another Link</span></a></li> -->
             <li>
+                <a href="<?php echo $homeUrl;?>user/dashboard">
+                    <i class="fa fa fa-dashboard"></i> <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
                 <a href="<?php echo $homeUrl;?>product/list">
                     <i class="fa fa-table"></i> <span>Products</span>
                 </a>
             </li>
+
             <li>
                 <a href="<?php echo $homeUrl;?>salesorder/list">
                     <i class="fa fa-list-alt"></i> <span>Sales Order</span>
                 </a>
             </li>
             <li>
-                <a href="<?php echo $homeUrl;?>order/purchase">
+                <a href="<?php echo $homeUrl;?>purchaseorder/list">
                     <i class="fa fa-truck"></i> <span>Purchase Order</span>
                 </a>
             </li>
@@ -247,19 +253,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </a>
             </li>
             <li>
-                <a href="<?php echo $homeUrl;?>product/stock-adjustment">
+                <a href="<?php echo $homeUrl;?>stockadjustment/list">
                     <i class="fa fa-eye"></i> <span>Stock Adjustment</span>
                     <!-- <small class="badge pull-right bg-red">3</small> -->
                 </a>
             </li>
-                                    
-<!--             <li class="treeview">
-              <a href="#"><span>Multilevel</span> <i class="fa fa-angle-left pull-right"></i></a>
-              <ul class="treeview-menu">
-                <li><a href="#">Link in level 2</a></li>
-                <li><a href="#">Link in level 2</a></li>
-              </ul>
-            </li> -->
+                
           </ul><!-- /.sidebar-menu -->
         </section>
         <!-- /.sidebar -->

@@ -1,0 +1,216 @@
+<div class="row">
+
+            <!-- fix for small devices only -->
+            <div class="clearfix visible-sm-block"></div>
+
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <div class="info-box">
+                <span class="info-box-icon bg-green"><i class="ion ion-ios-cart-outline"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">Sales Order Today</span>
+                  <span class="info-box-number"><?php echo $dashboardData['salesordertoday'];?></span>
+                </div><!-- /.info-box-content -->
+              </div><!-- /.info-box -->
+            </div><!-- /.col -->
+
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <div class="info-box">
+                <span class="info-box-icon bg-yellow"><i class="ion ion-ios-star"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">Accounts Receivable</span>
+                  <span class="info-box-number"><?php echo number_format($dashboardData['totalAcctsReceivable'],2);?></span>
+                </div><!-- /.info-box-content -->
+              </div><!-- /.info-box -->
+            </div><!-- /.col -->
+
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <div class="info-box">
+                <span class="info-box-icon bg-yellow"><i class="ion ion-ios-star"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">Total Sales Last 7 Days</span>
+                  <span class="info-box-number"><?php echo number_format($dashboardData['totalsalesLast7days'],2);?>  </span>
+                </div><!-- /.info-box-content -->
+              </div><!-- /.info-box -->
+            </div><!-- /.col -->
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+              <div class="box box-info">
+                <div class="box-header with-border">
+                  <h3 class="box-title">Latest Invoices</h3>
+                  <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                  </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                      <div class="box-body table-responsive col-sm-12">
+                          <table class="table table-hover table-striped table-bordered">
+                              <tbody><tr>
+                                  <th>ID
+                                  </th>
+                                  <th>
+                                      Customer Name </a>
+                                  </th>
+                                  <th>
+                                      Total
+                                  </th>
+                                  <th>
+                                      Finalized
+                                  </th>
+                                  <th>
+                                      Paid
+                                  </th>
+                                  <th>
+                                      Delivered
+                                  </th>
+
+                              </tr>
+                              <?php 
+                              if($dashboardData['salesOrders']->count() > 0 )
+                              {
+                                  foreach($dashboardData['salesOrders'] as $invoice){ 
+
+
+                                      ?>
+                              <tr>
+                                  <td>
+                                      <a href="<?php echo $this->basePath();?>/salesorder/details/<?php echo $invoice['_id']?>">
+                                            #<?php if (isset($invoice['_id'])) { echo $invoice['_id']; }?>
+                                      </a>
+                                  </td>
+                                  <td>
+                                      <?php echo $invoice['customer'];?>
+                                  </td>
+                                  <td>
+                                      <span class="pull-right"><?php echo number_format($invoice['total'],2);?>
+                                      </span> 
+                                  </td>
+
+                                  <td>
+
+                                      <?php if( isset($invoice['finalized']) && $invoice['finalized']) {?>
+                                          <span class="label bg-green">
+                                          <i class="fa fa-thumbs-up"></i>  
+                                          <?php echo Date('M d Y',$invoice['finalized_date']->sec);?>
+                                          </span>
+                                          &nbsp;
+                                      <?php }else {?>
+                                          No
+                                      <?php }?>
+                                  </td>
+                                  <td>
+
+                                      <?php if( $invoice['paid']) {?>
+                                          <span class="label bg-green">
+                                          <i class="fa fa-check-circle"></i>  
+                                          <?php echo Date('M d Y',$invoice['paid_date']->sec);?>
+                                          </span>
+                                          &nbsp;
+                                      <?php }else {?>
+                                          Unpaid
+                                      <?php }?>
+                                  </td>
+
+                                  <td>
+                                      <?php if( $invoice['shipped']) {?>
+                                          <span class="label bg-blue">
+                                          <i class="fa  fa-truck"></i>  
+                                          <?php echo Date('M d Y',$invoice['shipped_date']->sec);?>
+                                          </span>
+                                          &nbsp;
+                                      <?php }else {?>
+                                          For Delivery
+                                      <?php }?>
+                                  </td>
+
+                              </tr>
+                             <?php }}?>
+                          </tbody></table>
+                      </div>
+                </div><!-- /.box-body -->
+                <div class="box-footer clearfix">
+                  <a href="<?php echo $this->basePath();?>/salesorder/new" class="btn btn-sm btn-info btn-flat pull-left">Place New Invoice</a>
+                  <a href="<?php echo $this->basePath();?>/salesorder/list" class="btn btn-sm btn-default btn-flat pull-right">View All Invoice</a>
+                </div><!-- /.box-footer -->
+              </div>
+      </div>
+
+      <div class="col-md-4">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                  <h3 class="box-title">Last Purchase Order</h3>
+                  <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                  </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+
+                      <div class="box-body table-responsive col-sm-12">
+                          <table class="table table-hover table-striped table-bordered">
+                              <tbody>
+                              <tr>
+                                  <th>ID </th>   
+                                  <th>Cost</th>
+                                  <th>Status</th>
+                              </tr>
+                              <?php 
+                              if($dashboardData['purchaseOrders'] ->count() > 0 )
+                              {
+                                  foreach($dashboardData['purchaseOrders']  as $purchaseOrders){ 
+
+
+                                      ?>
+                              <tr>
+                                  <td>
+                                      <a href="<?php echo $this->basePath();?>/purchaseorder/details/<?php echo $purchaseOrders['_id']?>">
+                                             #<?php if (isset($purchaseOrders['_id'])) { echo $purchaseOrders['_id']; }?>
+                                      </a>
+                                  </td>
+                                  
+                          
+
+                                  <td>
+                                      &#8369; <?php echo number_format($purchaseOrders['total'],2);?>
+                                  </td>
+
+                                  <td>
+ 
+                                      <?php 
+                                      $label = 'warning';
+                                      switch ($purchaseOrders['status']) {
+                                          case 'new':
+                                              $label ='warning';
+                                              break;
+                                          
+                                          case 'cancelled':
+                                              $label ='danger';
+                                              break;
+
+                                          case 'closed':
+                                              $label ='success';
+                                              break;
+                                          
+                                          default:
+                                              # code...
+                                              break;
+                                      }?>
+                                      <span class="label label-<?php echo $label?>">
+                                          <?php echo ucfirst( $purchaseOrders['status']);?>
+                                      </span>
+                                  </td>
+                              </tr>
+                             <?php }}?>
+                          </tbody></table>
+                      </div>
+
+
+                </div><!-- /.box-body -->
+                <div class="box-footer text-center">
+                  <a href="<?php echo $this->basePath();?>/purchaseorder/list/" class="uppercase">View All Purchase Orders</a>
+                </div><!-- /.box-footer -->
+              </div>
+      </div>
+</div>

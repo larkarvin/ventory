@@ -17,16 +17,25 @@ trait FetchTrait
             $cursor = $this->_collection->find($criteria, $options);
         }
 
-        $cursor->limit($limit)->skip($skip);
         $cursor->sort($sort);
+        $cursor->limit($limit)->skip($skip);
+        
 
-        $data = [];
-        // echo $cursor->count();exit;
-        if($cursor->count() > 0) {
-            return $cursor;
-        }
+        return $cursor;
 
-        return [];
+
+
+    }
+    public function aggregate(Array $aggregate)
+    {
+
+        $cursor = $this->_collection->aggregate($aggregate);
+        
+
+        return $cursor;
+
+
+
     }
 
     public function fetchOne(Array $criteria, $options = [])

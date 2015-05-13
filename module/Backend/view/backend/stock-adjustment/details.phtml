@@ -1,0 +1,178 @@
+<?php
+$homeUrl = $this->url('home',array(),array('force_canonical' => true));
+?>
+<section class="invoice">
+          <!-- title row -->
+          <div class="row">
+            <div class="col-xs-12">
+              <h2 class="page-header">
+                 SO #<?php echo $stockAdjustment['_id'];?>
+                <small class="pull-right" style="padding-left:5em"><?php echo Date('m/d/Y', $stockAdjustment['created']->sec);?></small>
+              </h2>
+            </div><!-- /.col -->
+          </div>
+          <!-- info row -->
+
+          <div class="row invoice-info">
+
+            <div class="col-sm-12 invoice-col">
+              <address>
+                <strong>Reason:</strong> <?php echo $stockAdjustment['reason']?><br>
+                <strong>Adjusted Date:</strong> <?php echo Date('m/d/Y', $stockAdjustment['date_adjusted']->sec)?><br>
+              </address>
+            </div><!-- /.col -->
+
+          </div><!-- /.row -->
+
+          <!-- Table row -->
+          <div class="row">
+            <div class="col-xs-12 table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Qty</th>
+                    <th>Product</th>
+                    <th>From Stock</th>
+                    <th>To Stock</th>
+                  </tr>
+                </thead>
+                <tbody>
+                <?php foreach($stockAdjustment['items'] as $item){?>
+                  <tr>
+                    <td><?php echo $item['qty']?></td>
+                    <td><?php echo $item['sku']?></td>
+                    <td><?php echo $item['from_stock']?></td>
+                    <td><?php echo $item['to_stock']?></td>
+                  </tr>
+                <?php }?>
+                </tbody>
+              </table>
+
+            </div><!-- /.col -->
+            <div>
+
+            </div>
+          </div><!-- /.row -->
+
+          <div class="row">
+            <!-- accepted payments column -->
+            <div class="col-xs-6">
+              <div id="AccountsReceivable">
+ 
+              </div>
+              Notes:
+                <pre class="text-muted well well-sm no-shadow" style="font-style:italic; font-size:.9em; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;" ><?php echo $stockAdjustment['note'];?></pre>  
+            </div><!-- /.col -->
+            <div class="col-xs-6">
+              <!-- <p class="lead">Amount Due 2/22/2014</p> -->
+              <div class="table-responsive">
+                <table class="table">
+                  <tbody>
+                  <tr>
+                    <th>Total:</th>
+                    <td><?php echo number_format($stockAdjustment['total_units'])?></td>
+                  </tr>
+                </tbody></table>
+                
+                
+              </div>
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+          <div class="row">
+            <div class="col-sm-12">
+              <span class=" pull-right">
+              C3K Philippines, Inc. - contact@zaka.ph
+              </span>
+            </div>
+          </div>
+          <!-- this row will not appear when printing -->
+          <div class="row no-print">
+            <div class="col-xs-12">
+ 
+              <a href="?print=true" target="_blank" class="btn btn-default"><i class="fa fa-print"></i> Print</a>
+
+            </div>
+
+
+
+
+
+            <div id="deliveredmodal" class="modal fade">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Mark as Delivered </h4>
+                  </div>
+                  <div class="modal-body">
+                    <p>This will Decrement stock, Are you sure?</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                    <a  href="<?php echo $homeUrl;?>salesorder/markasdelivered/<?php echo $stockAdjustment['_id']?>">
+                        <button type="button" class="btn btn-success">
+                            <i class="fa fa-thumbs-up"></i> Decrement stock
+                        </button>
+                    </a>
+                  </div>
+                </div><!-- /.modal-content -->
+              </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+
+
+            <div id="paymentmodal" class="modal fade">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <form method="POST" role="form" action="<?php echo $homeUrl;?>salesorder/payments/<?php echo $stockAdjustment['_id']?>" onSubmit="validate(this, event)">
+
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Create Payment</h4>
+                  </div>
+                  <div class="modal-body">
+  
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                    &#8369; 
+                                    </div>
+                                    <input onKeyUp="validatePayment()" id="payment" name="paymenttobemade" type="text" class="form-control" placeholder="payment" value="<?php echo number_format((float)$stockAdjustment['payment_left'],2,'.','')?>">
+                                </div><!-- /.input group -->
+                            </div>
+
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success">Save Payment</button>
+                  </div>
+                  </form>
+                </div><!-- /.modal-content -->
+              </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+
+
+          </div>
+        </section>
+        <script src="<?php echo $homeUrl;?>js/plugins/datepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+
+        <script type="text/javascript">
+
+
+            function validatePayment()
+            {
+
+                paymentElement = document.getElementById('payment');
+                paymentElement.value = paymentElement.value.replace(/[^\d.-]/g, '')
+                console.log(paymentElement.value);
+                if((paymentElement.value == "." )|| (paymentElement.value == "0..")){
+                    paymentElement.value = "0."
+                }
+
+
+                if(paymentElement.value >= <?php echo $stockAdjustment['payment_left']?>){
+                    paymentElement.value = <?php echo $stockAdjustment['payment_left'];?>
+                }
+            }
+   
+
+        </script>

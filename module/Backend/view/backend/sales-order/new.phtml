@@ -501,7 +501,7 @@ var skus = new Bloodhound({
     },
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     remote: {
-        url: '<?php echo $homeUrl;?>order/typeahead?q=%QUERY',
+        url: '<?php echo $homeUrl;?>product/typeahead?q=%QUERY',
         filter: function (data) {
             // Map the remote source JSON array to a JavaScript object array
             return $.map(data, function (variant) {

@@ -1,0 +1,202 @@
+<?php
+$homeUrl = $this->url('home',array(),array('force_canonical' => true));
+?>
+<section class="invoice">
+          <!-- title row -->
+          <div class="row">
+            <div class="col-xs-12">
+              <h2 class="page-header">
+                 PO#<?php echo $purchaseorderData['_id'];?> - <?php echo $purchaseorderData['supplier']?>
+                <small class="pull-right" style="padding-left:5em"><?php //echo Date('m/d/Y', $purchaseorderData['created']->sec);?></small>
+              </h2>
+            </div><!-- /.col -->
+          </div>
+          <!-- info row -->
+
+          <div class="row invoice-info">
+            <div class="col-sm-6 invoice-col">
+              Supplier:
+              <br/>
+              <address>
+                <strong>Name:</strong> <?php echo ucwords($purchaseorderData['supplier'])?><br>
+                <strong>Order Status:</strong> <?php echo ucfirst($purchaseorderData['status'])?><br>
+              </address>
+            </div><!-- /.col -->
+
+            
+
+            <div class="col-sm-6 invoice-col">
+              Delivery Details:
+              <br/>
+              <b>Delivery Date:</b> <?php echo Date('M d Y ', $purchaseorderData['deliveryDate']->sec);?> <br>
+              <b>Delivered:</b> <?php echo ($purchaseorderData['delivered'] === TRUE)? Date('M d Y ', $purchaseorderData['delivereddate']->sec) : 'Not yet' ?> <br>
+            </div><!-- /.col -->
+
+          </div><!-- /.row -->
+
+          <!-- Table row -->
+          <div class="row">
+            <div class="col-xs-12 table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Qty</th>
+                    <th>Product</th>
+                    <th>Cost</th>
+                    <th>Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                <?php foreach($purchaseorderData['items'] as $item){?>
+                  <tr>
+                    <td><?php echo $item['qty']?></td>
+                    <td><?php echo $item['sku']?></td>
+                    <td><?php echo number_format($item['cost'],2)?></td>
+                    <td><?php echo number_format($item['subtotal'],2)?></td>
+                  </tr>
+                <?php }?>
+                </tbody>
+              </table>
+
+            </div><!-- /.col -->
+            <div>
+
+            </div>
+          </div><!-- /.row -->
+
+          <div class="row">
+            <!-- accepted payments column -->
+            <div class="col-xs-6">
+              <div id="AccountsReceivable">
+ 
+              </div>
+              Notes:
+                <pre class="text-muted well well-sm no-shadow" style="font-style:italic; font-size:.9em; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;" ><?php echo $purchaseorderData['note'];?></pre>  
+            </div><!-- /.col -->
+            <div class="col-xs-6">
+              <!-- <p class="lead">Amount Due 2/22/2014</p> -->
+              <div class="table-responsive">
+                <table class="table">
+                  <tbody>
+                  <tr>
+                    <th>Total:</th>
+                    <td>&#8369; <?php echo number_format($purchaseorderData['total'],2)?></td>
+                  </tr>
+                </tbody></table>
+                
+              </div>
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+          <div class="row">
+            <div class="col-sm-12">
+              <span class=" pull-right">
+              C3K Philippines, Inc. - contact@zaka.ph
+              </span>
+            </div>
+          </div>
+          <!-- this row will not appear when printing -->
+          <div class="row no-print">
+            <div class="col-xs-12">
+ 
+              <a href="?print=true" target="_blank" class="btn btn-default"><i class="fa fa-print"></i> Print</a>
+           
+              <?php if($purchaseorderData['status'] != "cancelled" && $purchaseorderData['status'] != "closed" ){ ?>
+                <a href="<?php echo $homeUrl;?>purchaseorder/edit/<?php echo $purchaseorderData['_id']?>" class="btn btn-primary"><i class="fa fa-pencil"></i> Edit</a>   
+              <?php }?>
+              
+
+              <?php if ($purchaseorderData['status'] != "cancelled" && $purchaseorderData['status'] != "closed") {?>
+                <a href="#deliveredmodal" data-toggle="modal">
+                   <button class="btn btn-primary pull-right" style="margin-left: 5px;">
+                   <i class="fa fa-truck"></i>
+                    Mark as Delivered</button>
+                </a>  
+              <?php } ?>
+
+              
+              <?php if($purchaseorderData['status'] != "cancelled" && $purchaseorderData['status'] != "closed"){ ?>
+                <a href="#cancelmodal" data-toggle="modal">
+                   <button class="btn btn-default pull-right" style="margin-left: 5px;">
+                   <i class="fa fa-close"></i>
+                    Cancel Purchase</button>
+                </a>
+              <?php }?>
+              
+
+
+
+
+
+            </div>
+
+
+
+            <div id="deliveredmodal" class="modal fade">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Mark as Delivered </h4>
+                  </div>
+                  <div class="modal-body">
+                    <p>This will replenish stock, Are you sure?</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                    <a  href="<?php echo $homeUrl;?>purchaseorder/markasdelivered/<?php echo $purchaseorderData['_id']?>">
+                        <button type="button" class="btn btn-success">
+                            <i class="fa fa-thumbs-up"></i> Replenish stock
+                        </button>
+                    </a>
+                  </div>
+                </div><!-- /.modal-content -->
+              </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+
+            <div id="cancelmodal" class="modal fade">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Cancel Purchase</h4>
+                  </div>
+                  <div class="modal-body">
+                    <p>Are you sure you want to cancel purchase?</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                    <a href="<?php echo $homeUrl;?>purchaseorder/cancel/<?php echo $purchaseorderData['_id']?>">
+                        <button type="button" class="btn btn-success">
+                            <i class="fa fa-thumbs-up"></i> Cancel Purchase
+                        </button>
+                    </a>
+                  </div>
+                </div><!-- /.modal-content -->
+              </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+
+          </div>
+        </section>
+        <script src="<?php echo $homeUrl;?>js/plugins/datepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+
+        <script type="text/javascript">
+
+
+            function validatePayment()
+            {
+
+                paymentElement = document.getElementById('payment');
+                paymentElement.value = paymentElement.value.replace(/[^\d.-]/g, '')
+                console.log(paymentElement.value);
+                if((paymentElement.value == "." )|| (paymentElement.value == "0..")){
+                    paymentElement.value = "0."
+                }
+
+
+                if(paymentElement.value >= <?php echo $purchaseorderData['payment_left']?>){
+                    paymentElement.value = <?php echo $purchaseorderData['payment_left'];?>
+                }
+            }
+   
+
+        </script>

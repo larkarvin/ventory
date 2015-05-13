@@ -44,7 +44,7 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
               Delivery:
               <br/>
               <b>Type:</b> <?php echo $salesorderData['deliveryType']?><br>
-                <strong>Date:</strong> <?php echo $salesorderData['shipmentDate']?> - 
+                <strong>Date:</strong> <?php echo Date('M/d/Y', $salesorderData['shipmentDate']->sec)?> - 
                         <?php echo $salesorderData['deliveryTime']?>
                       <br>
               <b>Delivered:</b> <?php echo ($salesorderData['shipped'] === TRUE)? Date('M d Y ', $salesorderData['shipped_date']->sec) : 'Not yet' ?> <br>
@@ -174,18 +174,18 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
               <?php }?>
               
               <?php if ($salesorderData['finalized'] && !$salesorderData['shipped']) {?>
-                <a href="<?php echo $homeUrl;?>salesorder/markasdelivered/<?php echo $salesorderData['_id']?>">
+                <!-- <a href="<?php echo $homeUrl;?>salesorder/markasdelivered/<?php echo $salesorderData['_id']?>"> -->
+                <a href="#deliveredmodal" data-toggle="modal">
                    <button class="btn btn-primary pull-right" style="margin-left: 5px;">
                    <i class="fa fa-truck"></i>
                     Mark as Delivered</button>
-                </a>  
+                </a>   
               <?php } ?>
 
 
 
               <?php if ($salesorderData['finalized'] && !$salesorderData['paid']) {?>
               <a href="#paymentmodal" data-toggle="modal">
-              <!-- <a href="<?php echo $homeUrl;?>salesorder/markaspaid/<?php echo $salesorderData['_id']?>"> -->
                  <button class="btn btn-success pull-right" style="margin-left: 5px;">
                  <i class="fa fa-credit-card"></i>
                   Create Payment</button>
@@ -193,6 +193,33 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
               <?php }?>
 
             </div>
+
+
+
+
+
+            <div id="deliveredmodal" class="modal fade">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Mark as Delivered </h4>
+                  </div>
+                  <div class="modal-body">
+                    <p>This will Decrement stock, Are you sure?</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                    <a  href="<?php echo $homeUrl;?>salesorder/markasdelivered/<?php echo $salesorderData['_id']?>">
+                        <button type="button" class="btn btn-success">
+                            <i class="fa fa-thumbs-up"></i> Decrement stock
+                        </button>
+                    </a>
+                  </div>
+                </div><!-- /.modal-content -->
+              </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+
 
             <div id="paymentmodal" class="modal fade">
               <div class="modal-dialog">

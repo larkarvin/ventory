@@ -1,0 +1,732 @@
+<?php
+$homeUrl = $this->url('home',array(),array('force_canonical' => true));
+?>
+<style>
+    .sales-order-form{
+ /*       height: 100%;*/
+        width: 100%;
+    }
+    .no-border{
+        border: 0px;
+    }
+
+.order-detail-title{
+    width: 200px;
+    min-width: 50px;
+}
+.order-detail-value{
+
+}
+
+.tt-query, /* UPDATE: newer versions use tt-input instead of tt-query */
+.tt-hint {
+    width: 396px;
+    height: 30px;
+    padding: 8px 12px;
+    font-size: 24px;
+    line-height: 30px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+}
+
+.tt-query { /* UPDATE: newer versions use tt-input instead of tt-query */
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.tt-hint {
+    color: #999
+}
+
+.tt-dropdown-menu {
+    width: 422px;
+    margin-top: 12px;
+    padding: 8px 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+.tt-suggestion {
+    padding: 3px 20px;
+    font-size: 18px;
+    line-height: 24px;
+}
+
+.tt-suggestion.tt-is-under-cursor { /* UPDATE: newer versions use .tt-suggestion.tt-cursor */
+    color: #fff;
+    background-color: #0097cf;
+
+}
+</style>
+
+<div class="box box-default">
+
+
+<?php if($updated === TRUE):?>
+<div class="alert alert-success alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <h4>    <i class="icon fa fa-check"></i> Success!</h4>
+                    Invoice successfully Updated.
+</div>
+
+<?php endif;?>
+<div class="box-body">
+<form method="POST" role="form" action="<?php echo $homeUrl;?>salesorder/edit/<?php echo $salesorder['_id']?>" onSubmit="validate(this, event)">
+<section class="content">    
+        <div class="row">
+            
+            <div class="col-xs-6">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-user"></i>
+                        </div>
+                        <input id="customer" name="customer" type="text" class="form-control input-sm" placeholder="Customer Name" 
+                            value="<?php echo isset($salesorder['customer'])? $salesorder['customer']: ''; ?>">
+                    </div><!-- /.input group -->
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-truck"></i>
+                        </div>
+                        <input id="deliveryAddr" name="deliveryAddr" type="text" class="form-control input-sm" placeholder="Delivery Address"
+                            value="<?php echo isset($salesorder['deliveryAddr'])? $salesorder['deliveryAddr']: ''; ?>">
+                    </div><!-- /.input group -->
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <input id="shipmentDate" name="shipmentDate" type="text" placeholder="Shipment Date" class="form-control input-sm" data-inputmask="'alias': 'mm/dd/yyyy'" data-mask=""
+                            value="<?php echo isset($salesorder['shipmentDate'])? $salesorder['shipmentDate']: ''; ?>">
+                    </div><!-- /.input group -->
+                </div>
+
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-clock-o"></i>
+                        </div>
+                        <input id="deliveryTime" name="deliveryTime" type="text" class="form-control input-sm timepicker"  placeholder="Time"
+                            value="<?php echo isset($salesorder['deliveryTime'])? $salesorder['deliveryTime']: ''; ?>">
+                    </div><!-- /.input group -->
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-phone"></i>
+                        </div>
+                        <input id="phone" name="phone" type="text" class="form-control" data-inputmask="&quot;mask&quot;: &quot;(9999) 999-9999&quot;" data-mask="" placeholder="Contact Number"
+                             value="<?php echo isset($salesorder['phone'])? $salesorder['phone']: ''; ?>">
+                    </div><!-- /.input group -->
+                </div>
+            </div>
+            
+
+<!--
+    Delivery Mode: Shipping, Delivery, Meetup, Pickup
+    Seller: Christy, Karen, Rose
+    Mode of Payment: BDO, BPI, GCASH, Smart Padala, Cash, Cebuana, MLueilher, Palawan, Western Union, LBC
+    Rider: Macky, Nelson, 
+-->
+<?php
+
+function determineSelected($compare, $value){
+
+    if($compare == $value){
+        return 'selected';
+    }
+    return '';
+}
+?>
+            <div class="col-xs-6">
+                    <div class="form-group">
+                      <select id="seller" name="seller" class="form-control input-sm" >
+                        <option disabled>Seller</option>
+                        <option <?php echo determineSelected($salesorder['seller'], 'Christy')?>
+                            value="Christy"> Christy
+                        </option>
+                        <option <?php echo determineSelected($salesorder['seller'], 'Karen')?>
+                            value="Karen">Karen
+                        </option>
+                        <option <?php echo determineSelected($salesorder['seller'], 'Rose')?>
+                            value="Rose">Rose
+                        </option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <select id="deliveryType" name="deliveryType" class="form-control input-sm" >
+                        <option disabled>Delivery Mode</option>
+                        <option <?php echo determineSelected($salesorder['deliveryType'], 'Delivery')?>
+                            value="Delivery">Delivery
+                        </option>
+                        <option <?php echo determineSelected($salesorder['deliveryType'], 'Meetup')?>
+                            value="Meetup">Meetup</option>
+                        <option <?php echo determineSelected($salesorder['deliveryType'], 'Shipping')?>
+                            value="Shipping">Shipping</option>
+                        <option <?php echo determineSelected($salesorder['deliveryType'], 'Pickup')?>
+                            value="Pickup">Pickup</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <select id="paymentType" name="paymentType" class="form-control input-sm" >
+                        <option disabled>Mode of Payment</option>
+                        <option <?php echo determineSelected($salesorder['paymentType'], 'BDO')?>
+                            value="BDO">BDO</option>
+                        <option <?php echo determineSelected($salesorder['paymentType'], 'BPI')?>
+                            value="BPI">BPI</option>
+                        <option <?php echo determineSelected($salesorder['paymentType'], 'GCASH')?>
+                            value="GCASH">GCASH</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <select id="rider" name="rider" class="form-control input-sm" >
+                        <option disabled>Rider</option>
+                        <option <?php echo determineSelected($salesorder['rider'], 'Macky')?> 
+                            value="Macky">Macky</option>
+                        <option <?php echo determineSelected($salesorder['rider'], 'Alex')?> 
+                            value="Alex">Alex</option>
+                        <option <?php echo determineSelected($salesorder['rider'], 'Nelson')?> 
+                            value="Nelson">Nelson</option>
+                      </select>
+                    </div>
+            </div>
+        </div>
+        <div>&nbsp;</div>
+
+        <!-- Table row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="input-group">
+                    <input id="typeaheadsearch" type="text" name="q" class="form-control" placeholder="Search Products">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-12 table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            
+                            <th width="35%">SKU</th>
+                            <th width="12%">Qty</th>
+                            <th width="10%">Stock</th>
+                            <th width="15%">Price</th>
+                            <th width="15%">%</th>
+                            <th width="10%">Subtotal</th>
+                            <th width="1%">&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody id="order_tbody">
+
+
+                        <?php 
+                        $itemCount = 0;
+                        foreach($salesorder['items'] as $item):
+                        ?>
+                            <tr id="tr-item-0">
+                            <td>
+                                <input type="text" class="variant-item form-control sales-order-form" name="items[<?php echo $itemCount;?>][sku]" value="<?php echo $item['sku']?>" id="item-<?php echo $itemCount?>-sku">
+                                <input type="hidden" name="items[<?php echo $itemCount;?>][id]" class="form-control sales-order-form" value="55055dc6f948e743058b4568" id="item-<?php echo $itemCount?>-id">
+                                </td>
+                            <td>
+                                <input type="text" name="items[<?php echo $itemCount;?>][qty]" value="<?php echo $item['qty']?>" class="form-control sales-order-form qty-element" id="item-<?php echo $itemCount?>-qty" onkeyup="computeSubtotal(<?php echo $itemCount?>)">
+                                </td>
+                            <td>
+                                <input type="text" disabled="disabled" class="form-control sales-order-form" value="<?php echo $item['stock']?>" id="item-<?php echo $itemCount?>-available">
+                                </td>
+                            <td>
+                                <input type="text" name="items[<?php echo $itemCount;?>][price]" class="form-control sales-order-form" value="<?php echo $item['price']?>" id="item-<?php echo $itemCount?>-price" onkeyup="computeSubtotal(<?php echo $itemCount?>)">
+                                </td>
+                            <td>
+                                <input type="text" name="items[<?php echo $itemCount;?>][discount]" onkeyup="computeSubtotal(<?php echo $itemCount?>)"  value="<?php echo $item['discount']?>" id="item-<?php echo $itemCount?>-discount" class="form-control sales-order-form">
+                                </td>
+                            <td>
+                                <input type="text" name="items[<?php echo $itemCount;?>][subtotal]"  value="<?php echo $item['subtotal']?>" onkeyup="computePercentile(<?php echo $itemCount?>)" id="item-<?php echo $itemCount?>-subtotal" class="form-control sales-order-form subtotal-element">
+                                </td>
+                            <td>
+                                <a href="#" onclick="removeRow(event, 'tr-item-0')"><i class="fa fa-trash-o"></i></a>
+                            </td>
+                            </tr>
+
+
+                        <?php
+                        $itemCount++;
+                        endforeach;
+                        ?>
+
+
+                    </tbody>
+                </table>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+        <div class="row">
+            <!-- accepted payments column -->
+            <div class="col-xs-6">
+                <div class="form-group">
+                    <div>Note:</div>
+                    <textarea class="form-control" name="note"><?php echo isset($salesorder['note'])? $salesorder['note']: '';?></textarea>
+                </div>
+            </div>
+            <div class="col-xs-6">
+               <div class="table-responsive">
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <td><strong> SR # <?php echo $salesorder['_id'];?> </strong></td>
+                        </tr>
+                        <tr>
+                            <td><span id="total-units">0</span> Units</td>
+                        </tr>
+                        <tr>
+                            <td><strong>&#8369; <span id="total-price">0.00</span>
+                            </strong></td>
+                        </tr>
+                    </tbody></table>
+                </div>
+            </div>
+            
+        </div>    
+        <div class="row">
+            <!-- accepted payments column -->
+            <div class="form-group">
+                <button type="submit" id="add-variant-btn" class="btn btn-primary">Update Product</button>
+            </div>
+            
+        </div>
+</section>
+</form>
+</div>
+</div>
+
+
+<div class="modal modal-danger fade add-variant-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <button type="button" class="close btn-sm" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Invoice has missing fields</h4>
+        </div>
+        <div class="modal-body">
+            <ul id="modalul">
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+    </div>
+</div>
+
+<link href="<?php echo $homeUrl;?>js/plugins/timepicker/bootstrap-timepicker.min.css" rel="stylesheet"/>
+<script src="<?php echo $homeUrl;?>js/plugins/typeahead.js" type="text/javascript"/></script>
+<script src="<?php echo $homeUrl;?>js/plugins/input-mask/jquery.inputmask.js" type="text/javascript"></script>
+<script src="<?php echo $homeUrl;?>js/plugins/input-mask/jquery.inputmask.date.extensions.js" type="text/javascript"></script>
+<script src="<?php echo $homeUrl;?>js/plugins/input-mask/jquery.inputmask.extensions.js" type="text/javascript"></script>
+<script src="<?php echo $homeUrl;?>js/plugins/timepicker/bootstrap-timepicker.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+function removeRow(event, trname)
+{
+    document.getElementById(trname).remove();
+    event.preventDefault();
+    updateTotalandTotalUnits();
+    clearTypeAhead();
+}
+
+function clearTypeAhead()
+{
+    typeahead = document.getElementById("typeaheadsearch");
+    typeahead.value = '';
+}
+
+function computeSubtotal(itemCounter)
+{
+
+    priceId = "item-"+ itemCounter +"-price";
+    discountId = "item-"+ itemCounter +"-discount";
+    subtotalId = "item-"+ itemCounter +"-subtotal";
+    qtyId = "item-"+ itemCounter +"-qty";
+
+    priceElement = document.getElementById(priceId);
+    discountElement = document.getElementById(discountId);
+    subtotalElement = document.getElementById(subtotalId);
+    qtyElement = document.getElementById(qtyId);
+
+    priceElement.value = priceElement.value.replace(/[^\d.-]/g, '')
+    qtyElement.value = qtyElement.value.replace(/[^\d-]/g, '')
+    discountElement.value = discountElement.value.replace(/[^\d.-]/g, '')
+
+
+    if((priceElement.value == "." )|| (priceElement.value == "0..")){
+        priceElement.value = "0."
+    }
+
+    if((discountElement.value == "." )|| (discountElement.value == "0..")){
+        discountElement.value = "0."
+    }
+
+    
+    if((subtotalElement.value == "." )|| (subtotalElement.value == "0..")){
+        subtotalElement.value = "0."
+    }
+
+
+
+
+    var price = priceElement.value;
+    var qty = qtyElement.value;
+    var discount = discountElement.value;
+    subtotal = qty * price;
+
+    discount = subtotal * (discount * 0.01);
+    subtotalElement.value = (subtotal - discount);
+
+    updateTotalandTotalUnits();
+}
+var formIncorrect = 0;
+var formComplete = 0;
+submitButtonClicked = 0;
+function validate(form, event){
+    submitButtonClicked = 1;
+    var modalul =  document.getElementById("modalul");
+    var textnode;
+    formIncorrect = 0;
+    while (modalul.firstChild) {
+        modalul.removeChild(modalul.firstChild);
+    }
+    
+    if( $('#customer').val() == "")
+    {
+        formIncorrect = 1;
+        customerLi = document.createElement("li");
+        textnode = document.createTextNode("Must have a Customer");
+        customerLi.appendChild(textnode);
+        modalul.appendChild(customerLi);
+    }
+    
+    if( $('#deliveryAddr').val() == "")
+    {
+        formIncorrect = 1;
+        deliveryAddrLi = document.createElement("li");
+        textnode = document.createTextNode("Must have an Address");
+        deliveryAddrLi.appendChild(textnode);
+        modalul.appendChild(deliveryAddrLi);
+    }
+    
+    if( $('#shipmentDate').val() == "")
+    {
+        formIncorrect = 1;
+        shipmentDateLi = document.createElement("li");
+        textnode = document.createTextNode("Must have a Shipment date");
+        shipmentDateLi.appendChild(textnode);
+        modalul.appendChild(shipmentDateLi);
+    }
+    
+    if( $('#deliveryTime').val() == "")
+    {
+        formIncorrect = 1;
+        deliveryTimeLi = document.createElement("li");
+        textnode = document.createTextNode("Must have Shipment time");
+        deliveryTimeLi.appendChild(textnode);
+        modalul.appendChild(deliveryTimeLi);
+
+    }
+    
+    if( $('#phone').val() == "")
+    {
+        formIncorrect = 1;
+        phoneLi = document.createElement("li");
+        textnode = document.createTextNode("Must have a phone number");
+        phoneLi.appendChild(textnode);
+        modalul.appendChild(phoneLi);
+    }
+    
+    if( $('#seller').val() == "")
+    {
+        formIncorrect = 1;
+        sellerLi = document.createElement("li");
+        textnode = document.createTextNode("Must have a Seller");
+        sellerLi.appendChild(textnode);
+        modalul.appendChild(sellerLi);
+    }
+    
+    if( $('#deliveryType').val() == "")
+    {
+        formIncorrect = 1;
+        deliveryTypeLi = document.createElement("li");
+        textnode = document.createTextNode("Must have a Delivery Type");
+        deliveryTypeLi.appendChild(textnode);
+        modalul.appendChild(deliveryTypeLi);
+    }
+    
+    if( $('#paymentType').val() == "")
+    {
+        formIncorrect = 1;
+        paymentTypeLi = document.createElement("li");
+        textnode = document.createTextNode("Must have a Payment Type");
+        paymentTypeLi.appendChild(textnode);
+        modalul.appendChild(paymentTypeLi);
+    }
+
+    if( $('.variant-item').length == 0){
+        formIncorrect = 1;
+        noitems = document.createElement("li");
+        textnode = document.createTextNode("No Items in the Cart");
+        noitems.appendChild(textnode);
+        modalul.appendChild(noitems);
+    }
+
+
+    // alert(formIncorrect);
+    // exit;
+    if(formIncorrect == 1){
+        
+        $('.modal').modal('show');
+        event.preventDefault();    
+    }
+    
+    
+
+}
+
+function computePercentile(itemCounter)
+{
+
+    priceId = "item-"+ itemCounter +"-price";
+    discountId = "item-"+ itemCounter +"-discount";
+    subtotalId = "item-"+ itemCounter +"-subtotal";
+    qtyId = "item-"+ itemCounter +"-qty";
+
+    priceElement = document.getElementById(priceId);
+    discountElement = document.getElementById(discountId);
+    subtotalElement = document.getElementById(subtotalId);
+    qtyElement = document.getElementById(qtyId);
+
+    priceElement.value = priceElement.value.replace(/[^\d.-]/g, '')
+    qtyElement.value = qtyElement.value.replace(/[^\d-]/g, '')
+    discountElement.value = discountElement.value.replace(/[^\d.-]/g, '')
+    
+
+    if((priceElement.value == "." )|| (priceElement.value == "0..")){
+        priceElement.value = "0."
+    }
+
+    if((discountElement.value == "." )|| (discountElement.value == "0..")){
+        discountElement.value = "0."
+    }
+
+
+    var price = priceElement.value;
+    var qty = qtyElement.value;
+    var discount = discountElement.value;
+    var subtotal = subtotalElement.value;
+    origSubtotal = qty * price;
+
+    saleDiscount = origSubtotal - subtotal;
+    percentile = (saleDiscount / origSubtotal) * 100;
+    percentile = parseFloat(Math.round(percentile * 100) / 100).toFixed(2);
+    discountElement.value = percentile;
+
+}
+
+
+function updateTotalandTotalUnits(){
+
+    qtyelements = document.getElementsByClassName('qty-element');
+    var x;
+    var count = 0;
+    for(x = 0; x < qtyelements.length; x++){
+        // console.log(qtyelements[x].value);
+        count = count + parseInt(qtyelements[x].value);
+    }
+
+
+    document.getElementById('total-units').innerHTML = count;
+
+    subtotalelements = document.querySelectorAll('.subtotal-element');
+
+    var total = 0;
+    for(x = 0; x < subtotalelements.length; x++){
+        total = total + parseFloat(subtotalelements[x].value);
+    }
+
+
+    total = total.toFixed(2).replace(/./g, function(c, i, a) {
+        return i && c !== "." && ((a.length - i) % 3 === 0) ? ',' + c : c;
+    });
+    document.getElementById('total-price').innerHTML = total;
+
+
+}
+
+var itemCounter = <?php echo $itemCount?>;
+
+var skus = new Bloodhound({
+    datumTokenizer: function (datum) {
+        return Bloodhound.tokenizers.whitespace(datum.value);
+    },
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    remote: {
+        url: '<?php echo $homeUrl;?>product/typeahead?q=%QUERY',
+        filter: function (data) {
+            // Map the remote source JSON array to a JavaScript object array
+            return $.map(data, function (variant) {
+
+                return { "value": variant.variant,
+                         "sku"  : variant.sku,
+                         "variant_id"  : variant._id.$id,
+                         "stock"  : variant.stock,
+                         "price"  : variant.price,
+
+                };
+            });
+        }
+    }
+});
+
+function createEntry(datum)
+{
+
+    input_variantName = document.createElement("input");
+    input_variantName.setAttribute("type", "text");
+    input_variantName.setAttribute("class", "variant-item form-control sales-order-form");
+    input_variantName.setAttribute("name", "items["+ itemCounter +"][sku]");
+    input_variantName.setAttribute("value", datum.value);
+    input_variantName.setAttribute("id", "item-"+ itemCounter +"-sku");
+
+    input_sku = document.createElement("input");
+    input_sku.setAttribute("type", "hidden");
+    input_sku.setAttribute("name", "items["+ itemCounter +"][id]");
+    input_sku.setAttribute("class", "form-control sales-order-form");
+    input_sku.setAttribute("value", datum.variant_id);
+    input_sku.setAttribute("id", "item-"+ itemCounter +"-id");
+    salesorder_td_1 = document.createElement("td");
+    salesorder_td_1.appendChild(input_variantName);
+    salesorder_td_1.appendChild(input_sku);
+    
+    input_qty = document.createElement("input");
+    input_qty.setAttribute("type", "text");
+    input_qty.setAttribute("name", "items["+ itemCounter +"][qty]");
+    input_qty.setAttribute("value", 1);
+    input_qty.setAttribute("class", "form-control sales-order-form qty-element");
+    input_qty.setAttribute("id", "item-"+ itemCounter +"-qty");
+    input_qty.setAttribute("onkeyup", "computeSubtotal("+ itemCounter +")");
+    salesorder_td_2 = document.createElement("td");
+    salesorder_td_2.appendChild(input_qty);
+
+
+    input_available = document.createElement("input");
+    input_available.setAttribute("type", "text");
+    input_available.setAttribute("disabled", "disabled");
+    input_available.setAttribute("class", "form-control sales-order-form");
+    input_available.setAttribute("value", datum.stock);
+    input_available.setAttribute("id", "item-"+ itemCounter +"-available");
+    salesorder_td_3 = document.createElement("td");
+    salesorder_td_3.appendChild(input_available);
+
+
+    input_price = document.createElement("input");
+    input_price.setAttribute("type", "text");
+    input_price.setAttribute("name", "items["+ itemCounter +"][price]");
+    input_price.setAttribute("class", "form-control sales-order-form");
+    input_price.setAttribute("value", datum.price);
+    input_price.setAttribute("id", "item-"+ itemCounter +"-price");
+    input_price.setAttribute("onkeyup", "computeSubtotal("+ itemCounter +")");
+    salesorder_td_4 = document.createElement("td");
+    salesorder_td_4.appendChild(input_price);
+
+
+    input_discount = document.createElement("input");
+    input_discount.setAttribute("type", "text");
+    input_discount.setAttribute("value", "0");
+    input_discount.setAttribute("name", "items["+ itemCounter +"][discount]");
+    input_discount.setAttribute("onkeyup", "computeSubtotal("+ itemCounter +")");      
+    input_discount.setAttribute("id", "item-"+ itemCounter +"-discount");
+    input_discount.setAttribute("class", "form-control sales-order-form");
+    salesorder_td_5 = document.createElement("td");
+    salesorder_td_5.appendChild(input_discount);
+
+    subtotal = datum.price;
+    input_subtotal = document.createElement("input");
+    input_subtotal.setAttribute("type", "text");
+    input_subtotal.setAttribute("name", "items["+ itemCounter +"][subtotal]");
+    input_subtotal.setAttribute("value", subtotal);
+    input_subtotal.setAttribute("onkeyup", "computePercentile("+ itemCounter +")");  
+    input_subtotal.setAttribute("id", "item-"+ itemCounter +"-subtotal");
+    input_subtotal.setAttribute("class", "form-control sales-order-form subtotal-element");
+    // input_subtotal.setAttribute("readOnly", true);
+    salesorder_td_6 = document.createElement("td");
+    salesorder_td_6.appendChild(input_subtotal);
+
+    trname = "tr-item-"+ itemCounter;
+    remove_link = document.createElement("a");
+    remove_link.setAttribute("href","#");
+    remove_link.setAttribute("onClick", "removeRow(event, '"+ trname +"')");
+    remove_icon = document.createElement("i");
+    remove_icon.setAttribute("class", "fa fa-trash-o");
+    remove_link.appendChild(remove_icon);
+    salesorder_td_7 = document.createElement("td");
+    salesorder_td_7.appendChild(remove_link);
+
+
+    table_tbody = document.getElementById("order_tbody");
+    salesorder_tr = document.createElement("tr");
+    salesorder_tr.setAttribute("id", trname);
+
+    salesorder_tr.appendChild(salesorder_td_1);
+    salesorder_tr.appendChild(salesorder_td_2);
+    salesorder_tr.appendChild(salesorder_td_3);
+    salesorder_tr.appendChild(salesorder_td_4);
+    salesorder_tr.appendChild(salesorder_td_5);
+    salesorder_tr.appendChild(salesorder_td_6);
+    salesorder_tr.appendChild(salesorder_td_7);
+
+    table_tbody.appendChild(salesorder_tr);
+
+
+    itemCounter = itemCounter + 1;
+    updateTotalandTotalUnits();
+    clearTypeAhead();
+
+}
+var formmodified = 0
+$(document).ready(function() {
+
+    skus.initialize();
+    updateTotalandTotalUnits();
+    $("form").change(function() {
+        formmodified = 1;
+    });
+
+    window.onbeforeunload = confirmExit;
+    function confirmExit() {
+        if (formmodified == 1 && submitButtonClicked == 1) {
+            return "Do you wish to leave the page?";
+        }
+    }
+
+    // $("#datemask").inputmask("dd/mm/yyyy", {"placeholder": "dd/mm/yyyy"});
+    $("[data-mask]").inputmask();
+    $('#typeaheadsearch').typeahead(null, {
+      name: 'skusearch',
+      displayKey: 'value',
+      source: skus.ttAdapter()
+    }).bind("typeahead:selected", function(obj, datum, name) {
+        console.log(obj, datum, name);
+        createEntry(datum);
+    });
+    $(".timepicker").timepicker({showInputs: false,disableFocus: true, defaultTime:false});
+
+
+
+});
+</script>

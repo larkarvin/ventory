@@ -119,25 +119,5 @@ class OrderController extends AbstractActionController
         return new ViewModel();
     }
 
-    public function typeaheadAction()
-    {
-
-        $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
-
-        $variantModel = new Model\ProductVariants();
-        $variantModel->setDbAdapter($mongoDb);
-
-        $request = $this->getRequest();
-        $q = '';
-        $getData = $request->getQuery()->toArray();
-        $q = $getData['q'];
-
-        $criteria = ['$text' => ['$search' => $q]];
-        $data = $variantModel->fetchAll($criteria);
-
-
-        header('Content-Type: application/json');
-        echo json_encode($data);
-        exit;
-    }
+ 
 }

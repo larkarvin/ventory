@@ -17,6 +17,8 @@ use Backend\Model;
 class SalesOrderController extends AbstractActionController
 {
     use PaginatorTrait;
+
+    
     public function listAction()
     {
 

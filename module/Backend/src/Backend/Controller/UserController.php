@@ -23,6 +23,69 @@ class UserController extends AbstractActionController
         return new ViewModel();
     }
 
+    public function dashboardAction()
+    {
+
+        $this->layout()->pageTitle = 'Dashboard';
+        // $this->layout()->pageDesc = 'Change the variant information here';
+
+        $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
+
+        $sequenceModel = new Model\Sequence();
+
+        $request = $this->getRequest();
+
+        $salesOrderModel = new Model\SalesOrders();
+        $salesOrderModel->setDbAdapter($mongoDb);
+
+        // sales order today
+        $todayTime = strtotime(Date('Y-m-d'));
+  
+
+        $criteria = ['created' => ['$gte' =>  new \MongoDate($todayTime)]];
+        $result = $salesOrderModel->fetchAll($criteria);
+        $dashboardData['salesordertoday'] = $result->count();
+        unset($result);
+
+        // last 10 orders
+        $dashboardData['salesOrders'] = $salesOrderModel->fetchAll([], [], 10, 0, ['created' => -1]);   
+
+
+
+        // Last Purchase Order
+        $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
+        $purchaseOrderModel = new Model\PurchaseOrders();
+        $purchaseOrderModel->setDbAdapter($mongoDb);
+        $dashboardData['purchaseOrders'] = $purchaseOrderModel->fetchAll([], [], 10, 0, ['created' => -1]);   
+
+        // accounts receivable
+        $aggregate = [['$group' => ["_id" => null, "total" => ['$sum' => '$payment_left']]]];
+        $result = $salesOrderModel->aggregate($aggregate);
+
+        $dashboardData['totalAcctsReceivable'] = 0;
+        if(isset($result['result'][0]['total']))
+        $dashboardData['totalAcctsReceivable'] = $result['result'][0]['total'];
+
+        // total sales last 7 days
+        $oneweekago = strtotime("-7 day");
+
+
+        $aggregate = [  
+                        ['$match' => ['created' => ['$gte' => new \MongoDate($oneweekago)]]],
+                        ['$group' => ["_id" => null, "totalsales" => ['$sum' => ['$subtract' => ['$total', '$payment_left']]]]],
+                        
+                        ];
+  
+        $result = $salesOrderModel->aggregate($aggregate);
+        $dashboardData['totalsalesLast7days'] = 0;
+        if(isset($result['result'][0]['totalsales']))
+        $dashboardData['totalsalesLast7days'] = $result['result'][0]['totalsales'];
+
+        return new ViewModel(['dashboardData' => $dashboardData]);
+
+
+    }
+
     public function loginAction()
     {
 

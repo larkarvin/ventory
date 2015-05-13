@@ -16,7 +16,7 @@ return array(
                     'route'    => '/',
                     'defaults' => array(
                         'controller' => 'Backend\Controller\User',
-                        'action'     => 'profile',
+                        'action'     => 'dashboard',
                     ),
                 ),
             ),
@@ -49,7 +49,121 @@ return array(
                         ),
                     ),  
                 ),
-            ),      
+            ),
+            'StockAdjustment' => array(
+                'type'    => 'Literal',
+                'options' => array(
+                    'route'    => '/stockadjustment',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Backend\Controller',
+                        'controller'    => 'StockAdjustment',
+                        'action'        => 'list',
+                    ),
+                ),
+                'may_terminate' => true,
+                'child_routes' => array(
+                    'default' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '[/:action]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                                'action' => 'list'
+                            ),
+                        ),
+                    ),  
+
+                    'details' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '/details[/:orderid]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                                'action' => 'details'
+                            ),
+                        ),
+                    ),  
+
+                ),
+            ),
+           'PurchaseOrder' => array(
+                'type'    => 'Literal',
+                'options' => array(
+                    'route'    => '/purchaseorder',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Backend\Controller',
+                        'controller'    => 'PurchaseOrder',
+                        'action'        => 'new',
+                    ),
+                ),
+                'may_terminate' => true,
+                'child_routes' => array(
+                    'default' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '[/:action]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                                'action' => 'new'
+                            ),
+                        ),
+                    ),  
+                    'cancel' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '/cancel[/:orderid]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                                'action' => 'cancel'
+                            ),
+                        ),
+                    ),  
+                    'details' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '/details[/:orderid]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                                'action' => 'details'
+                            ),
+                        ),
+                    ),  
+                    'markasdelivered' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '/markasdelivered[/:orderid]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                                'action' => 'markasdelivered'
+                            ),
+                        ),
+                    ),  
+                    'edit' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '/edit[/:orderid]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                                'action' => 'edit'
+                            ),
+                        ),
+                    ),  
+                ),
+            ),        
             'Salesorder' => array(
                 'type'    => 'Literal',
                 'options' => array(
@@ -155,7 +269,7 @@ return array(
                     'defaults' => array(
                         '__NAMESPACE__' => 'Backend\Controller',
                         'controller'    => 'User',
-                        'action'        => 'profile',
+                        'action'        => 'dashboard',
                     ),
                 ),
                 'may_terminate' => true,
@@ -168,7 +282,7 @@ return array(
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                             ),
                             'defaults' => array(
-                                'action' => 'profile'
+                                'action' => 'dashboard'
                             ),
                         ),
                     ),  
@@ -192,37 +306,11 @@ return array(
                     'route'    => '/dashboard',
                     'defaults' => array(
                         '__NAMESPACE__' => 'Backend\Controller',
-                        'controller' => 'Order',
-                        'action'     => 'sales',
+                        'controller' => 'User',
+                        'action'     => 'dasboard',
                     ),
                 ),
                 'may_terminate' => true,
-            ),
-            'Order' => array(
-                'type'    => 'Literal',
-                'options' => array(
-                    'route'    => '/order',
-                    'defaults' => array(
-                        '__NAMESPACE__' => 'Backend\Controller',
-                        'controller'    => 'Order',
-                        'action'        => 'index',
-                    ),
-                ),
-                'may_terminate' => true,
-                'child_routes' => array(
-                    'default' => array(
-                        'type' => 'Segment',
-                        'options' => array(
-                            'route' => '[/:action]',
-                            'constraints' => array(
-                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                            ),
-                            'defaults' => array(
-                                'action' => 'index'
-                            ),
-                        ),
-                    ),  
-                ),
             ),
         ),
     ),
@@ -254,6 +342,8 @@ return array(
             'Backend\Controller\Product' => 'Backend\Controller\ProductController',
             'Backend\Controller\Order'   => 'Backend\Controller\OrderController',
             'Backend\Controller\SalesOrder'   => 'Backend\Controller\SalesOrderController',
+            'Backend\Controller\PurchaseOrder'   => 'Backend\Controller\PurchaseOrderController',
+            'Backend\Controller\StockAdjustment'   => 'Backend\Controller\StockAdjustmentController',
             'Backend\Controller\User'   => 'Backend\Controller\UserController',
         ),
     ),

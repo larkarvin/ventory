@@ -8,6 +8,7 @@ use Zend\InputFilter\Input;
 class ProductVariants
 {
 
+    use FetchTrait;
     private $_collectionName = 'product_variants';
     private $_collection = NULL;
     private $_variantModel = NULL;
@@ -17,14 +18,6 @@ class ProductVariants
         $this->_collection = $dbAdapter->selectCollection($this->_collectionName);
     }
 
-    public function fetchOne(Array $criteria, $options = [])
-    {
-
-        $cursor = $this->_collection->findOne($criteria, $options);
-
-        return $cursor;
-
-    }
 
     public function remove($criteria)
     {
@@ -57,7 +50,7 @@ class ProductVariants
                        'variant'     => $variant['variant'],
                        'cost'        => (float) $variant['cost'],
                        'price'       => (float) $variant['price'],
-                       'stock'       => (int) $variant['stock'],
+                       // 'stock'       => (int) $variant['stock'],
                        'update_time' => new \MongoDate(),
         ];
 
@@ -70,7 +63,7 @@ class ProductVariants
     }
 
 
-    public function validateProductVariant(Array & $variant)
+    public function validateProductVariant(Array & $variant, $skipStockValidation = FALSE)
     {
 
         $stringLengthValidator = new Validator\StringLength();
@@ -103,19 +96,23 @@ class ProductVariants
 
 
 
-        $stock = new Input('stock');
-        $stock->getValidatorChain()
-               ->attach(new Validator\NotEmpty())
-               ->attach(new Validator\Digits())
-               ->attach(new Validator\GreaterThan(['min' => 0, 'inclusive' => true]));
-
         $inputFilter = new InputFilter();
         $inputFilter->add($sku)
                     ->add($variantName)
                     ->add($cost)
-                    ->add($price)
-                    ->add($stock)
-                    ->setData($variant);
+                    ->add($price);
+
+        if($skipStockValidation == FALSE){
+
+            $stock = new Input('stock');
+            $stock->getValidatorChain()
+                   ->attach(new Validator\NotEmpty())
+                   ->attach(new Validator\Digits())
+                   ->attach(new Validator\GreaterThan(['min' => 0, 'inclusive' => true]));
+            $inputFilter->add($stock);
+        }
+
+        $inputFilter->setData($variant);
 
         return $inputFilter;
 
@@ -150,30 +147,6 @@ class ProductVariants
         }
 
         return FALSE;
-    }
-
-    public function fetchAll(Array $criteria = NULL, $options = [],  $limit = 20, $sort = ['update_time' => 1])
-    {
-
-        if(empty($criteria)){
-            $cursor = $this->_collection->find(); //$criteria, $options);
-        }else{
-            $cursor = $this->_collection->find($criteria, $options);
-        }
-
-        $cursor->limit($limit);
-        $cursor->sort($sort);
-
-        $data = [];
-        if($cursor->count() > 0) {
-            foreach($cursor as $row) {
-                $data[] = $row;
-            }
-        }
-
-        return $data;
-
-
     }
 
 
