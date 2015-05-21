@@ -30,13 +30,13 @@ class PurchaseOrders
         $this->_sequenceModel = $sequenceModel;
     }
 
- 
+
     public function purchaseOrder($order){
         unset($order['q']);
 
         $deliveryDate = strtotime($order['deliveryDate']);
         $salesOrder = [
-                       '_id'           => $this->_sequenceModel->getNextSequence('salesorder'),
+                       '_id'           => $this->_sequenceModel->getNextSequence('purchaseorder'),
                        'created'       => new \MongoDate(),
                        'status'        => "new",
                        'delivered'     => FALSE,
@@ -44,7 +44,7 @@ class PurchaseOrders
                        'supplier'      => $order['supplier'],
                        'note'          => $order['note'],
                        'deliveryDate'  => new \Mongodate($deliveryDate),
-                       
+
         ];
         $total = 0;
         foreach($order['items'] as $key => $item){
@@ -128,7 +128,7 @@ class PurchaseOrders
 
         foreach($data['items'] as $item)
         {
-           $this->_variantModel->incrementVariantStock($item['id'], (float) $item['qty']); 
+           $this->_variantModel->incrementVariantStock($item['id'], (float) $item['qty']);
         }
 
         $updateDate = ['$set' => ['shipped' => TRUE,
