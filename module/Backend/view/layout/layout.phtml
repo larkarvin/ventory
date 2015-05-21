@@ -23,7 +23,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           page. However, you can choose any other skin. Make sure you
           apply the skin class to the body tag so the changes take effect.
     -->
-    <link href="<?php echo $homeUrl?>dist/css/skins/skin-blue.min.css" rel="stylesheet" type="text/css" />
+    <link href="<?php echo $homeUrl?>dist/css/skins/skin-green.min.css" rel="stylesheet" type="text/css" />
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -58,7 +58,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   |---------------------------------------------------------|
 
   -->
-  <body class="skin-blue">
+  <body class="skin-green">
     <div class="wrapper">
 
       <!-- Main Header -->
@@ -113,11 +113,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 
           <!-- search form (Optional) -->
-          <form action="#" method="get" class="sidebar-form">
+          <form action="<?php echo $homeUrl?>product/list" method="get" class="sidebar-form">
             <div class="input-group">
               <input type="text" name="q" class="form-control" placeholder="Search..."/>
               <span class="input-group-btn">
-                <button type='submit' name='search' id='search-btn' class="btn btn-flat"><i class="fa fa-search"></i></button>
+                <button type='submit' id='search-btn' class="btn btn-flat"><i class="fa fa-search"></i></button>
               </span>
             </div>
           </form>
