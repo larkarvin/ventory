@@ -132,13 +132,41 @@ function format_reportDate($grouping, $id)
 
             <table class="table table-hover table-striped table-bordered">
             <thead>
-                <th>Date</th>
-                <th style="text-align:right">Projected Sale</th>
-                <th style="text-align:right">Sales</th>
-                <th style="text-align:right">Accounts Receivable</th>
-                <th style="text-align:right">Costs</th>
-                <th style="text-align:right">Shipping</th>
-                <th style="text-align:right">Net Income</th>
+                <th>
+                      <span data-toggle="tooltip" data-placement="right" title="Invoice Created Date">
+                        Date
+                      </span>
+                </th>
+                <th style="text-align:right">
+                      <span data-toggle="tooltip" data-placement="bottom" title="Sum of all Invoice's Total">
+                        Projected Sale
+                      </span>
+                </th>
+                <th style="text-align:right">
+                      <span data-toggle="tooltip" data-placement="bottom" title="Sum of all Invoice's Total minus Accounts Receivable">
+                        Sales
+                      </span>
+                </th>
+                <th style="text-align:right">
+                      <span data-toggle="tooltip" data-placement="bottom" title="Total of all Accounts Receivable">
+                        Accounts Receivable
+                      </span>
+                </th>
+                <th style="text-align:right">
+                      <span data-toggle="tooltip" data-placement="bottom" title="Sum of all Item Cost">
+                        Costs
+                      </span>
+                </th>
+                <th style="text-align:right">
+                      <span data-toggle="tooltip" data-placement="bottom" title="Sum of all Invoice's Shipping">
+                        Shipping
+                      </span>
+                </th>
+                <th style="text-align:right">
+                      <span data-toggle="tooltip" data-placement="left" title="(Total Sales minus Total Accounts Cost) minus Total Shipping Cost">
+                        Net Income
+                      </span>
+                </th>
             </thead>
             <tbody>
                 <?php foreach($result['result'] as $row):?>
@@ -165,7 +193,7 @@ function format_reportDate($grouping, $id)
                                   <?php echo number_format($row['total_shipping'],2); ?>
                               </td>
                               <td style="text-align:right">
-                                  <?php echo number_format($row['totalsales'] - $row['total_cost'] - $row['total_shipping'],2); ?>
+                                  <?php echo number_format(($row['totalsales'] - $row['total_cost']) - $row['total_shipping'],2); ?>
                               </td>
                           </tr>
 
