@@ -15,7 +15,8 @@ return array(
                 'options' => array(
                     'route'    => '/',
                     'defaults' => array(
-                        'controller' => 'Backend\Controller\User',
+                        '__NAMESPACE__' => 'Backend\Controller',
+                        'controller'    => 'User',
                         'action'     => 'dashboard',
                     ),
                 ),
@@ -262,6 +263,44 @@ return array(
                     ),  
                 ),
             ),      
+            'Reports' => array(
+                'type'    => 'Literal',
+                'options' => array(
+                    'route'    => '/reports',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Backend\Controller',
+                        'controller'    => 'Reports',
+                        'action'        => 'index',
+                    ),
+                ),
+                'may_terminate' => true,
+                'child_routes' => array(
+                    'default' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '[/:action]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                                'action' => 'index'
+                            ),
+                        ),
+                    ),  
+                    'daily' => array(
+                        'type'    => 'Literal',
+                        'options' => array(
+                            'route'    => '/daily',
+                            'defaults' => array(
+                                '__NAMESPACE__' => 'Backend\Controller',
+                                'controller' => 'Reports',
+                                'action'     => 'daily',
+                            ),
+                        ),
+                        'may_terminate' => true,
+                    ),
+                ),
+            ),    
             'User' => array(
                 'type'    => 'Literal',
                 'options' => array(
@@ -286,6 +325,18 @@ return array(
                             ),
                         ),
                     ),  
+                    'dashboard' => array(
+                        'type'    => 'Literal',
+                        'options' => array(
+                            'route'    => '/dashboard',
+                            'defaults' => array(
+                                '__NAMESPACE__' => 'Backend\Controller',
+                                'controller' => 'User',
+                                'action'     => 'dashboard',
+                            ),
+                        ),
+                        'may_terminate' => true,
+                    ),
                 ),
             ),          
             'Login' => array(
@@ -299,19 +350,7 @@ return array(
                     ),
                 ),
                 'may_terminate' => true,
-            ),          
-            'Dashboard' => array(
-                'type'    => 'Literal',
-                'options' => array(
-                    'route'    => '/dashboard',
-                    'defaults' => array(
-                        '__NAMESPACE__' => 'Backend\Controller',
-                        'controller' => 'User',
-                        'action'     => 'dasboard',
-                    ),
-                ),
-                'may_terminate' => true,
-            ),
+            ),       
         ),
     ),
     'service_manager' => array(
@@ -345,6 +384,7 @@ return array(
             'Backend\Controller\PurchaseOrder'   => 'Backend\Controller\PurchaseOrderController',
             'Backend\Controller\StockAdjustment'   => 'Backend\Controller\StockAdjustmentController',
             'Backend\Controller\User'   => 'Backend\Controller\UserController',
+            'Backend\Controller\Reports'   => 'Backend\Controller\ReportsController',
         ),
     ),
     'view_manager' => array(

@@ -94,7 +94,10 @@ class UserController extends AbstractActionController
         // var_dump($auth->hasIdentity());exit;
 
         if ($auth->hasIdentity()) {
-            return $this->redirect()->toRoute('Dashboard');
+            return $this->redirect()->toRoute('User/dashboard', array(
+                    'controller' => 'User',
+                    'action'     => 'dashboard',
+                ));
         }
         $request = $this->getRequest();
 
@@ -132,7 +135,12 @@ class UserController extends AbstractActionController
                     $time = 1209600; // 14 days 1209600/3600 = 336 hours => 336/24 = 14 days
                     $sessionManager->rememberMe($time);
                 }
-                return $this->redirect()->toRoute('Dashboard');
+
+                return $this->redirect()->toRoute('User/dashboard', array(
+                    'controller' => 'User',
+                    'action'     => 'dashboard',
+                ));
+
             }
         }
         $this->layout('layout/login');

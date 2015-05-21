@@ -258,6 +258,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <!-- <small class="badge pull-right bg-red">3</small> -->
                 </a>
             </li>
+            <li class="treeview active">
+              <a href="#">
+                <i class="fa fa-pie-chart"></i>
+                <span>Reports</span>
+                <i class="fa fa-angle-left pull-right"></i>
+              </a>
+              <ul class="treeview-menu menu-open" style="display: block;">
+                <li><a href="<?php echo $homeUrl;?>reports/daily"><i class="fa fa-circle-o"></i> Daily Sales</a></li>
+                <li><a href="pages/charts/morris.html"><i class="fa fa-circle-o"></i> Weekly Sales</a></li>
+                <li><a href="pages/charts/flot.html"><i class="fa fa-circle-o"></i> Monthly Sales</a></li>
+              </ul>
+            </li>
                 
           </ul><!-- /.sidebar-menu -->
         </section>

@@ -49,7 +49,7 @@ class Module
                 // there should only be one method called "login" across 
                 // any controller or else this won't work
                 if($isLogin  && $params['action'] == "login"){
-                    return $controller->redirect()->toRoute('dashboard');
+                    return $controller->redirect()->toRoute('Dashboard');
                 }
 
                 if($isLogin == FALSE && $params['action'] !== "login"){

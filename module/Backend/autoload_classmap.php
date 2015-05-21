@@ -7,6 +7,7 @@ return array(
   'Backend\Controller\SalesOrderController'   => __DIR__ . '/src/Backend/Controller/SalesOrderController.php',
   'Backend\Controller\PurchaseOrderController'   => __DIR__ . '/src/Backend/Controller/PurchaseOrderController.php',
   'Backend\Controller\StockAdjustmentController'   => __DIR__ . '/src/Backend/Controller/StockAdjustmentController.php',
+  'Backend\Controller\ReportsController'   => __DIR__ . '/src/Backend/Controller/ReportsController.php',
   'Backend\Controller\PaginatorTrait'   => __DIR__ . '/src/Backend/Controller/PaginatorTrait.php',
   'Backend\Controller\UserController'    => __DIR__ . '/src/Backend/Controller/UserController.php',
   'Backend\Model\Orders'                 => __DIR__ . '/src/Backend/Model/Orders.php',
