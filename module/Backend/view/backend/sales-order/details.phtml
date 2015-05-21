@@ -4,7 +4,7 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
 <section class="invoice">
           <!-- title row -->
           <div class="row">
-            <div class="col-xs-12">
+            <div class="col-md-12 col-sm-12 col-xs-12">
               <h2 class="page-header">
                  SO#<?php echo $salesorderData['_id'];?> - <?php echo $salesorderData['customer']?>
                 <small class="pull-right" style="padding-left:5em"><?php echo Date('m/d/Y', $salesorderData['created']->sec);?></small>
@@ -20,8 +20,8 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                  C3K Philippines, Inc.</strong><br>
                 Email: contact@zaka.ph
               </address>
-            </div><!-- /.col --> 
-            <div class="col-sm-4 invoice-col">
+            </div><!-- /.col -->
+            <div class="col-md-4 col-sm-4 col-xs-12 invoice-col">
               Customer:
               <br/>
               <address>
@@ -31,31 +31,34 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
               </address>
             </div><!-- /.col -->
 
-            
-            <div class="col-sm-4 invoice-col">
+
+            <div class="col-md-4 col-sm-4 col-xs-12 invoice-col">
               Payment:
-              <br/>
+              <address>
               <b>Payment via:</b> <?php echo $salesorderData['paymentType']?><br>
               <b>Paid:</b> <?php echo ($salesorderData['paid'] === TRUE)? Date('M d Y ', $salesorderData['paid_date']->sec) : 'Unpaid' ?> <br>
               <b>Seller:</b> <?php echo $salesorderData['seller'];?> <br>
+              </address>
             </div><!-- /.col -->
 
-            <div class="col-sm-4 invoice-col">
+            <div class="col-md-4 col-sm-4 col-xs-12 invoice-col">
               Delivery:
               <br/>
+              <address>
               <b>Type:</b> <?php echo $salesorderData['deliveryType']?><br>
-                <strong>Date:</strong> <?php echo Date('M/d/Y', $salesorderData['shipmentDate']->sec)?> - 
+                <strong>Date:</strong> <?php echo Date('M/d/Y', $salesorderData['shipmentDate']->sec)?> -
                         <?php echo $salesorderData['deliveryTime']?>
                       <br>
               <b>Delivered:</b> <?php echo ($salesorderData['shipped'] === TRUE)? Date('M d Y ', $salesorderData['shipped_date']->sec) : 'Not yet' ?> <br>
               <b>Rider:</b> <?php echo $salesorderData['rider']; ?> <br>
+              </address>
             </div><!-- /.col -->
 
           </div><!-- /.row -->
 
           <!-- Table row -->
           <div class="row">
-            <div class="col-xs-12 table-responsive">
+            <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
               <table class="table table-striped">
                 <thead>
                   <tr>
@@ -87,14 +90,26 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
 
           <div class="row">
             <!-- accepted payments column -->
-            <div class="col-xs-6">
-              <div id="AccountsReceivable">
- 
-              </div>
-              Notes:
-                <pre class="text-muted well well-sm no-shadow" style="font-style:italic; font-size:.9em; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;" ><?php echo $salesorderData['note'];?></pre>  
+            <div class="col-md-6 col-sm-6 col-xs-12">
+
+
+                <div class="form-group">
+
+                    <label for="itemname">Shipping/Delivery Fee:</label>
+                    <div>
+                    <?php if(!empty($salesorderData['shippingfee'])):?>
+                        &#8369;  <?php echo $salesorderData['shippingfee'];?>
+                    <?php else:?>
+                        &#8369;  0.00
+                    <?php endif; ?>
+                    </div>
+
+                </div>
+
+                Notes:
+                <pre class="text-muted well well-sm no-shadow" style="font-style:italic; font-size:.9em; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;" ><?php echo $salesorderData['note'];?></pre>
             </div><!-- /.col -->
-            <div class="col-xs-6">
+            <div class="col-md-6 col-sm-6 col-xs-12">
               <!-- <p class="lead">Amount Due 2/22/2014</p> -->
               <div class="table-responsive">
                 <table class="table">
@@ -114,7 +129,7 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                   </tr>
                   <?php endif;?>
                 </tbody></table>
-                
+
                 <!-- PAYMENTS -->
                 <div id="paymentsmade" class="table-responsive">
                     Payment Breakdown:
@@ -123,21 +138,21 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                     <table class="table table-condensed" >
 
                         <tbody>
-                        <?php 
+                        <?php
                           foreach($salesorderData['payments'] as $payment):
                           if($payment['amount'] > 0):
                           ?>
-                          <tr> 
-                            <td style="text-align:left"> 
+                          <tr>
+                            <td style="text-align:left">
                               <?php echo Date('M d, Y',$payment['paid']->sec);?>
                             </td>
                             <td>&#8369; <?php echo number_format($payment['amount'],2)?></td>
 
                           </tr>
 
-                        <?php 
+                        <?php
                           endif;
-                          endforeach; 
+                          endforeach;
                         ?>
                       </tbody>
                     </table>
@@ -158,13 +173,13 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
           <!-- this row will not appear when printing -->
           <div class="row no-print">
             <div class="col-xs-12">
- 
+
               <a href="?print=true" target="_blank" class="btn btn-default"><i class="fa fa-print"></i> Print</a>
-           
+
               <?php if(!$salesorderData['finalized']){ ?>
-                <a href="<?php echo $homeUrl;?>salesorder/edit/<?php echo $salesorderData['_id']?>" class="btn btn-primary"><i class="fa fa-pencil"></i> Edit</a>   
+                <a href="<?php echo $homeUrl;?>salesorder/edit/<?php echo $salesorderData['_id']?>" class="btn btn-primary"><i class="fa fa-pencil"></i> Edit</a>
               <?php }?>
-              
+
               <?php if(!$salesorderData['finalized']){ ?>
                 <a href="#finalizemodal" data-toggle="modal">
                    <button class="btn btn-success pull-right" style="margin-left: 5px;">
@@ -172,14 +187,14 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                     Finalize Invoice</button>
                 </a>
               <?php }?>
-              
+
               <?php if ($salesorderData['finalized'] && !$salesorderData['shipped']) {?>
                 <!-- <a href="<?php echo $homeUrl;?>salesorder/markasdelivered/<?php echo $salesorderData['_id']?>"> -->
                 <a href="#deliveredmodal" data-toggle="modal">
                    <button class="btn btn-primary pull-right" style="margin-left: 5px;">
                    <i class="fa fa-truck"></i>
                     Mark as Delivered</button>
-                </a>   
+                </a>
               <?php } ?>
 
 
@@ -231,11 +246,11 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                     <h4 class="modal-title">Create Payment</h4>
                   </div>
                   <div class="modal-body">
-  
+
                             <div class="form-group">
                                 <div class="input-group">
                                     <div class="input-group-addon">
-                                    &#8369; 
+                                    &#8369;
                                     </div>
                                     <input onKeyUp="validatePayment()" id="payment" name="paymenttobemade" type="text" class="form-control" placeholder="payment" value="<?php echo number_format((float)$salesorderData['payment_left'],2,'.','')?>">
                                 </div><!-- /.input group -->
@@ -296,6 +311,6 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                     paymentElement.value = <?php echo $salesorderData['payment_left'];?>
                 }
             }
-   
+
 
         </script>

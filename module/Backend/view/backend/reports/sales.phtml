@@ -137,6 +137,7 @@ function format_reportDate($grouping, $id)
                 <th style="text-align:right">Sales</th>
                 <th style="text-align:right">Accounts Receivable</th>
                 <th style="text-align:right">Costs</th>
+                <th style="text-align:right">Shipping</th>
                 <th style="text-align:right">Net Income</th>
             </thead>
             <tbody>
@@ -161,7 +162,10 @@ function format_reportDate($grouping, $id)
                                   <?php echo number_format($row['total_cost'],2); ?>
                               </td>
                               <td style="text-align:right">
-                                  <?php echo number_format($row['totalsales'] - $row['total_cost'],2); ?>
+                                  <?php echo number_format($row['total_shipping'],2); ?>
+                              </td>
+                              <td style="text-align:right">
+                                  <?php echo number_format($row['totalsales'] - $row['total_cost'] - $row['total_shipping'],2); ?>
                               </td>
                           </tr>
 

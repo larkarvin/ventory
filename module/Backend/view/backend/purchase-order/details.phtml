@@ -14,7 +14,7 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
           <!-- info row -->
 
           <div class="row invoice-info">
-            <div class="col-sm-6 invoice-col">
+            <div class="col-md-6 col-sm-6 col-xs-12 invoice-col">
               Supplier:
               <br/>
               <address>
@@ -23,13 +23,16 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
               </address>
             </div><!-- /.col -->
 
-            
 
-            <div class="col-sm-6 invoice-col">
+
+            <div class="col-md-6 col-sm-6 col-xs-12 invoice-col">
               Delivery Details:
               <br/>
+              <address>
               <b>Delivery Date:</b> <?php echo Date('M d Y ', $purchaseorderData['deliveryDate']->sec);?> <br>
-              <b>Delivered:</b> <?php echo ($purchaseorderData['delivered'] === TRUE)? Date('M d Y ', $purchaseorderData['delivereddate']->sec) : 'Not yet' ?> <br>
+              <b>Delivered:</b> <?php echo ($purchaseorderData['delivered'] === TRUE)? Date('M d Y ', $purchaseorderData['delivereddate']->sec) : 'Not yet' ?>
+              <br>
+              </address>
             </div><!-- /.col -->
 
           </div><!-- /.row -->
@@ -66,14 +69,14 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
 
           <div class="row">
             <!-- accepted payments column -->
-            <div class="col-xs-6">
+            <div class="col-md-6 col-sm-6 col-xs-12">
               <div id="AccountsReceivable">
- 
+
               </div>
               Notes:
-                <pre class="text-muted well well-sm no-shadow" style="font-style:italic; font-size:.9em; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;" ><?php echo $purchaseorderData['note'];?></pre>  
+                <pre class="text-muted well well-sm no-shadow" style="font-style:italic; font-size:.9em; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;" ><?php echo $purchaseorderData['note'];?></pre>
             </div><!-- /.col -->
-            <div class="col-xs-6">
+            <div class="col-md-6 col-sm-6 col-xs-12">
               <!-- <p class="lead">Amount Due 2/22/2014</p> -->
               <div class="table-responsive">
                 <table class="table">
@@ -83,7 +86,7 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                     <td>&#8369; <?php echo number_format($purchaseorderData['total'],2)?></td>
                   </tr>
                 </tbody></table>
-                
+
               </div>
             </div><!-- /.col -->
           </div><!-- /.row -->
@@ -97,23 +100,23 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
           <!-- this row will not appear when printing -->
           <div class="row no-print">
             <div class="col-xs-12">
- 
+
               <a href="?print=true" target="_blank" class="btn btn-default"><i class="fa fa-print"></i> Print</a>
-           
+
               <?php if($purchaseorderData['status'] != "cancelled" && $purchaseorderData['status'] != "closed" ){ ?>
-                <a href="<?php echo $homeUrl;?>purchaseorder/edit/<?php echo $purchaseorderData['_id']?>" class="btn btn-primary"><i class="fa fa-pencil"></i> Edit</a>   
+                <a href="<?php echo $homeUrl;?>purchaseorder/edit/<?php echo $purchaseorderData['_id']?>" class="btn btn-primary"><i class="fa fa-pencil"></i> Edit</a>
               <?php }?>
-              
+
 
               <?php if ($purchaseorderData['status'] != "cancelled" && $purchaseorderData['status'] != "closed") {?>
                 <a href="#deliveredmodal" data-toggle="modal">
                    <button class="btn btn-primary pull-right" style="margin-left: 5px;">
                    <i class="fa fa-truck"></i>
                     Mark as Delivered</button>
-                </a>  
+                </a>
               <?php } ?>
 
-              
+
               <?php if($purchaseorderData['status'] != "cancelled" && $purchaseorderData['status'] != "closed"){ ?>
                 <a href="#cancelmodal" data-toggle="modal">
                    <button class="btn btn-default pull-right" style="margin-left: 5px;">
@@ -121,7 +124,7 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                     Cancel Purchase</button>
                 </a>
               <?php }?>
-              
+
 
 
 
@@ -197,6 +200,6 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                     paymentElement.value = <?php echo $purchaseorderData['payment_left'];?>
                 }
             }
-   
+
 
         </script>

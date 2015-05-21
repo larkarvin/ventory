@@ -66,10 +66,10 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
 
 <div class="box-body">
 <form method="POST" role="form" action="<?php echo $homeUrl;?>salesorder/new" onSubmit="validate(this, event)">
-<section class="content">    
+<section class="content">
         <div class="row">
-            
-            <div class="col-xs-6">
+
+            <div class="col-md-6 col-sm-6 col-xs-12">
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">
@@ -112,16 +112,16 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                     </div><!-- /.input group -->
                 </div>
             </div>
-            
+
 
 <!--
     Delivery Mode: Shipping, Delivery, Meetup, Pickup
     Seller: Christy, Karen, Rose
     Mode of Payment: BDO, BPI, GCASH, Smart Padala, Cash, Cebuana, MLueilher, Palawan, Western Union, LBC
-    Rider: Macky, Nelson, 
+    Rider: Macky, Nelson,
 -->
 
-            <div class="col-xs-6">
+            <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="form-group">
                       <select id="seller" name="seller" class="form-control input-sm" >
                         <option disabled selected>Seller</option>
@@ -169,18 +169,18 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
         </div>
         <div class="row">
 
-            <div class="col-12 table-responsive">
+            <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            
-                            <th width="35%">SKU</th>
-                            <th width="12%">Qty</th>
-                            <th width="10%">Stock</th>
-                            <th width="15%">Price</th>
-                            <th width="15%">%</th>
-                            <th width="10%">Subtotal</th>
-                            <th width="1%">&nbsp;</th>
+
+                            <th class="col-xs-6" width="35%">SKU</th>
+                            <th class="col-xs-6" width="12%">Qty</th>
+                            <th class="col-xs-6" width="10%">Stock</th>
+                            <th class="col-xs-6" width="15%">Price</th>
+                            <th class="col-xs-6" width="15%">%</th>
+                            <th class="col-xs-6" width="10%">Subtotal</th>
+                            <th class="col-xs-6" width="1%">&nbsp;</th>
                         </tr>
                     </thead>
                     <tbody id="order_tbody">
@@ -193,13 +193,21 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
         </div><!-- /.row -->
         <div class="row">
             <!-- accepted payments column -->
-            <div class="col-xs-6">
+            <div class="col-md-6 col-sm-6 col-xs-12">
+
+                <div class="form-group">
+                    <!-- <div for="itemname">Shipping/Delivery Fee </div> -->
+
+                    <input type="text" onkeyUp="limitShipping()" class="form-control" id="shippingfee" name="shippingfee" placeholder="Shipping/Delivery Fee " value="">
+                </div>
                 <div class="form-group">
                     <div>Note:</div>
                     <textarea class="form-control" name="note"></textarea>
                 </div>
+
+
             </div>
-            <div class="col-xs-6">
+            <div class="col-md-6 col-sm-6 col-xs-12">
                <div class="table-responsive">
                     <table class="table">
                         <tbody>
@@ -216,14 +224,14 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                     </tbody></table>
                 </div>
             </div>
-            
-        </div>    
+
+        </div>
         <div class="row">
             <!-- accepted payments column -->
             <div class="form-group">
                 <button type="submit" id="add-variant-btn" class="btn btn-primary">Place Order</button>
             </div>
-            
+
         </div>
 </section>
 </form>
@@ -273,6 +281,17 @@ function clearTypeAhead()
     typeahead.value = '';
 }
 
+function limitShipping()
+{
+    shippingElement = document.getElementById('shippingfee');
+    shippingElement.value = shippingElement.value.replace(/[^\d.-]/g, '')
+    if((shippingElement.value == "." )|| (shippingElement.value == "0..")){
+        shippingElement.value = "0."
+    }
+
+    updateTotalandTotalUnits();
+}
+
 function computeSubtotal(itemCounter)
 {
 
@@ -299,7 +318,7 @@ function computeSubtotal(itemCounter)
         discountElement.value = "0."
     }
 
-    
+
     if((subtotalElement.value == "." )|| (subtotalElement.value == "0..")){
         subtotalElement.value = "0."
     }
@@ -328,7 +347,7 @@ function validate(form, event){
     while (modalul.firstChild) {
         modalul.removeChild(modalul.firstChild);
     }
-    
+
     if( $('#customer').val() == "")
     {
         formIncorrect = 1;
@@ -337,7 +356,7 @@ function validate(form, event){
         customerLi.appendChild(textnode);
         modalul.appendChild(customerLi);
     }
-    
+
     if( $('#deliveryAddr').val() == "")
     {
         formIncorrect = 1;
@@ -346,7 +365,7 @@ function validate(form, event){
         deliveryAddrLi.appendChild(textnode);
         modalul.appendChild(deliveryAddrLi);
     }
-    
+
     if( $('#shipmentDate').val() == "")
     {
         formIncorrect = 1;
@@ -355,7 +374,7 @@ function validate(form, event){
         shipmentDateLi.appendChild(textnode);
         modalul.appendChild(shipmentDateLi);
     }
-    
+
     if( $('#deliveryTime').val() == "")
     {
         formIncorrect = 1;
@@ -365,7 +384,7 @@ function validate(form, event){
         modalul.appendChild(deliveryTimeLi);
 
     }
-    
+
     if( $('#phone').val() == "")
     {
         formIncorrect = 1;
@@ -374,7 +393,7 @@ function validate(form, event){
         phoneLi.appendChild(textnode);
         modalul.appendChild(phoneLi);
     }
-    
+
     if( $('#seller').val() == "")
     {
         formIncorrect = 1;
@@ -383,7 +402,7 @@ function validate(form, event){
         sellerLi.appendChild(textnode);
         modalul.appendChild(sellerLi);
     }
-    
+
     if( $('#deliveryType').val() == "")
     {
         formIncorrect = 1;
@@ -392,7 +411,7 @@ function validate(form, event){
         deliveryTypeLi.appendChild(textnode);
         modalul.appendChild(deliveryTypeLi);
     }
-    
+
     if( $('#paymentType').val() == "")
     {
         formIncorrect = 1;
@@ -414,12 +433,12 @@ function validate(form, event){
     // alert(formIncorrect);
     // exit;
     if(formIncorrect == 1){
-        
+
         $('.modal').modal('show');
-        event.preventDefault();    
+        event.preventDefault();
     }
-    
-    
+
+
 
 }
 
@@ -484,6 +503,13 @@ function updateTotalandTotalUnits(){
         total = total + parseFloat(subtotalelements[x].value);
     }
 
+    shippingElement = document.getElementById('shippingfee');
+
+
+    if(parseFloat(shippingElement.value) > 0){
+        total = total + parseFloat(shippingElement.value);
+    }
+
 
     total = total.toFixed(2).replace(/./g, function(c, i, a) {
         return i && c !== "." && ((a.length - i) % 3 === 0) ? ',' + c : c;
@@ -537,7 +563,7 @@ function createEntry(datum)
     salesorder_td_1 = document.createElement("td");
     salesorder_td_1.appendChild(input_variantName);
     salesorder_td_1.appendChild(input_sku);
-    
+
     input_qty = document.createElement("input");
     input_qty.setAttribute("type", "text");
     input_qty.setAttribute("name", "items["+ itemCounter +"][qty]");
@@ -583,7 +609,7 @@ function createEntry(datum)
     input_discount.setAttribute("type", "text");
     input_discount.setAttribute("value", "0");
     input_discount.setAttribute("name", "items["+ itemCounter +"][discount]");
-    input_discount.setAttribute("onkeyup", "computeSubtotal("+ itemCounter +")");      
+    input_discount.setAttribute("onkeyup", "computeSubtotal("+ itemCounter +")");
     input_discount.setAttribute("id", "item-"+ itemCounter +"-discount");
     input_discount.setAttribute("class", "form-control sales-order-form");
     salesorder_td_5 = document.createElement("td");
@@ -594,7 +620,7 @@ function createEntry(datum)
     input_subtotal.setAttribute("type", "text");
     input_subtotal.setAttribute("name", "items["+ itemCounter +"][subtotal]");
     input_subtotal.setAttribute("value", subtotal);
-    input_subtotal.setAttribute("onkeyup", "computePercentile("+ itemCounter +")");  
+    input_subtotal.setAttribute("onkeyup", "computePercentile("+ itemCounter +")");
     input_subtotal.setAttribute("id", "item-"+ itemCounter +"-subtotal");
     input_subtotal.setAttribute("class", "form-control sales-order-form subtotal-element");
     // input_subtotal.setAttribute("readOnly", true);

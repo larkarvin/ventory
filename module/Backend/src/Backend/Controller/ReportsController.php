@@ -95,15 +95,15 @@ class ReportsController extends AbstractActionController
                     ],
                     ['$group' =>
                         [
-                            '_id' => $groupId,
-                            'totalsales' => ['$sum' => '$total'],
+                            '_id'               => $groupId,
+                            'totalsales'        => ['$sum' => '$total'],
                             'totalsales_lessAR' => ['$sum' =>
-                                                     ['$subtract' => ['$total', '$payment_left']]
-                                            ],
-                            'total_cost' => ['$sum' => '$cost'],
+                                                        ['$subtract' => ['$total', '$payment_left']]
+                                                    ],
+                            'total_cost'     => ['$sum' => '$cost'],
+                            'total_shipping' => ['$sum' => '$shippingfee'],
                         ],
                     ],
-
                 ];
 
         $result = $salesOrderModel->aggregate($salesReport);

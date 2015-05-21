@@ -30,7 +30,7 @@ class SalesOrders
         $this->_sequenceModel = $sequenceModel;
     }
 
- 
+
     public function salesOrder($order){
         unset($order['q']);
 
@@ -53,6 +53,7 @@ class SalesOrders
                        'paymentType'   => $order['paymentType'],
                        'rider'         => isset($order['rider'])? $order['rider']: '',
                        'note'          => isset($order['note'])? $order['note']: '',
+                       'shippingfee'   => isset($order['shippingfee'])? $order['shippingfee']: 0.00,
                        'payments'      => []
         ];
         $total = 0;
@@ -67,6 +68,12 @@ class SalesOrders
             $total += (float)$item['subtotal'];
             // $this->_variantModel->decrementVariantStock($item['id'], (float) $item['qty']);
         }
+
+
+        if(isset($order['shippingfee']) && $order['shippingfee'] > 0){
+          $total += $order['shippingfee'];
+        }
+
         $salesOrder['total'] = $total;
         $salesOrder['payment_left'] = $total;
         $result = $this->_collection->insert($salesOrder);
@@ -92,6 +99,7 @@ class SalesOrders
                        'paymentType'   => $order['paymentType'],
                        'rider'         => isset($order['rider'])? $order['rider']: '',
                        'note'          => isset($order['note'])? $order['note']: '',
+                       'shippingfee'   => isset($order['shippingfee'])? $order['shippingfee']: 0.00,
         ];
         $total = 0;
         foreach($order['items'] as $key => $item){
@@ -104,6 +112,12 @@ class SalesOrders
             $salesOrder['items'][$key]['id']       = $item['id'];
             $total += (float)$item['subtotal'];
         }
+
+        if(isset($order['shippingfee']) && $order['shippingfee'] > 0){
+          $total += $order['shippingfee'];
+        }
+
+
         $salesOrder['total'] = $total;
 
         $criteria = ["_id" => (int) $orderId];
@@ -166,7 +180,7 @@ class SalesOrders
 
         foreach($data['items'] as $item)
         {
-           $this->_variantModel->decrementVariantStock($item['id'], (float) $item['qty']); 
+           $this->_variantModel->decrementVariantStock($item['id'], (float) $item['qty']);
         }
 
         $updateDate = ['$set' => ['shipped' => TRUE, 'shipped_date' => new \MongoDate()]];

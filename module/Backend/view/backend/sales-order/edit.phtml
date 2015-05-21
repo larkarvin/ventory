@@ -75,16 +75,16 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
 <?php endif;?>
 <div class="box-body">
 <form method="POST" role="form" action="<?php echo $homeUrl;?>salesorder/edit/<?php echo $salesorder['_id']?>" onSubmit="validate(this, event)">
-<section class="content">    
+<section class="content">
         <div class="row">
-            
-            <div class="col-xs-6">
+
+            <div class="col-md-6 col-sm-6 col-xs-12">
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">
                             <i class="fa fa-user"></i>
                         </div>
-                        <input id="customer" name="customer" type="text" class="form-control input-sm" placeholder="Customer Name" 
+                        <input id="customer" name="customer" type="text" class="form-control input-sm" placeholder="Customer Name"
                             value="<?php echo isset($salesorder['customer'])? $salesorder['customer']: ''; ?>">
                     </div><!-- /.input group -->
                 </div>
@@ -126,13 +126,13 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                     </div><!-- /.input group -->
                 </div>
             </div>
-            
+
 
 <!--
     Delivery Mode: Shipping, Delivery, Meetup, Pickup
     Seller: Christy, Karen, Rose
     Mode of Payment: BDO, BPI, GCASH, Smart Padala, Cash, Cebuana, MLueilher, Palawan, Western Union, LBC
-    Rider: Macky, Nelson, 
+    Rider: Macky, Nelson,
 -->
 <?php
 
@@ -144,7 +144,7 @@ function determineSelected($compare, $value){
     return '';
 }
 ?>
-            <div class="col-xs-6">
+            <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="form-group">
                       <select id="seller" name="seller" class="form-control input-sm" >
                         <option disabled>Seller</option>
@@ -187,11 +187,11 @@ function determineSelected($compare, $value){
                     <div class="form-group">
                       <select id="rider" name="rider" class="form-control input-sm" >
                         <option disabled>Rider</option>
-                        <option <?php echo determineSelected($salesorder['rider'], 'Macky')?> 
+                        <option <?php echo determineSelected($salesorder['rider'], 'Macky')?>
                             value="Macky">Macky</option>
-                        <option <?php echo determineSelected($salesorder['rider'], 'Alex')?> 
+                        <option <?php echo determineSelected($salesorder['rider'], 'Alex')?>
                             value="Alex">Alex</option>
-                        <option <?php echo determineSelected($salesorder['rider'], 'Nelson')?> 
+                        <option <?php echo determineSelected($salesorder['rider'], 'Nelson')?>
                             value="Nelson">Nelson</option>
                       </select>
                     </div>
@@ -213,7 +213,7 @@ function determineSelected($compare, $value){
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            
+
                             <th width="35%">SKU</th>
                             <th width="12%">Qty</th>
                             <th width="10%">Stock</th>
@@ -226,7 +226,7 @@ function determineSelected($compare, $value){
                     <tbody id="order_tbody">
 
 
-                        <?php 
+                        <?php
                         $itemCount = 0;
                         foreach($salesorder['items'] as $item):
                         ?>
@@ -269,13 +269,18 @@ function determineSelected($compare, $value){
         </div><!-- /.row -->
         <div class="row">
             <!-- accepted payments column -->
-            <div class="col-xs-6">
+            <div class="col-md-6 col-sm-6 col-xs-12">
+
                 <div class="form-group">
-                    <div>Note:</div>
+                    <input type="text" onkeyUp="limitShipping()" class="form-control" id="shippingfee" name="shippingfee" placeholder="Shipping/Delivery Fee " value="<?php echo isset($salesorder['shippingfee'])? $salesorder['shippingfee']: '';?>">
+                </div>
+                <div class="form-group">
+                    <div>Notes:</div>
                     <textarea class="form-control" name="note"><?php echo isset($salesorder['note'])? $salesorder['note']: '';?></textarea>
                 </div>
+
             </div>
-            <div class="col-xs-6">
+            <div class="col-md-6 col-sm-6 col-xs-12">
                <div class="table-responsive">
                     <table class="table">
                         <tbody>
@@ -292,14 +297,14 @@ function determineSelected($compare, $value){
                     </tbody></table>
                 </div>
             </div>
-            
-        </div>    
+
+        </div>
         <div class="row">
             <!-- accepted payments column -->
             <div class="form-group">
                 <button type="submit" id="add-variant-btn" class="btn btn-primary">Update Product</button>
             </div>
-            
+
         </div>
 </section>
 </form>
@@ -349,6 +354,18 @@ function clearTypeAhead()
     typeahead.value = '';
 }
 
+
+function limitShipping()
+{
+    shippingElement = document.getElementById('shippingfee');
+    shippingElement.value = shippingElement.value.replace(/[^\d.-]/g, '')
+    if((shippingElement.value == "." )|| (shippingElement.value == "0..")){
+        shippingElement.value = "0."
+    }
+
+    updateTotalandTotalUnits();
+}
+
 function computeSubtotal(itemCounter)
 {
 
@@ -375,7 +392,7 @@ function computeSubtotal(itemCounter)
         discountElement.value = "0."
     }
 
-    
+
     if((subtotalElement.value == "." )|| (subtotalElement.value == "0..")){
         subtotalElement.value = "0."
     }
@@ -393,6 +410,8 @@ function computeSubtotal(itemCounter)
 
     updateTotalandTotalUnits();
 }
+
+
 var formIncorrect = 0;
 var formComplete = 0;
 submitButtonClicked = 0;
@@ -404,7 +423,7 @@ function validate(form, event){
     while (modalul.firstChild) {
         modalul.removeChild(modalul.firstChild);
     }
-    
+
     if( $('#customer').val() == "")
     {
         formIncorrect = 1;
@@ -413,7 +432,7 @@ function validate(form, event){
         customerLi.appendChild(textnode);
         modalul.appendChild(customerLi);
     }
-    
+
     if( $('#deliveryAddr').val() == "")
     {
         formIncorrect = 1;
@@ -422,7 +441,7 @@ function validate(form, event){
         deliveryAddrLi.appendChild(textnode);
         modalul.appendChild(deliveryAddrLi);
     }
-    
+
     if( $('#shipmentDate').val() == "")
     {
         formIncorrect = 1;
@@ -431,7 +450,7 @@ function validate(form, event){
         shipmentDateLi.appendChild(textnode);
         modalul.appendChild(shipmentDateLi);
     }
-    
+
     if( $('#deliveryTime').val() == "")
     {
         formIncorrect = 1;
@@ -441,7 +460,7 @@ function validate(form, event){
         modalul.appendChild(deliveryTimeLi);
 
     }
-    
+
     if( $('#phone').val() == "")
     {
         formIncorrect = 1;
@@ -450,7 +469,7 @@ function validate(form, event){
         phoneLi.appendChild(textnode);
         modalul.appendChild(phoneLi);
     }
-    
+
     if( $('#seller').val() == "")
     {
         formIncorrect = 1;
@@ -459,7 +478,7 @@ function validate(form, event){
         sellerLi.appendChild(textnode);
         modalul.appendChild(sellerLi);
     }
-    
+
     if( $('#deliveryType').val() == "")
     {
         formIncorrect = 1;
@@ -468,7 +487,7 @@ function validate(form, event){
         deliveryTypeLi.appendChild(textnode);
         modalul.appendChild(deliveryTypeLi);
     }
-    
+
     if( $('#paymentType').val() == "")
     {
         formIncorrect = 1;
@@ -490,12 +509,12 @@ function validate(form, event){
     // alert(formIncorrect);
     // exit;
     if(formIncorrect == 1){
-        
+
         $('.modal').modal('show');
-        event.preventDefault();    
+        event.preventDefault();
     }
-    
-    
+
+
 
 }
 
@@ -515,7 +534,7 @@ function computePercentile(itemCounter)
     priceElement.value = priceElement.value.replace(/[^\d.-]/g, '')
     qtyElement.value = qtyElement.value.replace(/[^\d-]/g, '')
     discountElement.value = discountElement.value.replace(/[^\d.-]/g, '')
-    
+
 
     if((priceElement.value == "." )|| (priceElement.value == "0..")){
         priceElement.value = "0."
@@ -539,7 +558,6 @@ function computePercentile(itemCounter)
 
 }
 
-
 function updateTotalandTotalUnits(){
 
     qtyelements = document.getElementsByClassName('qty-element');
@@ -558,6 +576,13 @@ function updateTotalandTotalUnits(){
     var total = 0;
     for(x = 0; x < subtotalelements.length; x++){
         total = total + parseFloat(subtotalelements[x].value);
+    }
+
+    shippingElement = document.getElementById('shippingfee');
+
+
+    if(parseFloat(shippingElement.value) > 0){
+        total = total + parseFloat(shippingElement.value);
     }
 
 
@@ -613,7 +638,7 @@ function createEntry(datum)
     salesorder_td_1 = document.createElement("td");
     salesorder_td_1.appendChild(input_variantName);
     salesorder_td_1.appendChild(input_sku);
-    
+
     input_qty = document.createElement("input");
     input_qty.setAttribute("type", "text");
     input_qty.setAttribute("name", "items["+ itemCounter +"][qty]");
@@ -650,7 +675,7 @@ function createEntry(datum)
     input_discount.setAttribute("type", "text");
     input_discount.setAttribute("value", "0");
     input_discount.setAttribute("name", "items["+ itemCounter +"][discount]");
-    input_discount.setAttribute("onkeyup", "computeSubtotal("+ itemCounter +")");      
+    input_discount.setAttribute("onkeyup", "computeSubtotal("+ itemCounter +")");
     input_discount.setAttribute("id", "item-"+ itemCounter +"-discount");
     input_discount.setAttribute("class", "form-control sales-order-form");
     salesorder_td_5 = document.createElement("td");
@@ -661,7 +686,7 @@ function createEntry(datum)
     input_subtotal.setAttribute("type", "text");
     input_subtotal.setAttribute("name", "items["+ itemCounter +"][subtotal]");
     input_subtotal.setAttribute("value", subtotal);
-    input_subtotal.setAttribute("onkeyup", "computePercentile("+ itemCounter +")");  
+    input_subtotal.setAttribute("onkeyup", "computePercentile("+ itemCounter +")");
     input_subtotal.setAttribute("id", "item-"+ itemCounter +"-subtotal");
     input_subtotal.setAttribute("class", "form-control sales-order-form subtotal-element");
     // input_subtotal.setAttribute("readOnly", true);
