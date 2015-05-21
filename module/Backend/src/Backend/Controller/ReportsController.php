@@ -24,7 +24,7 @@ class ReportsController extends AbstractActionController
     }
 
 
-    public function dailyAction()
+    public function salesAction()
     {
 
         $this->layout()->pageTitle = 'Daily Report';
@@ -35,12 +35,87 @@ class ReportsController extends AbstractActionController
         $viewModelData = [];
         $request = $this->getRequest();
 
-        $variantModel = new Model\ProductVariants();
-        $variantModel->setDbAdapter($mongoDb);
 
-        $getData   = $request->getQuery()->toArray();
+        $getData = $request->getQuery();
+        $data  = $getData->toArray();
 
-        return new ViewModel();
+
+
+        $formData['date_from'] = Date('Y-m-d');
+        if(isset($data['date_from'])){
+            $formData['date_from'] = $data['date_from'];
+        }
+
+        $formData['date_to'] = Date('Y-m-d');
+        if(isset($data['date_to'])){
+            $formData['date_to'] = $data['date_to'];
+        }
+
+        $formData['grouping'] = 'daily';
+        if(isset($data['grouping'])){
+            $formData['grouping'] = $data['grouping'];
+        }
+
+        $salesOrderModel = new Model\SalesOrders();
+        $salesOrderModel->setDbAdapter($mongoDb);
+
+
+
+        switch ($formData['grouping']) {
+            default:
+            case 'daily':
+                    $groupId = [    'year' => ['$year' => '$created'],
+                                    'month' => ['$month' => '$created'],
+                                    'day' => ['$dayOfMonth' => '$created']
+                                ];
+                break;
+            case 'weekly':
+                    $groupId = [    'year' => ['$year' => '$created'],
+                                    'month' => ['$month' => '$created'],
+                                    'week' => ['$week' => '$created']
+                                ];
+                break;
+            case 'monthly':
+                    $groupId = [    'year' => ['$year' => '$created'],
+                                    'month' => ['$month' => '$created'],
+                                ];
+                break;
+        }
+
+
+        // round date_to to 1 minute before midnight
+        $formData['date_to'] = Date('Y-m-d 23:59:59', strtotime($formData['date_to']));
+
+        $salesReport = [
+                    ['$match' => ['created' =>
+                                        [
+                                            '$gte' => new \MongoDate(strtotime($formData['date_from'])),
+                                            '$lte' => new \MongoDate(strtotime($formData['date_to']))
+                                        ],
+                                 ]
+                    ],
+                    ['$group' =>
+                        [
+                            '_id' => $groupId,
+                            'totalsales' => ['$sum' => '$total'],
+                            'totalsales_lessAR' => ['$sum' =>
+                                                     ['$subtract' => ['$total', '$payment_left']]
+                                            ],
+                            'total_cost' => ['$sum' => '$cost'],
+                        ],
+                    ],
+
+                ];
+
+        $result = $salesOrderModel->aggregate($salesReport);
+
+        if(isset($getData['print'])){
+             $this->layout('layout/print');
+        }
+
+        return new ViewModel(['formData' => $formData,
+                              'result'   => $result,
+                            ]);
 
     }
 

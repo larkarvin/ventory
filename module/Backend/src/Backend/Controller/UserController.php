@@ -19,7 +19,7 @@ class UserController extends AbstractActionController
 {
     public function indexAction()
     {
-        
+
         return new ViewModel();
     }
 
@@ -40,7 +40,7 @@ class UserController extends AbstractActionController
 
         // sales order today
         $todayTime = strtotime(Date('Y-m-d'));
-  
+
 
         $criteria = ['created' => ['$gte' =>  new \MongoDate($todayTime)]];
         $result = $salesOrderModel->fetchAll($criteria);
@@ -48,7 +48,7 @@ class UserController extends AbstractActionController
         unset($result);
 
         // last 10 orders
-        $dashboardData['salesOrders'] = $salesOrderModel->fetchAll([], [], 10, 0, ['created' => -1]);   
+        $dashboardData['salesOrders'] = $salesOrderModel->fetchAll([], [], 10, 0, ['created' => -1]);
 
 
 
@@ -56,7 +56,7 @@ class UserController extends AbstractActionController
         $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
         $purchaseOrderModel = new Model\PurchaseOrders();
         $purchaseOrderModel->setDbAdapter($mongoDb);
-        $dashboardData['purchaseOrders'] = $purchaseOrderModel->fetchAll([], [], 10, 0, ['created' => -1]);   
+        $dashboardData['purchaseOrders'] = $purchaseOrderModel->fetchAll([], [], 10, 0, ['created' => -1]);
 
         // accounts receivable
         $aggregate = [['$group' => ["_id" => null, "total" => ['$sum' => '$payment_left']]]];
@@ -70,13 +70,41 @@ class UserController extends AbstractActionController
         $oneweekago = strtotime("-7 day");
 
 
-        $aggregate = [  
+        $totalSalesAggregate = [
                         ['$match' => ['created' => ['$gte' => new \MongoDate($oneweekago)]]],
                         ['$group' => ["_id" => null, "totalsales" => ['$sum' => ['$subtract' => ['$total', '$payment_left']]]]],
-                        
+
                         ];
-  
-        $result = $salesOrderModel->aggregate($aggregate);
+
+
+
+        $salesReport = [
+                            ['$match' => ['created' => ['$gte' => new \MongoDate($oneweekago)]]],
+                            ['$group' =>
+                                [
+                                    '_id' => [
+                                            'year' => ['$year' => '$created'],
+                                            'month' => ['$month' => '$created'],
+                                            'day' => ['$dayOfMonth' => '$created'],
+                                            ],
+                                    'totalsales' => ['$sum' => '$total'],
+                                    'totalsales_lessAR' => ['$sum' =>
+                                                             ['$subtract' => ['$total', '$payment_left']]
+                                                    ],
+                                    'total_cost' => ['$sum' => '$cost'],
+
+                                // ['total_sales' => [
+                                //                     '$sum' => ['$total'],
+                                //                 ],
+                                // ],
+                                ],
+                            ],
+
+                        ];
+
+        $result = $salesOrderModel->aggregate($totalSalesAggregate);
+
+        // print_r($result);exit;
         $dashboardData['totalsalesLast7days'] = 0;
         if(isset($result['result'][0]['totalsales']))
         $dashboardData['totalsalesLast7days'] = $result['result'][0]['totalsales'];
@@ -86,10 +114,15 @@ class UserController extends AbstractActionController
 
     }
 
+    public function changepasswordAction()
+    {
+
+    }
+
     public function loginAction()
     {
 
-        $auth = $this->getServiceLocator()->get('AuthService'); 
+        $auth = $this->getServiceLocator()->get('AuthService');
 
         // var_dump($auth->hasIdentity());exit;
 
@@ -102,7 +135,7 @@ class UserController extends AbstractActionController
         $request = $this->getRequest();
 
         if ($request->isPost()) {
-            
+
             $posts = $request->getPost();
             $data  = $posts->toArray();
             // default value to NULL
@@ -111,7 +144,7 @@ class UserController extends AbstractActionController
             if(isset($data['username']))  { $username = $data['username']; }
             if(isset($data['password']))  { $password = $data['password']; }
             if(isset($data['rememberme'])){ $rememberme = $data['rememberme']; }
-            
+
 
             if(isset($username) && isset($password)){
 
@@ -147,7 +180,7 @@ class UserController extends AbstractActionController
     }
 
     public function logoutAction() {
-        $auth = $this->getServiceLocator()->get('AuthService'); 
+        $auth = $this->getServiceLocator()->get('AuthService');
 
         if ($auth->hasIdentity()) {
             $identity = $auth->getIdentity();
@@ -156,7 +189,7 @@ class UserController extends AbstractActionController
         $auth->clearIdentity();
         $sessionManager = new \Zend\Session\SessionManager();
         $sessionManager->forgetMe();
-        $this->getServiceLocator()->get('AuthService')->getStorage()->clear();  
+        $this->getServiceLocator()->get('AuthService')->getStorage()->clear();
 
 
         return $this->redirect()->toRoute('Login');

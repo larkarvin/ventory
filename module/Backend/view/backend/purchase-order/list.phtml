@@ -86,7 +86,7 @@ function generatePagination($getParam, $pagination, $homeUrl)
                             <a href="<?php echo $this->basePath();?>/purchaseorder/list?<?php echo determineSortByLink($getParam, '_id');?>">
                             ID (<?php echo count($data); echo (count($data) == 1)? " item": " items" ?>)</a>
                         </th>   
-                        <th>
+                        <th style="text-align:right">
                             <a href="<?php echo $this->basePath();?>/purchaseorder/list?<?php echo determineSortByLink($getParam, 'cost');?>">
                             Cost
                         </th>
@@ -107,7 +107,7 @@ function generatePagination($getParam, $pagination, $homeUrl)
 
                             ?>
                     <tr>
-                      <td>
+                      <td >
                             <a href="<?php echo $this->basePath();?>/purchaseorder/details/<?php echo $purchaseOrders['_id']?>">
                                    #<?php if (isset($purchaseOrders['_id'])) { echo $purchaseOrders['_id']; }?>
                             </a>
@@ -116,8 +116,8 @@ function generatePagination($getParam, $pagination, $homeUrl)
 
                 
 
-                        <td>
-                            &#8369; <?php echo number_format($purchaseOrders['total'],2);?>
+                        <td style="text-align:right">
+                            <?php echo number_format($purchaseOrders['total'],2);?>
                         </td>
 
                         <td>

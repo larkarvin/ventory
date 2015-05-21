@@ -18,7 +18,7 @@ class SalesOrderController extends AbstractActionController
 {
     use PaginatorTrait;
 
-    
+
     public function listAction()
     {
 
@@ -35,14 +35,14 @@ class SalesOrderController extends AbstractActionController
         $page = 1;
         if(!empty($getData['q'])){
             $criteria = [ '$text' => [ '$search' => $getData['q'] ]];
-        } 
+        }
 
         $sort = ['created' => -1];
 
         $orderby = -1;
         if(!empty($getData['order']) && $getData['order'] == 'ASC')
             $orderby = 1;
-        
+
         if(!empty($getData['sort'])){
             $keyName = $getData['sort'];
             $sort = [ $keyName => $orderby];
@@ -87,12 +87,12 @@ class SalesOrderController extends AbstractActionController
 
             $salesOrderModel = new Model\SalesOrders();
             $salesOrderModel->setDbAdapter($mongoDb);
-        
+
 
             $salesOrderModel->setSequenceModel($sequenceModel);
 
             try{
-                $orderid = $salesOrderModel->salesOrder($data);  
+                $orderid = $salesOrderModel->salesOrder($data);
                 return $this->redirect()->toRoute('Salesorder/details', array(
                     'controller' => 'SalesOrder',
                     'action'     => 'details',
@@ -103,7 +103,7 @@ class SalesOrderController extends AbstractActionController
             }
         }
 
-        return new ViewModel(['invoiceNumber' => $invoiceNumber]); 
+        return new ViewModel(['invoiceNumber' => $invoiceNumber]);
     }
 
     public function detailsAction()
@@ -234,7 +234,7 @@ class SalesOrderController extends AbstractActionController
         $salesOrderModel = new Model\SalesOrders();
         $salesOrderModel->setDbAdapter($mongoDb);
         $request = $this->getRequest();
-        
+
         if ($request->isPost()) {
             $posts = $request->getPost();
             $payment  = $posts->toArray();

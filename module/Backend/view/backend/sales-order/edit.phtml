@@ -243,6 +243,7 @@ function determineSelected($compare, $value){
                                 </td>
                             <td>
                                 <input type="text" name="items[<?php echo $itemCount;?>][price]" class="form-control sales-order-form" value="<?php echo $item['price']?>" id="item-<?php echo $itemCount?>-price" onkeyup="computeSubtotal(<?php echo $itemCount?>)">
+                                <input type="hidden" name="items[<?php echo $itemCount;?>][cost]" value="<?php echo $item['cost']?>" id="item-<?php echo $itemCount?>-cost">
                                 </td>
                             <td>
                                 <input type="text" name="items[<?php echo $itemCount;?>][discount]" onkeyup="computeSubtotal(<?php echo $itemCount?>)"  value="<?php echo $item['discount']?>" id="item-<?php echo $itemCount?>-discount" class="form-control sales-order-form">

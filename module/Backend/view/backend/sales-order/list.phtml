@@ -90,7 +90,7 @@ function generatePagination($getParam, $pagination, $homeUrl)
                             <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($getParam, 'customer');?>">
                             Customer Name </a>
                         </th>
-                        <th>
+                        <th style="text-align:right">
                             <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($getParam, 'total');?>">
                             Total
                         </th>
@@ -98,7 +98,7 @@ function generatePagination($getParam, $pagination, $homeUrl)
                             <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($getParam, 'finalized');?>">
                             Finalized
                         </th>
-                        <th>
+                        <th style="text-align:right">
                             <a href="<?php echo $this->basePath();?>/salesorder/list?<?php echo determineSortByLink($getParam, 'paid');?>">
                             Paid
                         </th>
@@ -127,7 +127,7 @@ function generatePagination($getParam, $pagination, $homeUrl)
                         <td>
                             <?php echo $invoice['customer'];?>
                         </td>
-                        <td>
+                        <td style="text-align:right">
                             <span class="pull-right"><?php echo number_format($invoice['total'],2);?>
                             </span> 
                         </td>
@@ -144,7 +144,7 @@ function generatePagination($getParam, $pagination, $homeUrl)
                                 No
                             <?php }?>
                         </td>
-                        <td>
+                        <td style="text-align:right">
 
                             <?php if( $invoice['paid']) {?>
                                 <span class="label bg-green">
@@ -153,7 +153,7 @@ function generatePagination($getParam, $pagination, $homeUrl)
                                 </span>
                                 &nbsp;
                             <?php }else {?>
-                                Unpaid
+                                <?php echo number_format($invoice['total'] - $invoice['payment_left'],2)?>
                             <?php }?>
                         </td>
 

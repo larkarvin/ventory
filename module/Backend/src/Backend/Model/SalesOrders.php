@@ -59,6 +59,7 @@ class SalesOrders
         foreach($order['items'] as $key => $item){
             $salesOrder['items'][$key]['qty']      = (float) $item['qty'];
             $salesOrder['items'][$key]['price']    = (float) $item['price'];
+            $salesOrder['items'][$key]['cost']     = (float) $item['cost'];
             $salesOrder['items'][$key]['discount'] = (float) $item['discount'];
             $salesOrder['items'][$key]['subtotal'] = (float) $item['subtotal'];
             $salesOrder['items'][$key]['sku']      = $item['sku'];
@@ -95,6 +96,7 @@ class SalesOrders
         $total = 0;
         foreach($order['items'] as $key => $item){
             $salesOrder['items'][$key]['qty']      = (float) $item['qty'];
+            $salesOrder['items'][$key]['cost']     = (float) $item['cost'];
             $salesOrder['items'][$key]['price']    = (float) $item['price'];
             $salesOrder['items'][$key]['discount'] = (float) $item['discount'];
             $salesOrder['items'][$key]['subtotal'] = (float) $item['subtotal'];
@@ -171,28 +173,6 @@ class SalesOrders
         return $this->_collection->update($criteria, $updateDate);
     }
 
-    public function purchaseOrder($order){
-        unset($order['q']);
-
-        $this->_collection = $dbAdapter->selectCollection('purchase_orders');
-
-        $order['created'] = new \MongoDate();
-        $order['stock_due'] = new \MongoDate(strtotime($order['stock_due']));
-        $total = 0;
-        foreach($order['items'] as $key => $item){
-            $order['items'][$key]['qty']      = (float) $item['qty'];
-            $order['items'][$key]['cost']     = (float) $item['cost'];
-            $order['items'][$key]['sku']      = (float) $item['sku'];
-            $order['items'][$key]['id']       = (float) $item['id'];
-            $order['items'][$key]['subtotal'] = (float) $item['subtotal'];
-            $order['items'][$key]['discount'] = (float) $item['discount'];
-            $total += (float)$item['subtotal'];
-            unset($order['items'][$key]['discount']);
-            $this->_variantModel->incrementVariantStock($item['id'], (float) $item['qty']);
-        }
-        $order['total'] = $total;
-        $this->_collection->insert($order);
-    }
 
 
 

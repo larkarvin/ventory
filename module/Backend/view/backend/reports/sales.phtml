@@ -1,0 +1,215 @@
+<?php
+  $homeUrl = $this->url('home',array(),array('force_canonical' => true));
+
+function format_reportDate($grouping, $id)
+{
+
+    switch ($grouping) {
+      case 'daily':
+          $tmpDate = $id['year'] . '-' . $id['month'] . "-" . $id['day'];
+          return Date('M d, Y', strtotime($tmpDate));
+        break;
+
+      case 'weekly':
+
+          $string = '';
+          $tmpDateFrom = $id['year'] . 'W' . $id['week'];
+
+          $weekFrom = date('M d, Y', strtotime($tmpDateFrom));
+
+          $tmpDateTo = $id['year'] . 'W' . ($id['week']+1);
+          $weekTo = date('M d, Y', strtotime($tmpDateTo));
+
+          return $weekFrom . " to " . $weekTo;
+        break;
+
+      case 'monthly':
+          $tmpDate = $id['year'] . '-' . $id['month'];
+          return date('M Y', strtotime($tmpDate));
+        # code...
+        break;
+    }
+
+
+}
+?>
+<div class="box box-default no-print">
+
+    <div class="box-body">
+
+        <div class="row">
+
+            <form method="GET" action="<?php echo $homeUrl?>reports/sales">
+                <div class="col-sm-4">
+                      <div class="form-group">
+                        <label>Report Date:</label>
+                        <div class="input-group">
+                          <button class="btn btn-default pull-right" id="daterange-btn">
+                            <i class="fa fa-calendar"></i>
+                            <?php  if(isset($formData['date_from']) && isset($formData['date_to'])): ?>
+                                <span>
+                                  <?php
+                                    echo Date('M d, Y', strtotime($formData['date_from'])) . " - ";
+                                    echo Date('M d, Y', strtotime($formData['date_to']));
+                                  ?>
+
+                                 </span>
+                            <?php else: ?>
+                                <span> Report Date </span>
+                            <?php endif; ?>
+                            <i class="fa fa-caret-down"></i>
+                          </button>
+                          <input type="hidden" name="date_from" id="date_from"
+                                 value="<?php echo (isset($formData['date_from']))? Date('Y-m-d', strtotime($formData['date_from'])) : ""; ?>">
+                          <input type="hidden" name="date_to"   id="date_to"
+                                 value="<?php echo (isset($formData['date_to']))? Date('Y-m-d', strtotime($formData['date_to'])) : ""; ?>">
+                        </div>
+                      </div>
+                </div>
+                <div class="col-sm-4">
+                        <div class="form-group">
+                          <label>Report Grouping:</label>
+                          <select id="grouping" name="grouping" class="form-control input">
+                            <option value="daily"
+                                <?php echo (isset($formData['grouping']) && $formData['grouping'] == 'daily')?
+                                        "selected" : "" ?>>
+                                Daily
+                            </option>
+                            <option value="weekly"
+                                  <?php echo (isset($formData['grouping']) && $formData['grouping'] == 'weekly')?
+                                        "selected" : "" ?>>Weekly</option>
+                            <option value="monthly"
+                                  <?php echo (isset($formData['grouping']) && $formData['grouping'] == 'monthly')?
+                                        "selected" : "" ?>>Monthly</option>
+                          </select>
+                        </div>
+                </div>
+
+                <div class="col-sm-4">
+
+                    <div class="form-group">
+                      <label>&nbsp;</label>
+                        <div class="input-group">
+                          <button type="submit" id="add-variant-btn" class="btn btn-primary">Generate Report </button>
+                          </button>
+                        </div>
+                    </div>
+                    </div>
+
+
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="box box-info">
+    <div class="box-header">
+          <h3 class="box-title">
+            <?php echo ucfirst($formData['grouping'])?> Report:
+
+            <?php  if(isset($formData['date_from']) && isset($formData['date_to'])): ?>
+                <span style=" font-style: italic;">
+                  <?php
+                    echo Date('M d, Y', strtotime($formData['date_from'])) . " to ";
+                    echo Date('M d, Y', strtotime($formData['date_to']));
+                  ?>
+
+                 </span>
+            <?php endif ?>
+
+          </h3>
+    </div>
+
+    <div class="box-body">
+
+        <div class="row">
+
+          <div class="box-body table-responsive col-sm-12">
+
+
+            <table class="table table-hover table-striped table-bordered">
+            <thead>
+                <th>Date</th>
+                <th style="text-align:right">Projected Sale</th>
+                <th style="text-align:right">Sales</th>
+                <th style="text-align:right">Accounts Receivable</th>
+                <th style="text-align:right">Costs</th>
+                <th style="text-align:right">Net Income</th>
+            </thead>
+            <tbody>
+                <?php foreach($result['result'] as $row):?>
+
+                          <tr>
+                              <td>
+                              <?php
+                                echo format_reportDate($formData['grouping'], $row['_id']);
+                              ?>
+                              </td>
+                              <td style="text-align:right">
+                                  <?php echo number_format($row['totalsales'],2); ?>
+                              </td>
+                              <td style="text-align:right">
+                                  <?php echo number_format($row['totalsales_lessAR'],2); ?>
+                              </td>
+                              <td style="text-align:right">
+                                  <?php echo number_format($row['totalsales'] - $row['totalsales_lessAR'],2); ?>
+                              </td>
+                              <td style="text-align:right">
+                                  <?php echo number_format($row['total_cost'],2); ?>
+                              </td>
+                              <td style="text-align:right">
+                                  <?php echo number_format($row['totalsales'] - $row['total_cost'],2); ?>
+                              </td>
+                          </tr>
+
+                <?php endforeach;?>
+              </tbody>
+          </table>
+        </div>
+    </div>
+    <div class="row no-print">
+      <div class="col-xs-12">
+
+        <?php
+        $formData['print'] = 'true';
+        $getString = http_build_query($formData);
+        ?>
+        <a href="<?php echo $homeUrl;?>reports/sales?<?php echo $getString;?>" target="_blank" class="btn btn-default"><i class="fa fa-print"></i> Print</a>
+
+    </div>
+</div>
+
+<link href="<?php echo $homeUrl?>plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet" type="text/css" />
+<script src="<?php echo $homeUrl?>plugins/daterangepicker/daterangepicker.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+$('#daterange-btn').daterangepicker(
+                {
+                  ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
+                    'Last 7 Days': [moment().subtract('days', 6), moment()],
+                    'Last 30 Days': [moment().subtract('days', 29), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]
+                  },
+                  startDate: moment().subtract('days', 29),
+                  endDate: moment(),
+                  'opens': 'right',
+                },
+        function (start, end) {
+          $('#daterange-btn span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+          $('#date_to').val(end.format('YYYY-MM-D'));
+          $('#date_from').val(start.format('YYYY-MM-D'));
+        }
+        );
+<?php
+
+  if(isset($formData['date_from']) && isset($formData['date_to'])): ?>
+      $('#daterange').data('daterangepicker').setStartDate("<?php echo Date('Y-m-d', strtotime($formData['date_from'])); ?>");
+      $('#daterange').data('daterangepicker').setEndDate("<?php echo Date('Y-m-d', strtotime($formData['date_to'])); ?>");
+<?php endif; ?>
+</script>
