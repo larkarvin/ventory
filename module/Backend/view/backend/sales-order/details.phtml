@@ -98,7 +98,7 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                     <label for="itemname">Shipping/Delivery Fee:</label>
                     <div>
                     <?php if(!empty($salesorderData['shippingfee'])):?>
-                        &#8369;  <?php echo $salesorderData['shippingfee'];?>
+                        &#8369;  <?php echo number_format($salesorderData['shippingfee'],2);?>
                     <?php else:?>
                         &#8369;  0.00
                     <?php endif; ?>
