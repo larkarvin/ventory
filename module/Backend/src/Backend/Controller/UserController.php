@@ -69,11 +69,9 @@ class UserController extends AbstractActionController
         // total sales last 7 days
         $oneweekago = strtotime("-7 day");
 
-
         $totalSalesAggregate = [
-                        ['$match' => ['created' => ['$gte' => new \MongoDate($oneweekago)]]],
-                        ['$group' => ["_id" => null, "totalsales" => ['$sum' => ['$subtract' => ['$total', '$payment_left']]]]],
-
+                            ['$match' => ['created' => ['$gte' => new \MongoDate($oneweekago)]]],
+                            ['$group' => ["_id" => null, "totalsales" => ['$sum' => ['$subtract' => ['$total', '$payment_left']]]]],
                         ];
 
 
@@ -89,17 +87,10 @@ class UserController extends AbstractActionController
                                             ],
                                     'totalsales' => ['$sum' => '$total'],
                                     'totalsales_lessAR' => ['$sum' =>
-                                                             ['$subtract' => ['$total', '$payment_left']]
-                                                    ],
+                                                             ['$subtract' => ['$total', '$payment_left']]                              ],
                                     'total_cost' => ['$sum' => '$cost'],
-
-                                // ['total_sales' => [
-                                //                     '$sum' => ['$total'],
-                                //                 ],
-                                // ],
                                 ],
                             ],
-
                         ];
 
         $result = $salesOrderModel->aggregate($totalSalesAggregate);
@@ -117,14 +108,73 @@ class UserController extends AbstractActionController
     public function changepasswordAction()
     {
 
+        $request = $this->getRequest();
+        $formData['password'] = '';
+        $formData['password2'] = '';
+        $validationMessages = [];
+
+        $auth = $this->getServiceLocator()->get('AuthService');
+
+        $username = $auth->getIdentity();
+        $success = FALSE;
+
+        if ($request->isPost()) {
+            $posts = $request->getPost();
+            $data  = $posts->toArray();
+
+            $validationPass = TRUE;
+            if(isset($data['password'])
+                && $data['password'] !== ''
+            ){
+                $formData['password'] = $data['password'];
+            }
+
+
+            if(isset($data['password2'])
+                && $data['password2'] !== ''
+            ){
+                $formData['password2'] = $data['password2'];
+            }
+
+            // validate
+            if($formData['password'] !== $formData['password2']){
+                $validationPass = FALSE;
+                $validationMessages[] = 'Password does not match';
+            }
+
+            if( !(strlen($formData['password']) >= 5) ){
+                $validationPass = FALSE;
+                $validationMessages[] = 'Password should be more five characters';
+            }
+
+            if($validationPass){
+
+                $config = $this->getServiceLocator()->get('Config');
+                $staticSalt = $config['staticSalt'];
+                $dbAdapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+                $userModel = new Model\Users;
+                $userModel->setDbAdapter($dbAdapter);
+
+                $result = $userModel->changePassword($username, $formData['password'], $staticSalt);
+                if( $result->getAffectedRows() > 0 ){
+                    $success = TRUE;
+                }
+            }
+
+        }
+        $this->layout()->pageTitle = 'Change Password for ' . $username;
+
+
+        return new ViewModel(['formData' => $formData,
+                              'validationMessages' => $validationMessages,
+                              'success' => $success]);
     }
 
     public function loginAction()
     {
 
         $auth = $this->getServiceLocator()->get('AuthService');
-
-        // var_dump($auth->hasIdentity());exit;
+        $this->layout()->pageTitle =  'Login';
 
         if ($auth->hasIdentity()) {
             return $this->redirect()->toRoute('User/dashboard', array(
@@ -145,11 +195,12 @@ class UserController extends AbstractActionController
             if(isset($data['password']))  { $password = $data['password']; }
             if(isset($data['rememberme'])){ $rememberme = $data['rememberme']; }
 
-
+            $config = $this->getServiceLocator()->get('Config');
             if(isset($username) && isset($password)){
 
                 $dbAdapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-                $staticSalt = "l4r!<@rB3n";
+                $staticSalt = $config['staticSalt'];
+
                 $authAdapter = new AuthAdapter($dbAdapter,
                                 'users', //method setTableName  for dbAdapter
                                 'username', // a method for setIdentityColumn

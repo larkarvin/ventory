@@ -1,3 +1,7 @@
+<?php
+
+$homeUrl = $this->url('home',array(),array('force_canonical' => true));
+?>
 <div class="row">
 
             <!-- fix for small devices only -->
@@ -67,16 +71,16 @@
                                   </th>
 
                               </tr>
-                              <?php 
+                              <?php
                               if($dashboardData['salesOrders']->count() > 0 )
                               {
-                                  foreach($dashboardData['salesOrders'] as $invoice){ 
+                                  foreach($dashboardData['salesOrders'] as $invoice){
 
 
                                       ?>
                               <tr>
                                   <td>
-                                      <a href="<?php echo $this->basePath();?>/salesorder/details/<?php echo $invoice['_id']?>">
+                                      <a href="<?php echo $homeUrl;?>salesorder/details/<?php echo $invoice['_id']?>">
                                             #<?php if (isset($invoice['_id'])) { echo $invoice['_id']; }?>
                                       </a>
                                   </td>
@@ -85,14 +89,14 @@
                                   </td>
                                   <td>
                                       <span class="pull-right"><?php echo number_format($invoice['total'],2);?>
-                                      </span> 
+                                      </span>
                                   </td>
 
                                   <td>
 
                                       <?php if( isset($invoice['finalized']) && $invoice['finalized']) {?>
                                           <span class="label bg-green">
-                                          <i class="fa fa-thumbs-up"></i>  
+                                          <i class="fa fa-thumbs-up"></i>
                                           <?php echo Date('M d Y',$invoice['finalized_date']->sec);?>
                                           </span>
                                           &nbsp;
@@ -104,7 +108,7 @@
 
                                       <?php if( $invoice['paid']) {?>
                                           <span class="label bg-green">
-                                          <i class="fa fa-check-circle"></i>  
+                                          <i class="fa fa-check-circle"></i>
                                           <?php echo Date('M d Y',$invoice['paid_date']->sec);?>
                                           </span>
                                           &nbsp;
@@ -116,7 +120,7 @@
                                   <td>
                                       <?php if( $invoice['shipped']) {?>
                                           <span class="label bg-blue">
-                                          <i class="fa  fa-truck"></i>  
+                                          <i class="fa  fa-truck"></i>
                                           <?php echo Date('M d Y',$invoice['shipped_date']->sec);?>
                                           </span>
                                           &nbsp;
@@ -131,8 +135,8 @@
                       </div>
                 </div><!-- /.box-body -->
                 <div class="box-footer clearfix">
-                  <a href="<?php echo $this->basePath();?>/salesorder/new" class="btn btn-sm btn-info btn-flat pull-left">Place New Invoice</a>
-                  <a href="<?php echo $this->basePath();?>/salesorder/list" class="btn btn-sm btn-default btn-flat pull-right">View All Invoice</a>
+                  <a href="<?php echo $homeUrl;?>salesorder/new" class="btn btn-sm btn-info btn-flat pull-left">Place New Invoice</a>
+                  <a href="<?php echo $homeUrl;?>salesorder/list" class="btn btn-sm btn-default btn-flat pull-right">View All Invoice</a>
                 </div><!-- /.box-footer -->
               </div>
       </div>
@@ -152,39 +156,39 @@
                           <table class="table table-hover table-striped table-bordered">
                               <tbody>
                               <tr>
-                                  <th>ID </th>   
+                                  <th>ID </th>
                                   <th>Cost</th>
                                   <th>Status</th>
                               </tr>
-                              <?php 
+                              <?php
                               if($dashboardData['purchaseOrders'] ->count() > 0 )
                               {
-                                  foreach($dashboardData['purchaseOrders']  as $purchaseOrders){ 
+                                  foreach($dashboardData['purchaseOrders']  as $purchaseOrders){
 
 
                                       ?>
                               <tr>
                                   <td>
-                                      <a href="<?php echo $this->basePath();?>/purchaseorder/details/<?php echo $purchaseOrders['_id']?>">
+                                      <a href="<?php echo $homeUrl;?>purchaseorder/details/<?php echo $purchaseOrders['_id']?>">
                                              #<?php if (isset($purchaseOrders['_id'])) { echo $purchaseOrders['_id']; }?>
                                       </a>
                                   </td>
-                                  
-                          
+
+
 
                                   <td>
                                       &#8369; <?php echo number_format($purchaseOrders['total'],2);?>
                                   </td>
 
                                   <td>
- 
-                                      <?php 
+
+                                      <?php
                                       $label = 'warning';
                                       switch ($purchaseOrders['status']) {
                                           case 'new':
                                               $label ='warning';
                                               break;
-                                          
+
                                           case 'cancelled':
                                               $label ='danger';
                                               break;
@@ -192,7 +196,7 @@
                                           case 'closed':
                                               $label ='success';
                                               break;
-                                          
+
                                           default:
                                               # code...
                                               break;
@@ -202,14 +206,13 @@
                                       </span>
                                   </td>
                               </tr>
-                             <?php }}?>
+                             <?php }} ?>
                           </tbody></table>
                       </div>
 
-
                 </div><!-- /.box-body -->
                 <div class="box-footer text-center">
-                  <a href="<?php echo $this->basePath();?>/purchaseorder/list/" class="uppercase">View All Purchase Orders</a>
+                  <a href="<?php echo $homeUrl;?>purchaseorder/list" class="uppercase">View All Purchase Orders</a>
                 </div><!-- /.box-footer -->
               </div>
       </div>

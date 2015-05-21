@@ -16,5 +16,6 @@ return array(
   'Backend\Model\Sequence'                 => __DIR__ . '/src/Backend/Model/Sequence.php',
   'Backend\Model\ProductVariants'        => __DIR__ . '/src/Backend/Model/ProductVariants.php',
   'Backend\Model\Products'               => __DIR__ . '/src/Backend/Model/Products.php',
+  'Backend\Model\Users'               => __DIR__ . '/src/Backend/Model/Users.php',
   'Backend\Model\StockAdjustments'               => __DIR__ . '/src/Backend/Model/StockAdjustments.php',
 );

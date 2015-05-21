@@ -118,7 +118,7 @@ class ProductController extends AbstractActionController
         $orderby = -1;
         if(!empty($getData['order']) && $getData['order'] == 'ASC')
             $orderby = 1;
-        
+
         if(!empty($getData['sort'])){
             $keyName = $getData['sort'];
             $sort = [ $keyName => $orderby];
@@ -147,8 +147,8 @@ class ProductController extends AbstractActionController
         $this->layout()->pageTitle = 'Stock Adjustments';
         $this->layout()->pageDesc = 'Adjust your stocks, list returns or defective items';
 
-        
-        
+
+
 
     }
 
@@ -174,7 +174,7 @@ class ProductController extends AbstractActionController
         $orderby = -1;
         if(!empty($getData['order']) && $getData['order'] == 'ASC')
             $orderby = 1;
-        
+
         if(!empty($getData['sort'])){
             $keyName = $getData['sort'];
             $sort = [ $keyName => $orderby];
@@ -332,7 +332,7 @@ class ProductController extends AbstractActionController
         $this->layout()->pageTitle = 'Add Product';
         $this->layout()->pageDesc = 'Add Product and variants to your inventory.';
 
-        
+
         $request = $this->getRequest();
 
         if ($request->isPost()) {
@@ -351,7 +351,7 @@ class ProductController extends AbstractActionController
             $result = $productModel->addProduct($data);
             if($result === TRUE){
 
-                return new ViewModel(['success'     => TRUE, 
+                return new ViewModel(['success'     => TRUE,
                                       'productName' => $data['itemname']]
                                     );
 
@@ -403,7 +403,7 @@ class ProductController extends AbstractActionController
                 $insertResult = $variantModel->insertVariants($productId, $insertData);
 
                 $viewModelData = array_merge($viewModelData, ['success' => $insertResult]);
-                
+
             }else{
                 $viewModelData = array_merge($viewModelData, ['inputFilter' => $result]);
             }

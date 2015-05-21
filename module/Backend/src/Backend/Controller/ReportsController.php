@@ -27,8 +27,7 @@ class ReportsController extends AbstractActionController
     public function salesAction()
     {
 
-        $this->layout()->pageTitle = 'Daily Report';
-        $this->layout()->pageDesc = 'Change the variant information here';
+
 
         $mongoDb = $this->getServiceLocator()->get('Mongo\Db');
 
@@ -108,6 +107,9 @@ class ReportsController extends AbstractActionController
                 ];
 
         $result = $salesOrderModel->aggregate($salesReport);
+
+        $this->layout()->pageTitle = ucfirst($formData['grouping']) .' ' . 'Report';
+        // $this->layout()->pageDesc = '';
 
         if(isset($getData['print'])){
              $this->layout('layout/print');

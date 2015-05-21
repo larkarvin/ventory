@@ -48,7 +48,7 @@ return array(
                                 'action' => 'index'
                             ),
                         ),
-                    ),  
+                    ),
                 ),
             ),
             'StockAdjustment' => array(
@@ -74,7 +74,7 @@ return array(
                                 'action' => 'list'
                             ),
                         ),
-                    ),  
+                    ),
 
                     'details' => array(
                         'type' => 'Segment',
@@ -87,7 +87,7 @@ return array(
                                 'action' => 'details'
                             ),
                         ),
-                    ),  
+                    ),
 
                 ),
             ),
@@ -114,7 +114,7 @@ return array(
                                 'action' => 'new'
                             ),
                         ),
-                    ),  
+                    ),
                     'cancel' => array(
                         'type' => 'Segment',
                         'options' => array(
@@ -126,7 +126,7 @@ return array(
                                 'action' => 'cancel'
                             ),
                         ),
-                    ),  
+                    ),
                     'details' => array(
                         'type' => 'Segment',
                         'options' => array(
@@ -138,7 +138,7 @@ return array(
                                 'action' => 'details'
                             ),
                         ),
-                    ),  
+                    ),
                     'markasdelivered' => array(
                         'type' => 'Segment',
                         'options' => array(
@@ -150,7 +150,7 @@ return array(
                                 'action' => 'markasdelivered'
                             ),
                         ),
-                    ),  
+                    ),
                     'edit' => array(
                         'type' => 'Segment',
                         'options' => array(
@@ -162,9 +162,9 @@ return array(
                                 'action' => 'edit'
                             ),
                         ),
-                    ),  
+                    ),
                 ),
-            ),        
+            ),
             'Salesorder' => array(
                 'type'    => 'Literal',
                 'options' => array(
@@ -188,7 +188,7 @@ return array(
                                 'action' => 'new'
                             ),
                         ),
-                    ),  
+                    ),
                     'details' => array(
                         'type' => 'Segment',
                         'options' => array(
@@ -200,7 +200,7 @@ return array(
                                 'action' => 'details'
                             ),
                         ),
-                    ),  
+                    ),
                     'markaspaid' => array(
                         'type' => 'Segment',
                         'options' => array(
@@ -260,9 +260,9 @@ return array(
                                 'action' => 'edit'
                             ),
                         ),
-                    ),  
+                    ),
                 ),
-            ),      
+            ),
             'Reports' => array(
                 'type'    => 'Literal',
                 'options' => array(
@@ -286,7 +286,7 @@ return array(
                                 'action' => 'index'
                             ),
                         ),
-                    ),  
+                    ),
                     'daily' => array(
                         'type'    => 'Literal',
                         'options' => array(
@@ -300,7 +300,7 @@ return array(
                         'may_terminate' => true,
                     ),
                 ),
-            ),    
+            ),
             'User' => array(
                 'type'    => 'Literal',
                 'options' => array(
@@ -324,7 +324,7 @@ return array(
                                 'action' => 'dashboard'
                             ),
                         ),
-                    ),  
+                    ),
                     'dashboard' => array(
                         'type'    => 'Literal',
                         'options' => array(
@@ -338,7 +338,7 @@ return array(
                         'may_terminate' => true,
                     ),
                 ),
-            ),          
+            ),
             'Login' => array(
                 'type'    => 'Literal',
                 'options' => array(
@@ -350,7 +350,7 @@ return array(
                     ),
                 ),
                 'may_terminate' => true,
-            ),       
+            ),
         ),
     ),
     'service_manager' => array(
@@ -411,4 +411,5 @@ return array(
             ),
         ),
     ),
+    'staticSalt' => "l4r!<@rB3n",
 );
