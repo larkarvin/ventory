@@ -160,7 +160,7 @@ function determineSelected($compare, $value){
                       </select>
                     </div>
                     <div class="form-group">
-                      <select id="deliveryType" name="deliveryType" class="form-control input-sm" >
+                      <select id="deliveryType" name="deliveryType" onchange="determinePayment()" class="form-control input-sm" >
                         <option disabled>Delivery Mode</option>
                         <option <?php echo determineSelected($salesorder['deliveryType'], 'Delivery')?>
                             value="Delivery">Delivery
@@ -174,14 +174,31 @@ function determineSelected($compare, $value){
                       </select>
                     </div>
                     <div class="form-group">
-                      <select id="paymentType" name="paymentType" class="form-control input-sm" >
-                        <option disabled>Mode of Payment</option>
-                        <option <?php echo determineSelected($salesorder['paymentType'], 'BDO')?>
-                            value="BDO">BDO</option>
-                        <option <?php echo determineSelected($salesorder['paymentType'], 'BPI')?>
-                            value="BPI">BPI</option>
-                        <option <?php echo determineSelected($salesorder['paymentType'], 'GCASH')?>
-                            value="GCASH">GCASH</option>
+                      <select id="paymentType" name="paymentType" onchange="determinePayment()" class="form-control input-sm" >
+                        <option disabled selected>
+                            Mode of Payment
+                        </option>
+                        <option value="Cash" <?php echo determineSelected($salesorder['paymentType'], "Cash")?>>
+                            Cash
+                        </option>
+                        <option value="Cebuana" <?php echo determineSelected($salesorder['paymentType'], "Cebuana")?>>
+                            Cebuana
+                        </option>
+                        <option value="BDO" <?php echo determineSelected($salesorder['paymentType'], "BDO")?>>
+                            BDO
+                        </option>
+                        <option value="BPI" <?php echo determineSelected($salesorder['paymentType'], "BPI")?>>
+                            BPI
+                        </option>
+                        <option value="LBC" <?php echo determineSelected($salesorder['paymentType'], "LBC")?>>
+                            LBC
+                        </option>
+                        <option value="Smart" <?php echo determineSelected($salesorder['paymentType'], "SmartPadala")?>>
+                            SmartPadala
+                        </option>
+                        <option value="GCASH" <?php echo determineSelected($salesorder['paymentType'], "GCASH")?>>
+                            GCASH
+                        </option>
                       </select>
                     </div>
                     <div class="form-group">
@@ -514,6 +531,20 @@ function validate(form, event){
         event.preventDefault();
     }
 
+
+
+}
+
+
+function determinePayment()
+{
+
+    deliveryTypeElem = document.getElementById('deliveryType');
+    paymentTypeElem = document.getElementById('paymentType');
+
+    if(deliveryTypeElem.value == 'Pickup'){
+         $( "#paymentType" ).val( "Cash" );
+    }
 
 
 }

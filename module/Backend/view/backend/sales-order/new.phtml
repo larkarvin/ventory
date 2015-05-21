@@ -131,7 +131,7 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                       </select>
                     </div>
                     <div class="form-group">
-                      <select id="deliveryType" name="deliveryType" class="form-control input-sm" >
+                      <select id="deliveryType" onchange="determinePayment()" name="deliveryType" class="form-control input-sm" >
                         <option disabled selected>Delivery Mode</option>
                         <option value="Delivery">Delivery</option>
                         <option value="Meetup">Meetup</option>
@@ -140,10 +140,14 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
                       </select>
                     </div>
                     <div class="form-group">
-                      <select id="paymentType" name="paymentType" class="form-control input-sm" >
+                      <select id="paymentType" onchange="determinePayment()" name="paymentType" class="form-control input-sm" >
                         <option disabled selected>Mode of Payment</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Cebuana">Cebuana</option>
                         <option value="BDO">BDO</option>
                         <option value="BPI">BPI</option>
+                        <option value="LBC">LBC</option>
+                        <option value="SmartPadala">SmartPadala</option>
                         <option value="GCASH">GCASH</option>
                       </select>
                     </div>
@@ -438,6 +442,20 @@ function validate(form, event){
         event.preventDefault();
     }
 
+
+
+}
+
+
+function determinePayment()
+{
+
+    deliveryTypeElem = document.getElementById('deliveryType');
+    paymentTypeElem = document.getElementById('paymentType');
+
+    if(deliveryTypeElem.value == 'Pickup'){
+         $( "#paymentType" ).val( "Cash" );
+    }
 
 
 }
