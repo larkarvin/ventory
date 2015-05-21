@@ -34,7 +34,11 @@ class SalesOrderController extends AbstractActionController
         $criteria = [];
         $page = 1;
         if(!empty($getData['q'])){
-            $criteria = [ '$text' => [ '$search' => $getData['q'] ]];
+             $criteria = [ '$or' => [
+                                        ['$text' => [ '$search' => $getData['q']]],
+                                        ['_id' => (int) $getData['q']]
+                                   ]
+                        ];
         }
 
         $sort = ['created' => -1];

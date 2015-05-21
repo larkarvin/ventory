@@ -32,15 +32,19 @@ class PurchaseOrderController extends AbstractActionController
         $criteria = [];
         $page = 1;
         if(!empty($getData['q'])){
-            $criteria = [ '$text' => [ '$search' => $getData['q'] ]];
-        } 
+            $criteria = [ '$or' => [
+                                        ['$text' => [ '$search' => $getData['q']]],
+                                        ['_id' => (int) $getData['q']]
+                                   ]
+                        ];
+        }
 
         $sort = ['created' => -1];
 
         $orderby = -1;
         if(!empty($getData['order']) && $getData['order'] == 'ASC')
             $orderby = 1;
-        
+
         if(!empty($getData['sort'])){
             $keyName = $getData['sort'];
             $sort = [ $keyName => $orderby];
@@ -86,12 +90,12 @@ class PurchaseOrderController extends AbstractActionController
 
             $purchaseOrderModel = new Model\PurchaseOrders();
             $purchaseOrderModel->setDbAdapter($mongoDb);
-        
+
 
             $purchaseOrderModel->setSequenceModel($sequenceModel);
 
             try{
-                $orderid = $purchaseOrderModel->purchaseOrder($data);  
+                $orderid = $purchaseOrderModel->purchaseOrder($data);
                 return $this->redirect()->toRoute('PurchaseOrder/details', array(
                     'controller' => 'PurchaseOrder',
                     'action'     => 'details',
@@ -102,7 +106,7 @@ class PurchaseOrderController extends AbstractActionController
             }
         }
 
-        return new ViewModel(['invoiceNumber' => $invoiceNumber]); 
+        return new ViewModel(['invoiceNumber' => $invoiceNumber]);
     }
 
     public function detailsAction()
@@ -233,7 +237,7 @@ class PurchaseOrderController extends AbstractActionController
         $purchaseOrderModel = new Model\PurchaseOrders();
         $purchaseOrderModel->setDbAdapter($mongoDb);
         $request = $this->getRequest();
-        
+
         if ($request->isPost()) {
             $posts = $request->getPost();
             $payment  = $posts->toArray();
