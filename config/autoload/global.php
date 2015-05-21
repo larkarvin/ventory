@@ -26,7 +26,7 @@ return array(
         'driver_options' => array(
             PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''
         ),
-        'username' => 'zakaph',
+        'username' => 'zakabackend',
         'password' => 'pwd@zak@',
     ),
 );
