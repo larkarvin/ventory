@@ -130,7 +130,7 @@ $homeUrl = $this->url('home',array(),array('force_canonical' => true));
 
 <!--
     Delivery Mode: Shipping, Delivery, Meetup, Pickup
-    Seller: Christy, Karen, Rose
+    Seller: Christy, Karen, Raz
     Mode of Payment: BDO, BPI, GCASH, Smart Padala, Cash, Cebuana, MLueilher, Palawan, Western Union, LBC
     Rider: Macky, Nelson,
 -->
@@ -154,8 +154,8 @@ function determineSelected($compare, $value){
                         <option <?php echo determineSelected($salesorder['seller'], 'Karen')?>
                             value="Karen">Karen
                         </option>
-                        <option <?php echo determineSelected($salesorder['seller'], 'Rose')?>
-                            value="Rose">Rose
+                        <option <?php echo determineSelected($salesorder['seller'], 'Raz')?>
+                            value="Raz">Raz
                         </option>
                       </select>
                     </div>
@@ -198,6 +198,9 @@ function determineSelected($compare, $value){
                         </option>
                         <option value="GCASH" <?php echo determineSelected($salesorder['paymentType'], "GCASH")?>>
                             GCASH
+                        </option>
+                        <option value="Other" <?php echo determineSelected($salesorder['paymentType'], "Other")?>>
+                           Other 
                         </option>
                       </select>
                     </div>

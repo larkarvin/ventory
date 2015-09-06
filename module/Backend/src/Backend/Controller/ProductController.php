@@ -399,7 +399,6 @@ class ProductController extends AbstractActionController
             if($result->isValid()){
                 // multi insert thats why you need to create an array with a single value
                 $insertData[0] = $data;
-                var_dump($insertData);
                 $insertResult = $variantModel->insertVariants($productId, $insertData);
 
                 $viewModelData = array_merge($viewModelData, ['success' => $insertResult]);
